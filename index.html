@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellage Admin — Smart District Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<!-- ─── THEME TOGGLE (global) ─────────────────────── -->
+<button class="theme-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
+  <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+</button>
+
+<!-- ════════════════════════════════════════════════════
+     AUTH VIEW
+════════════════════════════════════════════════════ -->
+<div id="authView">
+  <div class="auth-wrap">
+
+    <!-- SIDE PANEL -->
+    <div class="auth-side">
+      <div class="auth-side-grid"></div>
+
+      <div class="side-logo">
+        <div class="wellage-emblem wellage-emblem--auth" aria-hidden="true">
+          <span class="wellage-w">W</span>
+          <span class="wellage-line"></span>
+          <span class="wellage-word">WELLAGE</span>
+        </div>
+      </div>
+
+        <div class="side-body">
+        <h1 class="side-headline">Admin Portal</h1>
+        <p class="side-desc">Manage payments, visitors, notices, and residents from one place. Residents and guards use the Wellage app.</p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Payment Tracking</strong>
+              <span>Automated Paid / Pending status with Mobile Money integration</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Digital Access Control</strong>
+              <span>Visitor logbook with QR code guest passes and real-time alerts</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="feature-text">
+              <strong>Community Board</strong>
+              <span>Official announcements, polls, and resident communication</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-footer">© 2026 Wellage · Admin Portal · Residents & security use the app</div>
+    </div>
+
+    <!-- FORM PANEL -->
+    <div class="auth-main">
+
+      <!-- LOGIN FORM (Admin only — residents & security use the app) -->
+      <div class="form-box" id="loginBox">
+        <div class="form-head">
+          <h2 class="form-title">Admin Portal</h2>
+          <!-- <p class="form-subtitle">Sign in to manage your district. Residents and security staff use the Wellage app.</p> -->
+        </div>
+        <p class="admin-only-note">This website is for district administrators only.</p>
+
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="loginEmail" placeholder="you@wellage.rw">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="loginPassword" placeholder="Enter your password">
+            <button class="pass-eye" onclick="togglePwd('loginPassword', this)" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row-meta">
+          <label class="check-label">
+            <input type="checkbox"> Remember me
+          </label>
+          <button class="link-text">Forgot password?</button>
+        </div>
+
+        <button class="btn-submit" onclick="handleLogin()">
+          Sign In
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div class="switch-row switch-row-muted">
+          Residents and security: use the <a href="app/index.html" class="link-app">Wellage app</a>.
+        </div>
+      </div>
+
+      <!-- SIGNUP FORM (hidden on web — app only) -->
+      <div class="form-box hidden" id="signupBox">
+        <div class="form-head">
+          <h2 class="form-title">Join Wellage</h2>
+          <p class="form-subtitle">Create your resident account</p>
+        </div>
+
+        <div class="role-tabs" id="signupRoleTabs">
+          <button class="role-tab active" onclick="selectRole(this, 'signupRoleTabs')">Resident</button>
+          <button class="role-tab" onclick="selectRole(this, 'signupRoleTabs')">Security</button>
+          <button class="role-tab" onclick="selectRole(this, 'signupRoleTabs')">Admin</button>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>First Name</label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="signupFirst" placeholder="First name">
+            </div>
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <div class="input-wrap">
+              <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="signupLast" placeholder="Last name">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email address</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="signupEmail" placeholder="you@wellage.rw">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Phone Number</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <input type="text" id="signupPhone" placeholder="+250 7XX XXX XXX">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>House / Unit Number</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <input type="text" id="signupHouse" placeholder="e.g. A-12">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="signupPassword" placeholder="Create a strong password">
+            <button class="pass-eye" onclick="togglePwd('signupPassword', this)" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Confirm Password</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="signupConfirm" placeholder="Repeat password">
+          </div>
+          <p class="err-msg hidden" id="pwdErr">Passwords do not match.</p>
+        </div>
+
+        <button class="btn-submit" onclick="handleSignup()" style="margin-top:8px;">
+          Create Account
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div class="switch-row">
+          Already have an account? <button class="link-text" onclick="showForm('login')">Sign in</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     APP VIEW
+════════════════════════════════════════════════════ -->
+<div id="appView" class="hidden">
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-logo">
+        <div class="logo-mark sb-logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 52 52" fill="none">
+            <path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <line x1="8" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <line x1="32" y1="44" x2="44" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="26" cy="11" r="3.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="logo-name">Wellage</span>
+      </div>
+
+      <button class="sb-nav-item active" onclick="navTo('dashboard', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </button>
+
+      <button class="sb-nav-item" onclick="navTo('payments', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payments
+        <span class="badge">3</span>
+      </button>
+
+      <button class="sb-nav-item" onclick="navTo('visitors', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Visitors
+      </button>
+
+      <button class="sb-nav-item" onclick="navTo('notices', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Notices
+        <span class="badge">1</span>
+      </button>
+
+      <button class="sb-nav-item" onclick="navTo('residents', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Residents
+      </button>
+
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="avatar" id="userAvatar">BN</div>
+          <div class="sb-user-info">
+            <div class="sb-user-name" id="userName">Belyse N.</div>
+            <div class="sb-user-role" id="userRole">Resident · A-12</div>
+          </div>
+        </div>
+        <button class="sb-nav-item" style="margin-top:6px;" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Overview</h1>
+          <p id="pageSubtitle">Monday, 2 March 2026</p>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <div class="notif-dot"></div>
+          </div>
+          <div class="icon-btn" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+      </header>
+
+      <!-- ─── DASHBOARD PAGE ─────────────────────────── -->
+      <section class="page active" id="page-dashboard">
+        <div class="approvals-section">
+          <h2 class="approvals-heading">Needs your attention</h2>
+          <div class="approvals-cards">
+            <a class="approval-card approval-card--payments" href="#" onclick="navTo('payments', null); return false;">
+              <span class="approval-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </span>
+              <div class="approval-body">
+                <span class="approval-title">Payments to approve</span>
+                <span class="approval-count">3 pending · 3 overdue</span>
+              </div>
+              <span class="approval-arrow">→</span>
+            </a>
+            <a class="approval-card approval-card--residents" href="#" onclick="navTo('residents', null); return false;">
+              <span class="approval-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <div class="approval-body">
+                <span class="approval-title">New resident signups</span>
+                <span class="approval-count" id="dashboard-pending-residents-count">0 requests</span>
+              </div>
+              <span class="approval-arrow">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="stats-grid stats-grid--compact">
+          <div class="stat-card">
+            <div class="stat-label">Total Residents</div>
+            <div class="stat-value">48</div>
+            <div class="stat-change neutral">All units registered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Paid This Month</div>
+            <div class="stat-value" style="color: var(--accent)">39</div>
+            <div class="stat-change up">81.2% collection</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" style="color: var(--warning)">9</div>
+            <div class="stat-change down">3 overdue</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Visitors Today</div>
+            <div class="stat-value">14</div>
+            <div class="stat-change neutral">3 on-site</div>
+          </div>
+        </div>
+
+        <div class="content-grid content-grid--compact">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Recent payments</span>
+              <button class="card-action" onclick="navTo('payments', null)">View all</button>
+            </div>
+            <div class="card-body">
+              <table class="data-table">
+                <thead><tr><th>Resident</th><th>Unit</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>Kamana Eric</td><td>B-04</td><td>25,000 RWF</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                  <tr><td>Uwase Claire</td><td>A-08</td><td>25,000 RWF</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
+                  <tr><td>Mugisha Patrick</td><td>A-03</td><td>25,000 RWF</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
+                  <tr><td>Cyiza Vestine</td><td>D-07</td><td>25,000 RWF</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Activity</span>
+              <button class="card-action">See all</button>
+            </div>
+            <div class="card-body">
+              <ul class="activity-list">
+                <li class="activity-item">
+                  <span class="act-dot green"></span>
+                  <span class="act-text"><strong>Kamana Eric</strong> submitted payment for March</span>
+                  <span class="act-time">9:42 AM</span>
+                </li>
+                <li class="activity-item">
+                  <span class="act-dot blue"></span>
+                  <span class="act-text">Visitor <strong>Diane M.</strong> checked in — C-02</span>
+                  <span class="act-time">9:17 AM</span>
+                </li>
+                <li class="activity-item">
+                  <span class="act-dot orange"></span>
+                  <span class="act-text">Notice: Water maintenance Friday</span>
+                  <span class="act-time">8:55 AM</span>
+                </li>
+                <li class="activity-item">
+                  <span class="act-dot red"></span>
+                  <span class="act-text"><strong>Mugisha Patrick</strong> payment overdue</span>
+                  <span class="act-time">8:30 AM</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── PAYMENTS PAGE ──────────────────────────── -->
+      <section class="page" id="page-payments">
+        <div class="page-toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search resident or unit..." oninput="filterPayments(this.value)">
+          </div>
+          <select class="filter-select" onchange="filterPayments(document.querySelector('#page-payments .search-wrap input').value, this.value)">
+            <option value="">All Status</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          <button class="btn-primary" onclick="openModal('recordPayment')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Record Payment
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Payment Records — March 2026</span>
+            <span style="font-size:12px; color: var(--text-muted)">48 residents</span>
+          </div>
+          <div class="card-body">
+            <table class="data-table" id="paymentsTable">
+              <thead><tr><th>Resident</th><th>Unit</th><th>Service</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody id="paymentsBody">
+                <tr data-status="paid"><td>Kamana Eric</td><td>B-04</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 1, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr data-status="pending"><td>Uwase Claire</td><td>A-08</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
+                <tr data-status="paid"><td>Ndayishimiye J.</td><td>C-11</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Feb 28, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr data-status="overdue"><td>Mugisha Patrick</td><td>A-03</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
+                <tr data-status="paid"><td>Cyiza Vestine</td><td>D-07</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 2, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr data-status="pending"><td>Habimana Joel</td><td>B-09</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
+                <tr data-status="paid"><td>Ingabire Sandra</td><td>C-05</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 1, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr data-status="overdue"><td>Nkurunziza T.</td><td>A-14</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── VISITORS PAGE ──────────────────────────── -->
+      <section class="page" id="page-visitors">
+        <div class="visitor-form-card">
+          <div class="card-title" style="margin-bottom:18px;">Register Visitor</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Visitor Name</label>
+              <div class="input-wrap">
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="visitorName" placeholder="Full name">
+              </div>
+            </div>
+            <div class="field">
+              <label>Vehicle Plate</label>
+              <div class="input-wrap">
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <input type="text" id="visitorPlate" placeholder="e.g. RAC 123A">
+              </div>
+            </div>
+            <div class="field">
+              <label>Host Unit</label>
+              <div class="input-wrap">
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <input type="text" id="visitorHost" placeholder="e.g. A-12">
+              </div>
+            </div>
+          </div>
+          <button class="btn-primary" style="width: auto;" onclick="registerVisitor()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Check In Visitor
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Visitor Logbook — Today</span>
+            <span style="font-size:12px; color: var(--text-muted)" id="visitorCount">14 entries</span>
+          </div>
+          <div class="card-body">
+            <table class="data-table" id="visitorsTable">
+              <thead><tr><th>Visitor</th><th>Vehicle Plate</th><th>Host Unit</th><th>Check In</th><th>Check Out</th><th>Status</th></tr></thead>
+              <tbody id="visitorsBody">
+                <tr><td>Diane Mukamana</td><td>RAC 441B</td><td>C-02</td><td>09:17 AM</td><td>—</td><td><span class="badge-status badge-paid">On-site</span></td></tr>
+                <tr><td>Samuel Nzeyimana</td><td>RAD 209C</td><td>A-07</td><td>08:45 AM</td><td>10:30 AM</td><td><span class="badge-status badge-pending" style="background:rgba(139,146,160,0.1);color:var(--text-muted);">Left</span></td></tr>
+                <tr><td>Aline Uwimana</td><td>—</td><td>B-06</td><td>07:30 AM</td><td>09:00 AM</td><td><span class="badge-status badge-pending" style="background:rgba(139,146,160,0.1);color:var(--text-muted);">Left</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── NOTICES PAGE ───────────────────────────── -->
+      <section class="page" id="page-notices">
+        <div class="page-toolbar">
+          <div></div>
+          <button class="btn-primary" onclick="openModal('addNotice')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Post Notice
+          </button>
+        </div>
+
+        <div class="notices-grid">
+          <div class="notice-card">
+            <span class="notice-tag tag-urgent">Urgent</span>
+            <div class="notice-title">Water Maintenance — Friday 7 Mar</div>
+            <p class="notice-body">Water supply will be interrupted from 8:00 AM to 2:00 PM on Friday due to scheduled pipe maintenance. Please store water in advance.</p>
+            <div class="notice-meta"><span>Admin</span><span>Mar 2, 2026</span></div>
+          </div>
+          <div class="notice-card">
+            <span class="notice-tag tag-general">General</span>
+            <div class="notice-title">March Payment Deadline — 10 March</div>
+            <p class="notice-body">Reminder that monthly service fees are due by 10 March 2026. Late payments will incur a 10% penalty. Use Mobile Money or upload your receipt.</p>
+            <div class="notice-meta"><span>Admin</span><span>Mar 1, 2026</span></div>
+          </div>
+          <div class="notice-card">
+            <span class="notice-tag tag-poll">Poll</span>
+            <div class="notice-title">New Gate Opening Hours — Vote Now</div>
+            <p class="notice-body">Should the main gate extend its operating hours to midnight on weekends? Cast your vote before 5 March.</p>
+            <div class="notice-meta"><span>Admin</span><span>Feb 28, 2026</span></div>
+          </div>
+          <div class="notice-card">
+            <span class="notice-tag tag-info">Info</span>
+            <div class="notice-title">Community Meeting — 15 March</div>
+            <p class="notice-body">Quarterly community meeting scheduled for Saturday 15 March at 10:00 AM in the community hall. Agenda: security review and landscaping proposal.</p>
+            <div class="notice-meta"><span>Admin</span><span>Feb 26, 2026</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── RESIDENTS PAGE ─────────────────────────── -->
+      <section class="page" id="page-residents">
+        <div class="page-toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search residents...">
+          </div>
+          <button class="btn-primary" onclick="openModal('addResident')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Resident
+          </button>
+        </div>
+
+        <!-- Pending signups (from app) — approve to allow resident login -->
+        <div class="card" id="pending-residents-card">
+          <div class="card-head">
+            <span class="card-title">Pending approvals</span>
+            <span class="card-meta" id="pending-residents-count">0 requests</span>
+          </div>
+          <div class="card-body">
+            <div id="pending-residents-empty" class="empty-state hidden">No pending signups. Residents who register in the app will appear here.</div>
+            <table class="data-table hidden" id="pending-residents-table">
+              <thead><tr><th>Name</th><th>Phone</th><th>Unit</th><th>Community</th><th>Submitted</th><th>Actions</th></tr></thead>
+              <tbody id="pending-residents-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">All Residents</span>
+            <span style="font-size:12px; color: var(--text-muted)">48 registered</span>
+          </div>
+          <div class="card-body">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Unit</th><th>Phone</th><th>Joined</th><th>Payment</th></tr></thead>
+              <tbody>
+                <tr><td>Kamana Eric</td><td>B-04</td><td>+250 788 123 456</td><td>Jan 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr><td>Uwase Claire</td><td>A-08</td><td>+250 782 234 567</td><td>Mar 2024</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
+                <tr><td>Ndayishimiye J.</td><td>C-11</td><td>+250 795 345 678</td><td>Jun 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr><td>Mugisha Patrick</td><td>A-03</td><td>+250 788 456 789</td><td>Sep 2023</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
+                <tr><td>Cyiza Vestine</td><td>D-07</td><td>+250 780 567 890</td><td>Feb 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+                <tr><td>Habimana Joel</td><td>B-09</td><td>+250 783 678 901</td><td>Nov 2023</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
+                <tr><td>Ingabire Sandra</td><td>C-05</td><td>+250 784 789 012</td><td>Apr 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODALS ─────────────────────────────────────────── -->
+
+<!-- Record Payment Modal -->
+<div class="modal-backdrop hidden" id="modal-recordPayment" onclick="closeModalOutside(event,'modal-recordPayment')">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Record Payment</span>
+      <button class="close-btn" onclick="closeModal('modal-recordPayment')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Resident / Unit</label>
+        <div class="input-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <input type="text" placeholder="e.g. Kamana Eric — B-04">
+        </div>
+      </div>
+      <div class="field">
+        <label>Amount (RWF)</label>
+        <div class="input-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <input type="text" placeholder="25,000">
+        </div>
+      </div>
+      <div class="field">
+        <label>Payment Reference</label>
+        <div class="input-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <input type="text" placeholder="MoMo TxID or receipt number">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-recordPayment')">Cancel</button>
+      <button class="btn-primary" onclick="submitPayment()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirm Payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Notice Modal -->
+<div class="modal-backdrop hidden" id="modal-addNotice" onclick="closeModalOutside(event,'modal-addNotice')">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Post Notice</span>
+      <button class="close-btn" onclick="closeModal('modal-addNotice')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Title</label>
+        <div class="input-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+          <input type="text" placeholder="Notice title">
+        </div>
+      </div>
+      <div class="field">
+        <label>Body</label>
+        <div class="input-wrap">
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top:16px;transform:none;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <input type="text" placeholder="Write your announcement...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-addNotice')">Cancel</button>
+      <button class="btn-primary" onclick="submitNotice()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Publish
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Resident Modal -->
+<div class="modal-backdrop hidden" id="modal-addResident" onclick="closeModalOutside(event,'modal-addResident')">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Add Resident</span>
+      <button class="close-btn" onclick="closeModal('modal-addResident')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="field"><label>First Name</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input type="text" placeholder="First name"></div></div>
+        <div class="field"><label>Last Name</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input type="text" placeholder="Last name"></div></div>
+      </div>
+      <div class="field"><label>Unit Number</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><input type="text" placeholder="e.g. A-12"></div></div>
+      <div class="field"><label>Phone</label><div class="input-wrap"><svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><input type="text" placeholder="+250 7XX XXX XXX"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-addResident')">Cancel</button>
+      <button class="btn-primary" onclick="submitResident()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Add Resident
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST CONTAINER ────────────────────────────── -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════ -->
+<script src="js/app.js"></script>
+</body>
+</html>
