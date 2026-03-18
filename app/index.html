@@ -599,18 +599,32 @@
             <!-- Sub-tab switcher -->
             <div class="ch-subtab-bar">
               <button class="ch-subtab active" data-subtab="notices" onclick="openCommunityTab('notices',true)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 Notices
+                <span class="ch-subtab-count ch-count-notices" id="adminNoticesCount">4</span>
               </button>
               <button class="ch-subtab" data-subtab="chat" onclick="openCommunityTab('chat',true)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Chat
-                <span class="ch-subtab-dot hidden" id="adminChatSubDot"></span>
+                <span class="ch-subtab-count ch-count-chat" id="adminChatCount">3</span>
               </button>
             </div>
             <!-- Notices panel -->
-            <div class="ch-panel" id="adminCommunityNotices">
-              <div class="admin-notice-cards"><div class="admin-notice-card"><span class="admin-notice-tag urgent">Urgent</span><p class="admin-notice-title">Water Maintenance — Friday 7 Mar</p><p class="admin-notice-body">Water supply interrupted 8:00 AM – 2:00 PM. Store water in advance.</p></div><div class="admin-notice-card"><span class="admin-notice-tag general">General</span><p class="admin-notice-title">March Payment Deadline — 10 March</p><p class="admin-notice-body">Monthly fees due by 10 March. Late payments incur 10% penalty.</p></div></div>
+            <div class="ch-panel an-panel" id="adminCommunityNotices">
+              <!-- Filter row + compose button -->
+              <div class="an-toolbar">
+                <div class="an-filter-row" id="anFilterRow">
+                  <button class="an-chip active" data-filter="" onclick="setAdminNoticeFilter(this)">All</button>
+                  <button class="an-chip" data-filter="urgent" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#DC2626"></span>Urgent</button>
+                  <button class="an-chip" data-filter="general" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#1A9E6B"></span>General</button>
+                  <button class="an-chip" data-filter="poll" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#D97706"></span>Poll</button>
+                  <button class="an-chip" data-filter="info" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#2563EB"></span>Info</button>
+                </div>
+                <button class="an-compose-btn" onclick="openNoticeComposer()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  New
+                </button>
+              </div>
+              <!-- Notice list rendered by JS -->
+              <div class="an-scroll" id="adminNoticeList"></div>
             </div>
             <!-- Chat panel -->
             <div class="ch-panel hidden" id="adminCommunityChat">
@@ -1090,25 +1104,18 @@
           <!-- Sub-tab switcher -->
           <div class="ch-subtab-bar">
             <button class="ch-subtab active" data-subtab="notices" onclick="openCommunityTab('notices',false)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               Notices
+              <span class="ch-subtab-count ch-count-notices" id="residentNoticesCount">4</span>
             </button>
             <button class="ch-subtab" data-subtab="chat" onclick="openCommunityTab('chat',false)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               Chat
-              <span class="ch-subtab-dot hidden" id="residentChatSubDot"></span>
+              <span class="ch-subtab-count ch-count-chat" id="residentChatCount">3</span>
             </button>
           </div>
 
           <!-- Notices panel -->
           <div class="ch-panel rn-screen" id="residentCommunityNotices">
-            <div class="rn-header">
-              <div class="rn-header-top">
-                <div>
-                  <h1 class="rn-title">Notices</h1>
-                  <p class="rn-sub" id="noticePhSub">Community announcements</p>
-                </div>
-              </div>
+            <div class="rn-filter-bar">
               <div class="rn-filter-row" id="rnFilterRow">
                 <button type="button" class="rn-chip active" data-filter="" onclick="switchNoticeFilter(this)">All</button>
                 <button type="button" class="rn-chip" data-filter="urgent" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-urgent"></span>Urgent</button>
@@ -1124,88 +1131,18 @@
           <div class="ch-panel hidden" id="residentCommunityChat">
             <div class="ch-list-header">
               <span class="ch-list-title">Messages</span>
+              <button class="ch-new-group-btn" onclick="openNewGroupModal(false)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Group
+              </button>
             </div>
+            <!-- Search bar -->
+            <div class="ch-search-wrap">
+              <svg class="ch-search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input class="ch-search-input" id="residentChatSearch" type="text" placeholder="Search people or groups…" oninput="renderChatSearch(this.value,false)" autocomplete="off">
+            </div>
+            <!-- People + conversations rendered here -->
             <div class="ch-list" id="residentChatList"></div>
-          </div>
-        </div>
-
-        <!-- Notice detail bottom sheet (redesigned) -->
-        <div class="rn-overlay hidden" id="noticeDetailSheetBg" onclick="if(event.target===this)closeNoticeDetail()">
-          <div class="rn-sheet" id="noticeDetailSheet">
-            <div class="rn-sheet-handle-wrap"><div class="rn-sheet-handle"></div></div>
-            <div class="rn-sheet-head">
-              <div class="rn-sheet-tag-row">
-                <span class="rn-ntag" id="rnSheetTag"></span>
-                <span class="rn-pin-badge hidden" id="rnSheetPin">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>
-                  Pinned
-                </span>
-              </div>
-              <h2 class="rn-sheet-title" id="rnSheetTitle"></h2>
-              <div class="rn-sheet-meta">
-                <span class="rn-sheet-date">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <span id="rnSheetDate"></span>
-                </span>
-                <span class="rn-sheet-aud">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  <span id="rnSheetAud"></span>
-                </span>
-              </div>
-            </div>
-            <div class="rn-sheet-body">
-              <p class="rn-sheet-text" id="rnSheetText"></p>
-              <div id="rnSheetPoll"></div>
-            </div>
-            <div class="rn-sheet-footer">
-              <button type="button" class="rn-sheet-close" onclick="closeNoticeDetail()">Close</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ CHAT THREAD OVERLAY (shared: resident + admin) ═══ -->
-        <div class="ch-thread-overlay hidden" id="chatThreadOverlay">
-          <div class="ch-thread-header">
-            <button class="ch-back-btn" onclick="closeChatThread()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div class="ch-thread-info">
-              <div class="ch-thread-avatar" id="chatThreadAvatar"></div>
-              <div>
-                <p class="ch-thread-name" id="chatThreadName"></p>
-                <p class="ch-thread-sub" id="chatThreadSub"></p>
-              </div>
-            </div>
-          </div>
-          <div class="ch-messages" id="chatMessages"></div>
-          <div class="ch-input-bar">
-            <textarea class="ch-input" id="chatInput" placeholder="Type a message…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage()}"></textarea>
-            <button class="ch-send-btn" onclick="sendChatMessage()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- ═══ NEW GROUP MODAL (admin only) ═══ -->
-        <div class="modal-backdrop hidden" id="newGroupModalBg" onclick="if(event.target===this)closeNewGroupModal()">
-          <div class="modal">
-            <div class="modal-head">
-              <span class="modal-title">New Group</span>
-              <button class="modal-close" onclick="closeNewGroupModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-              <p class="modal-hint">Create a group chat visible to all residents.</p>
-              <div class="field">
-                <label class="field-label">Group name</label>
-                <input class="field-input" type="text" id="newGroupName" placeholder="e.g. Block A Residents, Committee…"/>
-              </div>
-              <div class="field">
-                <label class="field-label">Description <span style="font-weight:400;opacity:.5;font-size:11px">(optional)</span></label>
-                <input class="field-input" type="text" id="newGroupDesc" placeholder="What's this group for?"/>
-              </div>
-              <button class="btn-full" onclick="submitNewGroup()">Create Group</button>
-              <button class="btn-full btn-ghost-full" onclick="closeNewGroupModal()">Cancel</button>
-            </div>
           </div>
         </div>
 
@@ -1904,6 +1841,133 @@
       <p class="security-qr-success-name">Diane Mukamana</p>
       <p class="security-qr-success-meta">Unit B-07 · Visiting Patrick Habimana<br/>Plate: RAB 441C · Checked in 9:41 AM</p>
       <button type="button" class="security-qr-success-done" onclick="confirmSecurityCheckin()">Done</button>
+    </div>
+  </div>
+
+  <!-- ═══ SHARED: CHAT THREAD OVERLAY (accessible from any view) ═══ -->
+  <div class="ch-thread-overlay hidden" id="chatThreadOverlay" onclick="if(event.target===this)closeChatThread()">
+    <div class="ch-thread-sheet">
+      <div class="ch-thread-header">
+        <button class="ch-back-btn" onclick="closeChatThread()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="ch-thread-info">
+          <div class="ch-thread-avatar" id="chatThreadAvatar"></div>
+          <div>
+            <p class="ch-thread-name" id="chatThreadName"></p>
+            <p class="ch-thread-sub" id="chatThreadSub"></p>
+          </div>
+        </div>
+      </div>
+      <div class="ch-messages" id="chatMessages"></div>
+      <div class="ch-input-bar">
+        <textarea class="ch-input" id="chatInput" placeholder="Type a message…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage()}"></textarea>
+        <button class="ch-send-btn" onclick="sendChatMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHARED: NEW GROUP MODAL (admin only) ═══ -->
+  <div class="modal-backdrop hidden" id="newGroupModalBg" onclick="if(event.target===this)closeNewGroupModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <span class="modal-title">New Group</span>
+        <button class="modal-close" onclick="closeNewGroupModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">Create a group chat visible to all residents.</p>
+        <div class="field">
+          <label class="field-label">Group name</label>
+          <input class="field-input" type="text" id="newGroupName" placeholder="e.g. Block A Residents, Committee…"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Description <span style="font-weight:400;opacity:.5;font-size:11px">(optional)</span></label>
+          <input class="field-input" type="text" id="newGroupDesc" placeholder="What's this group for?"/>
+        </div>
+        <button class="btn-full" onclick="submitNewGroup()">Create Group</button>
+        <button class="btn-full btn-ghost-full" onclick="closeNewGroupModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHARED: NOTICE DETAIL BOTTOM SHEET (accessible from any view) ═══ -->
+  <div class="rn-overlay hidden" id="noticeDetailSheetBg" onclick="if(event.target===this)closeNoticeDetail()">
+    <div class="rn-sheet" id="noticeDetailSheet">
+      <div class="rn-sheet-handle-wrap"><div class="rn-sheet-handle"></div></div>
+      <div class="rn-sheet-head">
+        <div class="rn-sheet-tag-row">
+          <span class="rn-ntag" id="rnSheetTag"></span>
+          <span class="rn-pin-badge hidden" id="rnSheetPin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>
+            Pinned
+          </span>
+        </div>
+        <h2 class="rn-sheet-title" id="rnSheetTitle"></h2>
+        <div class="rn-sheet-meta">
+          <span class="rn-sheet-date">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="rnSheetDate"></span>
+          </span>
+          <span class="rn-sheet-aud">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span id="rnSheetAud"></span>
+          </span>
+        </div>
+      </div>
+      <div class="rn-sheet-body">
+        <p class="rn-sheet-text" id="rnSheetText"></p>
+        <div id="rnSheetPoll"></div>
+      </div>
+      <div class="rn-sheet-footer">
+        <button type="button" class="rn-sheet-close" onclick="closeNoticeDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHARED: NOTICE COMPOSER MODAL (admin only) ═══ -->
+  <div class="modal-backdrop hidden" id="noticeComposerBg" onclick="if(event.target===this)closeNoticeComposer()">
+    <div class="modal nc-modal">
+      <div class="modal-head">
+        <span class="modal-title">Post a Notice</span>
+        <button class="modal-close" onclick="closeNoticeComposer()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Type selector -->
+        <div class="field">
+          <label class="field-label">Type</label>
+          <div class="nc-type-row">
+            <button type="button" class="nc-type-btn active" data-type="urgent" onclick="selectNoticeType(this)"><span class="nc-type-dot" style="background:#DC2626"></span>Urgent</button>
+            <button type="button" class="nc-type-btn" data-type="general" onclick="selectNoticeType(this)"><span class="nc-type-dot" style="background:#1A9E6B"></span>General</button>
+            <button type="button" class="nc-type-btn" data-type="poll" onclick="selectNoticeType(this)"><span class="nc-type-dot" style="background:#D97706"></span>Poll</button>
+            <button type="button" class="nc-type-btn" data-type="info" onclick="selectNoticeType(this)"><span class="nc-type-dot" style="background:#2563EB"></span>Info</button>
+          </div>
+        </div>
+        <!-- Title -->
+        <div class="field">
+          <label class="field-label">Title</label>
+          <input class="field-input" type="text" id="ncTitle" placeholder="e.g. Water Maintenance — Friday 7 Mar"/>
+        </div>
+        <!-- Body -->
+        <div class="field">
+          <label class="field-label">Message</label>
+          <textarea class="field-input nc-textarea" id="ncBody" rows="3" placeholder="Write your notice here…"></textarea>
+        </div>
+        <!-- Poll options — visible only when type=poll -->
+        <div class="field nc-poll-fields hidden" id="ncPollFields">
+          <label class="field-label">Poll options</label>
+          <input class="field-input" type="text" id="ncOpt1" placeholder="Option A"/>
+          <input class="field-input" style="margin-top:8px" type="text" id="ncOpt2" placeholder="Option B"/>
+        </div>
+        <!-- Pin toggle -->
+        <label class="nc-pin-row">
+          <input type="checkbox" id="ncPinned"/>
+          <span class="nc-pin-lbl">📌 Pin this notice</span>
+        </label>
+        <button class="btn-full" onclick="submitNoticeComposer()">Post Notice</button>
+        <button class="btn-full btn-ghost-full" onclick="closeNoticeComposer()">Cancel</button>
+      </div>
     </div>
   </div>
 

@@ -303,7 +303,7 @@ function adminNav(tab) {
   if (screen) screen.classList.add('active');
   if (navBtn) navBtn.classList.add('active');
   if (tab === 'incidents') renderAdminIncidents();
-  if (tab === 'community') { renderChatList(true); }
+  if (tab === 'community') { renderAdminNotices(); renderChatList(true); }
   const shell = document.getElementById('adminAppShell');
   if (shell) {
     if (tab === 'overview') shell.classList.add('on-overview');
@@ -1444,12 +1444,12 @@ function rnCardHTML(n) {
   const color = RN_COLORS[n.type] || '#64748b';
   const total = n.poll ? n.poll.options.reduce((s, o) => s + o.votes, 0) : 0;
   const pinBadge = n.pinned
-    ? `<span class="rn-pin-badge-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>Pinned</span>`
+    ? `<span class="rn-pin-badge-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="9" height="9"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>Pinned</span>`
     : `<span class="rn-card-date">${n.date}</span>`;
   const pollHTML = n.poll
     ? `<div class="rn-poll-wrap">${n.poll.options.map(o => {
         const pct = total ? Math.round(o.votes / total * 100) : 0;
-        return `<div class="rn-poll-opt"><div class="rn-poll-opt-head"><span class="rn-poll-lbl">${o.label}</span><span class="rn-poll-pct">${pct}%</span></div><div class="rn-poll-track"><div class="rn-poll-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+        return `<div class="rn-poll-opt"><div class="rn-poll-opt-head"><span class="rn-poll-lbl">${o.label}</span><span class="rn-poll-pct">${pct}%</span></div><div class="rn-poll-track"><div class="rn-poll-fill" style="width:${pct}%"></div></div></div>`;
       }).join('')}<div class="rn-poll-votes">${total} votes · tap to vote</div></div>`
     : '';
   return `<div class="rn-card" onclick="openNoticeDetail('${n.id}')">
@@ -1462,12 +1462,6 @@ function rnCardHTML(n) {
       <p class="rn-card-title">${n.title}</p>
       <p class="rn-card-body">${n.body}</p>
       ${pollHTML}
-      <div class="rn-card-foot">
-        <span class="rn-card-aud">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          ${n.audience}
-        </span>
-      </div>
     </div>
   </div>`;
 }
@@ -1481,6 +1475,78 @@ function switchNoticeFilter(btn) {
 
 // Keep old name so any other references still work
 function switchNoticeTab(btn) { switchNoticeFilter(btn); }
+
+// ── Admin Notices ─────────────────────────────────────────────
+let anActiveFilter = '';
+
+function renderAdminNotices() {
+  const list = document.getElementById('adminNoticeList');
+  if (!list) return;
+
+  const rows = RESIDENT_NOTICES
+    .filter(n => !anActiveFilter || n.type === anActiveFilter)
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+  if (!rows.length) {
+    list.innerHTML = `<div class="rn-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>No notices</p><span>Check back later</span></div>`;
+    return;
+  }
+
+  const pinned = rows.filter(n => n.pinned);
+  const rest   = rows.filter(n => !n.pinned);
+  let html = '';
+  if (pinned.length) html += `<p class="rn-section-lbl">Pinned</p>` + pinned.map(anCardHTML).join('');
+  if (rest.length) {
+    if (pinned.length) html += `<p class="rn-section-lbl" style="margin-top:4px">Recent</p>`;
+    html += rest.map(anCardHTML).join('');
+  }
+  list.innerHTML = html;
+}
+
+function anCardHTML(n) {
+  const color = RN_COLORS[n.type] || '#64748b';
+  const total = n.poll ? n.poll.options.reduce((s, o) => s + o.votes, 0) : 0;
+  const pinBadge = n.pinned
+    ? `<span class="rn-pin-badge-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="9" height="9"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>Pinned</span>`
+    : `<span class="rn-card-date">${n.date}</span>`;
+  const pollHTML = n.poll
+    ? `<div class="rn-poll-wrap">${n.poll.options.map(o => {
+        const pct = total ? Math.round(o.votes / total * 100) : 0;
+        return `<div class="rn-poll-opt"><div class="rn-poll-opt-head"><span class="rn-poll-lbl">${o.label}</span><span class="rn-poll-pct">${pct}%</span></div><div class="rn-poll-track"><div class="rn-poll-fill" style="width:${pct}%"></div></div></div>`;
+      }).join('')}<div class="rn-poll-votes">${total} votes total</div></div>`
+    : '';
+  return `<div class="rn-card an-card" onclick="openNoticeDetail('${n.id}')">
+    <div class="rn-card-bar" style="background:${color}"></div>
+    <div class="rn-card-inner">
+      <div class="rn-card-top">
+        <span class="rn-ntag rn-ntag-${n.type}">${n.type.toUpperCase()}</span>
+        ${pinBadge}
+      </div>
+      <p class="rn-card-title">${n.title}</p>
+      <p class="rn-card-body">${n.body}</p>
+      ${pollHTML}
+      <div class="rn-card-foot">
+        <span class="rn-card-aud">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="10" height="10"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          ${n.audience}
+        </span>
+        <span class="an-reach-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="9" height="9"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          48 reached
+        </span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setAdminNoticeFilter(btn) {
+  document.querySelectorAll('#anFilterRow .an-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  anActiveFilter = btn.dataset.filter || '';
+  renderAdminNotices();
+}
 
 function openNoticeDetail(id) {
   const n = RESIDENT_NOTICES.find(x => x.id === id);
@@ -1602,7 +1668,17 @@ function toast(msg, type) {
 const CHAT_KEY = 'wellage_chats';
 let _currentChatId  = null;
 let _currentChatIsAdmin = false;
+let _chatOpenedByAdmin  = true;
 let _activeCommunityTab = { resident: 'notices', admin: 'notices' };
+
+// ── App users (all residents visible for search/DM) ─────────────
+const APP_USERS = [
+  { id: 'res-amara', name: 'Amara Ngozi',   unit: 'A-12', initials: 'AN', color: '#16a34a' },
+  { id: 'res-kemi',  name: 'Kemi Osei',     unit: 'B-05', initials: 'KO', color: '#7C3AED' },
+  { id: 'res-james', name: 'James Mutua',   unit: 'C-08', initials: 'JM', color: '#F97316' },
+  { id: 'res-fati',  name: 'Fatima Diallo', unit: 'A-03', initials: 'FD', color: '#0891B2' },
+  { id: 'res-david', name: 'David Kariuki', unit: 'D-11', initials: 'DK', color: '#DC2626' },
+];
 
 // ── Default seed chats ──────────────────────────────────────────
 const SEED_CHATS = [
@@ -1682,6 +1758,7 @@ function openCommunityTab(tab, isAdmin) {
   if (isAdmin) {
     document.getElementById('adminCommunityNotices')?.classList.toggle('hidden', tab !== 'notices');
     document.getElementById('adminCommunityChat')?.classList.toggle('hidden', tab !== 'chat');
+    if (tab === 'notices') renderAdminNotices();
     if (tab === 'chat') renderChatList(true);
   } else {
     document.getElementById('residentCommunityNotices')?.classList.toggle('hidden', tab !== 'notices');
@@ -1703,12 +1780,29 @@ function renderChatList(isAdmin) {
     document.getElementById(id)?.classList.toggle('hidden', total === 0);
   });
 
+  let html = '';
+
+  // Resident-only: quick People strip for starting DMs
+  if (!isAdmin && APP_USERS.length) {
+    html += `<div class="ch-section-lbl">People</div>
+    <div class="ch-people-strip">
+      ${APP_USERS.map(u => `
+        <div class="ch-people-pill" onclick="startDM('${u.id}',false)">
+          <div class="ch-user-av" style="background:${u.color}22;color:${u.color}">${u.initials}</div>
+          <span class="ch-people-fname">${u.name.split(' ')[0]}</span>
+          <span class="ch-people-unit">${u.unit}</span>
+        </div>`).join('')}
+    </div>
+    <div class="ch-section-lbl" style="margin-top:4px">Conversations</div>`;
+  }
+
   if (!chats.length) {
-    listEl.innerHTML = `<div class="ch-list-empty"><p>No conversations yet</p></div>`;
+    html += `<div class="ch-list-empty"><p>No conversations yet</p></div>`;
+    listEl.innerHTML = html;
     return;
   }
 
-  listEl.innerHTML = chats.map(chat => {
+  html += chats.map(chat => {
     const lastMsg = chat.messages.length ? chat.messages[chat.messages.length - 1] : null;
     const preview = lastMsg ? lastMsg.text.slice(0, 55) + (lastMsg.text.length > 55 ? '…' : '') : 'No messages yet';
     const time    = lastMsg ? lastMsg.time : '';
@@ -1716,8 +1810,11 @@ function renderChatList(isAdmin) {
     const typeTag = chat.type === 'group'
       ? `<span class="ch-type-tag">Group</span>`
       : (chat.type === 'dm' ? `<span class="ch-type-tag ch-tag-dm">DM</span>` : '');
+    const avatarHtml = chat.initials
+      ? `<div class="ch-conv-avatar ch-initials-av" style="background:${chat.color}22;color:${chat.color}">${chat.initials}</div>`
+      : `<div class="ch-conv-avatar">${chat.emoji || '💬'}</div>`;
     return `<div class="ch-conv-card" onclick="openChatThread('${chat.id}',${isAdmin})">
-      <div class="ch-conv-avatar">${chat.emoji || '💬'}</div>
+      ${avatarHtml}
       <div class="ch-conv-body">
         <div class="ch-conv-top">
           <span class="ch-conv-name">${chat.name}</span>
@@ -1733,6 +1830,8 @@ function renderChatList(isAdmin) {
       </div>
     </div>`;
   }).join('');
+
+  listEl.innerHTML = html;
 }
 
 // ── Chat thread ─────────────────────────────────────────────────
@@ -1751,9 +1850,17 @@ function openChatThread(chatId, isAdmin) {
   const avatarEl = document.getElementById('chatThreadAvatar');
   const nameEl   = document.getElementById('chatThreadName');
   const subEl    = document.getElementById('chatThreadSub');
-  if (avatarEl) avatarEl.textContent = chat.emoji || '💬';
+  if (avatarEl) {
+    if (chat.initials) {
+      avatarEl.textContent = chat.initials;
+      avatarEl.style.cssText = `background:${chat.color}22;color:${chat.color};font-size:15px;font-weight:700`;
+    } else {
+      avatarEl.textContent = chat.emoji || '💬';
+      avatarEl.style.cssText = '';
+    }
+  }
   if (nameEl) nameEl.textContent = chat.name;
-  if (subEl) subEl.textContent = chat.type === 'group' ? chat.desc || 'Group chat' : 'Direct message';
+  if (subEl) subEl.textContent = chat.type === 'group' ? (chat.desc || 'Group chat') : (chat.desc || 'Direct message');
 
   renderChatMessages(chat);
 
@@ -1849,8 +1956,102 @@ function sendChatMessage() {
   }, 30);
 }
 
-// ── Admin: New Group ────────────────────────────────────────────
-function openNewGroupModal() {
+// ── Start / open a DM with a resident ──────────────────────────
+function startDM(userId, isAdmin) {
+  const user = APP_USERS.find(u => u.id === userId);
+  if (!user) return;
+
+  const dmId = 'dm-' + userId;
+  const chats = loadChats();
+  if (!chats.find(c => c.id === dmId)) {
+    chats.push({
+      id:       dmId,
+      type:     'dm',
+      name:     user.name,
+      initials: user.initials,
+      color:    user.color,
+      desc:     `Unit ${user.unit} · resident`,
+      messages: [],
+      unread:   0
+    });
+    saveChats(chats);
+  }
+
+  // Clear search field if present
+  const searchEl = document.getElementById('residentChatSearch');
+  if (searchEl) searchEl.value = '';
+
+  openChatThread(dmId, isAdmin);
+}
+
+// ── Live search across people + conversations ───────────────────
+function renderChatSearch(query, isAdmin) {
+  const listEl = document.getElementById(isAdmin ? 'adminChatList' : 'residentChatList');
+  if (!listEl) return;
+
+  const q = query.trim().toLowerCase();
+  if (!q) { renderChatList(isAdmin); return; }
+
+  const chats = loadChats();
+  const users = isAdmin ? [] : APP_USERS.filter(u =>
+    u.name.toLowerCase().includes(q) || u.unit.toLowerCase().includes(q)
+  );
+  const convs = chats.filter(c => c.name.toLowerCase().includes(q));
+
+  let html = '';
+
+  if (users.length) {
+    html += `<div class="ch-section-lbl">People</div>`;
+    html += users.map(u => `
+      <div class="ch-search-user-row" onclick="startDM('${u.id}',${isAdmin})">
+        <div class="ch-user-av" style="background:${u.color}22;color:${u.color}">${u.initials}</div>
+        <div class="ch-search-user-info">
+          <span class="ch-search-user-name">${u.name}</span>
+          <span class="ch-search-user-unit">Unit ${u.unit}</span>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14" style="color:var(--text-muted,#B8CCC7);flex-shrink:0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>`).join('');
+  }
+
+  if (convs.length) {
+    html += `<div class="ch-section-lbl">${users.length ? 'Conversations' : 'Results'}</div>`;
+    html += convs.map(chat => {
+      const lastMsg = chat.messages.length ? chat.messages[chat.messages.length - 1] : null;
+      const preview = lastMsg ? lastMsg.text.slice(0, 55) + (lastMsg.text.length > 55 ? '…' : '') : 'No messages yet';
+      const time    = lastMsg ? lastMsg.time : '';
+      const unread  = chat.unread || 0;
+      const typeTag = chat.type === 'group'
+        ? `<span class="ch-type-tag">Group</span>`
+        : `<span class="ch-type-tag ch-tag-dm">DM</span>`;
+      const avatarHtml = chat.initials
+        ? `<div class="ch-conv-avatar ch-initials-av" style="background:${chat.color}22;color:${chat.color}">${chat.initials}</div>`
+        : `<div class="ch-conv-avatar">${chat.emoji || '💬'}</div>`;
+      return `<div class="ch-conv-card" onclick="openChatThread('${chat.id}',${isAdmin})">
+        ${avatarHtml}
+        <div class="ch-conv-body">
+          <div class="ch-conv-top">
+            <span class="ch-conv-name">${chat.name}</span>
+            <div style="display:flex;align-items:center;gap:6px">${typeTag}<span class="ch-conv-time">${time}</span></div>
+          </div>
+          <div class="ch-conv-bottom">
+            <span class="ch-conv-preview">${preview}</span>
+            ${unread ? `<span class="ch-unread-badge">${unread}</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if (!users.length && !convs.length) {
+    html = `<div class="ch-list-empty"><p>No results for "<strong>${query}</strong>"</p></div>`;
+  }
+
+  listEl.innerHTML = html;
+}
+
+// ── New Group (admin + resident) ────────────────────────────────
+function openNewGroupModal(isAdmin = true) {
+  _chatOpenedByAdmin = isAdmin;
   const bg = document.getElementById('newGroupModalBg');
   if (!bg) return;
   document.getElementById('newGroupName').value = '';
@@ -1871,25 +2072,104 @@ function submitNewGroup() {
   const desc = (document.getElementById('newGroupDesc')?.value || '').trim();
   if (!name) { toast('Please enter a group name.', 'error'); return; }
 
+  const isAdmin    = _chatOpenedByAdmin;
+  const senderName = isAdmin ? 'Management' : ('Unit ' + (RESIDENT_UNIT || 'A-12'));
   const chats = loadChats();
   const newGroup = {
     id:       'group-' + Date.now(),
     type:     'group',
     name,
     emoji:    '👥',
-    desc:     desc || 'Group created by management',
+    desc:     desc || (isAdmin ? 'Group created by management' : 'Resident group'),
     messages: [
-      { id: Date.now(), sender: 'Management', role: 'admin',
-        text: `Welcome to "${name}"!`, time: fmtChatTime(new Date()), date: fmtChatDate(new Date()) }
+      { id: Date.now(), sender: senderName, role: isAdmin ? 'admin' : 'resident',
+        text: `Welcome to "${name}"! 👋`, time: fmtChatTime(new Date()), date: fmtChatDate(new Date()) }
     ],
     unread: 1
   };
   chats.push(newGroup);
   saveChats(chats);
   closeNewGroupModal();
-  renderChatList(true);
-  toast(`Group "${name}" created.`, 'success');
+  renderChatList(isAdmin);
+  toast(`Group "${name}" created! 🎉`, 'success');
 }
+
+// ─── Notice Composer ─────────────────────────────────────────────────────────
+
+function openNoticeComposer() {
+  const bg = document.getElementById('noticeComposerBg');
+  if (!bg) return;
+  // Reset form
+  document.getElementById('ncTitle').value = '';
+  document.getElementById('ncBody').value = '';
+  document.getElementById('ncOpt1').value = '';
+  document.getElementById('ncOpt2').value = '';
+  if (document.getElementById('ncPinned')) document.getElementById('ncPinned').checked = false;
+  document.querySelectorAll('.nc-type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  document.getElementById('ncPollFields').classList.add('hidden');
+  bg.classList.remove('hidden');
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+
+function closeNoticeComposer() {
+  const bg = document.getElementById('noticeComposerBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+}
+
+function selectNoticeType(btn) {
+  document.querySelectorAll('.nc-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const isPoll = btn.dataset.type === 'poll';
+  document.getElementById('ncPollFields').classList.toggle('hidden', !isPoll);
+}
+
+function submitNoticeComposer() {
+  const typeBtn = document.querySelector('.nc-type-btn.active');
+  const type    = typeBtn ? typeBtn.dataset.type : 'general';
+  const title   = (document.getElementById('ncTitle')?.value || '').trim();
+  const body    = (document.getElementById('ncBody')?.value || '').trim();
+  const pinned  = document.getElementById('ncPinned')?.checked || false;
+
+  if (!title) { toast('Please enter a title.', 'error'); return; }
+  if (!body)  { toast('Please enter a message.', 'error'); return; }
+
+  let poll = null;
+  if (type === 'poll') {
+    const opt1 = (document.getElementById('ncOpt1')?.value || '').trim();
+    const opt2 = (document.getElementById('ncOpt2')?.value || '').trim();
+    if (!opt1 || !opt2) { toast('Please fill in both poll options.', 'error'); return; }
+    poll = { voted: null, options: [{ label: opt1, votes: 0 }, { label: opt2, votes: 0 }] };
+  }
+
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  RESIDENT_NOTICES.unshift({
+    id:       'notice-' + Date.now(),
+    type, pinned, title, body,
+    fullText: body,
+    audience: 'All residents',
+    date:     dateStr,
+    poll
+  });
+
+  // Update counts
+  const cnt = RESIDENT_NOTICES.length;
+  ['adminNoticesCount','residentNoticesCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = cnt;
+  });
+
+  closeNoticeComposer();
+  renderAdminNotices();
+  renderResidentNotices();
+  toast('Notice posted! 📣', 'success');
+}
+
+// ─── End Notice Composer ──────────────────────────────────────────────────────
 
 // Init: ensure welcome is shown and resident QR drawn when entering resident view
 document.addEventListener('DOMContentLoaded', () => {
