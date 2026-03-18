@@ -4,15 +4,15 @@
 const WELLAGE_THEME_KEY = 'wellage-theme';
 
 function applyTheme(theme) {
-  const html = document.documentElement;
-  const dark = theme === 'dark';
+  var html = document.documentElement;
+  var dark = theme === 'dark';
   html.setAttribute('data-theme', dark ? 'dark' : 'light');
-  const icon = document.getElementById('themeIcon');
-  if (icon) {
-    icon.innerHTML = dark
-      ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
-      : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-  }
+  var sunMoonHtml = dark
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  document.querySelectorAll('.theme-icon').forEach(function (el) {
+    el.innerHTML = sunMoonHtml;
+  });
 }
 
 function initTheme() {
@@ -59,12 +59,23 @@ function getApprovedResidents() {
   }
 }
 
+const WELLAGE_ESTATE_KEY = 'wellage_estate_name';
+
+function getEstateName() {
+  try { return localStorage.getItem(WELLAGE_ESTATE_KEY) || 'Wellage Estate'; } catch (_) { return 'Wellage Estate'; }
+}
+
+function populateResidentSignupCommunity() {
+  const el = document.getElementById('residentSignupCommunityDisplay');
+  if (el) el.textContent = getEstateName();
+}
+
 function submitResidentSignup() {
   const fullName = document.getElementById('residentSignupName').value.trim();
   const phone = document.getElementById('residentSignupPhone').value.trim();
   const unit = document.getElementById('residentSignupUnit').value.trim();
-  const community = document.getElementById('residentSignupCommunity').value.trim();
   const password = document.getElementById('residentSignupPassword').value;
+  const community = getEstateName();
   if (!fullName) {
     toast('Please enter your full name.', 'error');
     return;
@@ -74,11 +85,7 @@ function submitResidentSignup() {
     return;
   }
   if (!unit) {
-    toast('Please enter your unit or house.', 'error');
-    return;
-  }
-  if (!community) {
-    toast('Please select a community.', 'error');
+    toast('Please enter your unit or house number.', 'error');
     return;
   }
   if (!password || password.length < 4) {
@@ -121,70 +128,9 @@ function showResidentLogin() {
 function showResidentSignup() {
   closeModal('modal-resident-login');
   document.getElementById('modal-resident-auth').classList.remove('hidden');
-  closeCommunityDropdown();
+  populateResidentSignupCommunity();
 }
 
-function toggleCommunityDropdown() {
-  const wrap = document.querySelector('.field-community .custom-select-wrap');
-  const dropdown = document.getElementById('residentSignupCommunityDropdown');
-  const trigger = document.getElementById('residentSignupCommunityTrigger');
-  if (!wrap || !dropdown) return;
-  const isOpen = wrap.classList.toggle('open');
-  dropdown.setAttribute('aria-hidden', !isOpen);
-  if (trigger) trigger.setAttribute('aria-expanded', isOpen);
-  if (isOpen) {
-    document.addEventListener('click', closeCommunityDropdownOnClickOutside);
-  } else {
-    document.removeEventListener('click', closeCommunityDropdownOnClickOutside);
-  }
-}
-
-function closeCommunityDropdown() {
-  const wrap = document.querySelector('.field-community .custom-select-wrap');
-  const dropdown = document.getElementById('residentSignupCommunityDropdown');
-  const trigger = document.getElementById('residentSignupCommunityTrigger');
-  if (wrap) wrap.classList.remove('open');
-  if (dropdown) dropdown.setAttribute('aria-hidden', 'true');
-  if (trigger) trigger.setAttribute('aria-expanded', 'false');
-  document.removeEventListener('click', closeCommunityDropdownOnClickOutside);
-}
-
-function closeCommunityDropdownOnClickOutside(e) {
-  const wrap = document.querySelector('.field-community .custom-select-wrap');
-  if (wrap && !wrap.contains(e.target)) closeCommunityDropdown();
-}
-
-function initCommunityDropdown() {
-  const select = document.getElementById('residentSignupCommunity');
-  const label = document.getElementById('residentSignupCommunityLabel');
-  const dropdown = document.getElementById('residentSignupCommunityDropdown');
-  if (!select || !label || !dropdown) return;
-  const trigger = document.getElementById('residentSignupCommunityTrigger');
-  function syncLabel() {
-    const opt = select.options[select.selectedIndex];
-    label.textContent = opt ? opt.textContent : 'Select community';
-    if (trigger) {
-      if (select.value) trigger.classList.remove('is-placeholder');
-      else trigger.classList.add('is-placeholder');
-    }
-    dropdown.querySelectorAll('li[role="option"]').forEach(o => {
-      o.removeAttribute('aria-selected');
-      if ((o.getAttribute('data-value') || '') === (select.value || '')) o.setAttribute('aria-selected', 'true');
-    });
-  }
-  select.addEventListener('change', syncLabel);
-  syncLabel();
-  dropdown.querySelectorAll('li[role="option"]').forEach(li => {
-    li.addEventListener('click', () => {
-      const value = li.getAttribute('data-value');
-      select.value = value || '';
-      dropdown.querySelectorAll('li[role="option"]').forEach(o => o.removeAttribute('aria-selected'));
-      li.setAttribute('aria-selected', 'true');
-      syncLabel();
-      closeCommunityDropdown();
-    });
-  });
-}
 
 function submitResidentLogin() {
   const phone = document.getElementById('residentLoginPhone').value.trim();
@@ -304,14 +250,17 @@ function doAdminSignIn() {
   }, 1200);
 }
 
+const WELLAGE_ESTATE_CODE_KEY = 'wellage_estate_code';
+
 function doAdminSignUp() {
   const btn = document.getElementById('adminSuBtn');
   const first = document.getElementById('adminSuFirst').value.trim();
   const last = document.getElementById('adminSuLast').value.trim();
   const email = document.getElementById('adminSuEmail').value.trim();
-  const code = document.getElementById('adminSuCode').value.trim();
+  const code = (document.getElementById('adminSuCode').value || '').trim().toUpperCase();
+  const estateName = (document.getElementById('adminSuEstateName').value || '').trim();
   const pw = document.getElementById('adminSuPw').value;
-  if (!first || !last || !email || !code || !pw) {
+  if (!first || !last || !email || !code || !estateName || !pw) {
     toast('Please fill in all fields.', 'error');
     return;
   }
@@ -322,7 +271,11 @@ function doAdminSignUp() {
   if (btn) btn.classList.add('loading');
   setTimeout(() => {
     if (btn) btn.classList.remove('loading');
-    ['adminSuFirst', 'adminSuLast', 'adminSuEmail', 'adminSuPhone', 'adminSuCode', 'adminSuPw'].forEach(id => {
+    try {
+      localStorage.setItem(WELLAGE_ESTATE_CODE_KEY, code);
+      localStorage.setItem(WELLAGE_ESTATE_KEY, estateName);
+    } catch (_) {}
+    ['adminSuFirst', 'adminSuLast', 'adminSuEmail', 'adminSuPhone', 'adminSuCode', 'adminSuEstateName', 'adminSuPw'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -333,11 +286,13 @@ function doAdminSignUp() {
 }
 
 const adminPageTitles = {
-  overview: { title: 'Overview', sub: 'Monday, 2 March 2026' },
-  payments: { title: 'Payments', sub: 'March 2026 · Urugo Estate' },
-  visitors: { title: 'Visitors', sub: 'Digital access logbook' },
-  notices: { title: 'Notices', sub: 'Community announcements' },
-  residents: { title: 'Residents', sub: 'Manage district residents' },
+  overview:   { title: 'Overview',   sub: 'Monday, 2 March 2026' },
+  payments:   { title: 'Payments',   sub: 'March 2026 · Urugo Estate' },
+  visitors:   { title: 'Visitors',   sub: 'Digital access logbook' },
+  notices:    { title: 'Notices',    sub: 'Community announcements' },
+  community:  { title: 'Community',  sub: 'Notices & resident chat' },
+  residents:  { title: 'Residents',  sub: 'Manage district residents' },
+  incidents:  { title: 'Incidents',  sub: 'Incident history & status' },
 };
 
 function adminNav(tab) {
@@ -347,6 +302,8 @@ function adminNav(tab) {
   const navBtn = document.querySelector('.admin-bottom-nav-item[data-tab="' + tab + '"]');
   if (screen) screen.classList.add('active');
   if (navBtn) navBtn.classList.add('active');
+  if (tab === 'incidents') renderAdminIncidents();
+  if (tab === 'community') { renderChatList(true); }
   const shell = document.getElementById('adminAppShell');
   if (shell) {
     if (tab === 'overview') shell.classList.add('on-overview');
@@ -358,12 +315,50 @@ function adminNav(tab) {
   if (titleEl) titleEl.textContent = info.title;
   if (subEl) subEl.textContent = info.sub;
   if (tab === 'residents') renderAdminPendingResidents();
-  else if (tab === 'overview') {
-    const countEl = document.getElementById('adminAppPendingCount');
-    if (countEl) {
-      const pending = getPendingResidents();
-      countEl.textContent = pending.length === 1 ? '1 request' : pending.length + ' requests';
+  else if (tab === 'overview') updateAttentionCards();
+}
+
+function updateAttentionCards() {
+  const today = todayKey();
+
+  // Payments: count overdue + pending rows in the payments table
+  const overdueRows = document.querySelectorAll('.admin-pay-row-overdue').length;
+  const pendingRows = document.querySelectorAll('.admin-pay-row-pending').length;
+  const payCard = document.getElementById('adminAttnPayments');
+  const payMeta = document.getElementById('adminAttnPaymentsMeta');
+  if (payCard) {
+    const hasPayments = overdueRows > 0 || pendingRows > 0;
+    payCard.style.display = hasPayments ? '' : 'none';
+    if (payMeta && hasPayments) {
+      const parts = [];
+      if (overdueRows > 0) parts.push('<strong>' + overdueRows + ' overdue</strong>');
+      if (pendingRows > 0) parts.push(pendingRows + ' pending confirmation');
+      payMeta.innerHTML = parts.join(' · ');
     }
+  }
+
+  // Residents: count pending signups
+  const pending = getPendingResidents();
+  const resCard = document.getElementById('adminAttnResidents');
+  const countEl = document.getElementById('adminAppPendingCount');
+  if (resCard) resCard.style.display = pending.length > 0 ? '' : 'none';
+  if (countEl) countEl.textContent = pending.length === 1 ? '1 request' : pending.length + ' requests';
+
+  // Visitors: count onsite entries for today
+  const onsiteCount = logbook.filter(e => e.status === 'onsite' && (e.dateKey || today) === today).length;
+  const visCard = document.getElementById('adminAttnVisitors');
+  const visCount = document.getElementById('adminAttnVisitorCount');
+  if (visCard) visCard.style.display = onsiteCount > 0 ? '' : 'none';
+  if (visCount) visCount.textContent = onsiteCount + (onsiteCount === 1 ? ' visitor' : ' visitors');
+
+  // Hide the whole section header if no cards are visible
+  const sectionHead = document.getElementById('adminAttnSectionHead');
+  const attnList = document.getElementById('adminAttnSectionHead');
+  if (sectionHead) {
+    const anyVisible = (overdueRows > 0 || pendingRows > 0) || pending.length > 0 || onsiteCount > 0;
+    sectionHead.style.display = anyVisible ? '' : 'none';
+    const list = sectionHead.nextElementSibling;
+    if (list) list.style.display = anyVisible ? '' : 'none';
   }
 }
 
@@ -494,11 +489,11 @@ function adminVisitSetTab(el) {
   }
 }
 
-function adminOpenVisitorSheet(name, initials, unit, host, checkin, checkout, plate, onsite) {
+function adminOpenVisitorSheet(hostName, hostInitials, unit, phone, checkin, checkout, plate, onsite) {
   const titleEl = document.getElementById('adminVisitorSheetTitle');
   const avatarEl = document.getElementById('adminVisitorSheetAvatar');
   const nameEl = document.getElementById('adminVisitorSheetName');
-  const hostEl = document.getElementById('adminVisitorSheetHost');
+  const phoneEl = document.getElementById('adminVisitorSheetPhone');
   const unitEl = document.getElementById('adminVisitorSheetUnit');
   const inEl = document.getElementById('adminVisitorSheetIn');
   const outEl = document.getElementById('adminVisitorSheetOut');
@@ -506,10 +501,10 @@ function adminOpenVisitorSheet(name, initials, unit, host, checkin, checkout, pl
   const unitTagEl = document.getElementById('adminVisitorSheetUnitTag');
   const statusTagEl = document.getElementById('adminVisitorSheetStatusTag');
   const outBtnEl = document.getElementById('adminVisitorSheetOutBtn');
-  if (titleEl) titleEl.textContent = name;
-  if (avatarEl) avatarEl.textContent = initials;
-  if (nameEl) nameEl.textContent = name;
-  if (hostEl) hostEl.textContent = host;
+  if (titleEl) titleEl.textContent = 'Visit to ' + hostName;
+  if (avatarEl) avatarEl.textContent = hostInitials;
+  if (nameEl) nameEl.textContent = hostName;
+  if (phoneEl) phoneEl.textContent = phone || '—';
   if (unitEl) unitEl.textContent = unit;
   if (inEl) inEl.textContent = checkin;
   if (outEl) outEl.textContent = checkout;
@@ -576,11 +571,13 @@ function residentNav(tab) {
   const navBtn = document.querySelector('.resident-nav-item[data-tab="' + tab + '"]') || document.querySelector('.resident-bottom-nav-item[data-tab="' + tab + '"]');
   if (screen) screen.classList.add('active');
   if (navBtn) navBtn.classList.add('active');
-  const titles = { home: 'Home', payments: 'My Payments', qr: 'My Visitors', notices: 'Notice Board', profile: 'My account' };
+  const titles = { home: 'Home', payments: 'My Payments', qr: 'My Visitors', notices: 'Notice Board', community: 'Community', incidents: 'Incidents', profile: 'My account' };
+  if (tab === 'incidents') renderResidentIncidents();
   const subEl = document.getElementById('residentGreetingSub');
   if (subEl && tab === 'home')
     subEl.textContent = (residentPageSubs.home || '') + ' · House ' + (RESIDENT_UNIT || 'A-12');
   toggleResidentSidebar(false);
+  updateResidentEmergencyStrip();
   if (tab === 'qr') {
     const qrPhSub = document.getElementById('residentQrPhSub');
     if (qrPhSub) qrPhSub.textContent = 'House ' + (RESIDENT_UNIT || 'A-12') + ' · Today';
@@ -593,12 +590,14 @@ function residentNav(tab) {
     clearResidentNotificationDot();
   }
   if (tab === 'payments') renderResidentPayments();
-  if (tab === 'notices') {
+  if (tab === 'community') {
     const noticePhSub = document.getElementById('noticePhSub');
     if (noticePhSub) {
       const estateLabel = RESIDENT_COMMUNITY ? (RESIDENT_COMMUNITY + ' estate') : 'Your estate';
       noticePhSub.textContent = estateLabel + ' · March 2026';
     }
+    renderResidentNotices();
+    renderChatList(false);
   }
   if (tab === 'home') {
     updateResidentGreeting();
@@ -651,12 +650,16 @@ function saveProfile() {
 
 function openSignoutSheet() {
   const sheet = document.getElementById('signoutSheetBg');
-  if (sheet) sheet.classList.add('open');
+  if (!sheet) return;
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => sheet.classList.add('open'));
 }
 
 function closeSignoutSheet() {
   const sheet = document.getElementById('signoutSheetBg');
-  if (sheet) sheet.classList.remove('open');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  setTimeout(() => sheet.classList.add('hidden'), 280);
 }
 
 function confirmSignout() {
@@ -855,14 +858,27 @@ function renderResidentHomePaymentCard() {
 
 function renderResidentAtAGlance() {
   const nextDueEl = document.getElementById('residentNextDueValue');
+  const servicesEl = document.getElementById('residentNextDueServices');
   if (!nextDueEl) return;
   const outstanding = getOutstandingPayments();
   if (outstanding.length > 0) {
     nextDueEl.textContent = outstanding[0].period;
     nextDueEl.classList.remove('overdue');
+    if (servicesEl) {
+      const label = (s) => PAYMENT_SVC_LABELS[s] || s;
+      const amt = (a) => (typeof a === 'string' && a.startsWith('RWF ') ? a.slice(4) : a);
+      servicesEl.innerHTML = outstanding.map((o) =>
+        '<span class="home-due-service-item">' + escapeHtml(label(o.service)) + ' · ' + escapeHtml(amt(o.amount)) + '</span>'
+      ).join('');
+      servicesEl.classList.remove('hidden');
+    }
   } else {
     nextDueEl.textContent = getNextDueDateWhenNoDebt();
     nextDueEl.classList.remove('overdue');
+    if (servicesEl) {
+      servicesEl.innerHTML = '';
+      servicesEl.classList.add('hidden');
+    }
   }
   renderResidentHomeVisitors();
 }
@@ -951,7 +967,7 @@ function renderResidentPayments() {
     badgesEl.innerHTML = badgesHtml;
   }
   if (payNowWrap) payNowWrap.style.display = totalOut > 0 ? '' : 'none';
-  if (payNowLabel) payNowLabel.textContent = 'Pay all outstanding — RWF ' + totalOut.toLocaleString();
+  if (payNowLabel) payNowLabel.textContent = 'Pay all due — RWF ' + totalOut.toLocaleString();
 
   // Tab badges (overdue count per service)
   ['security', 'cleaning', 'waste', 'pool'].forEach((svc) => {
@@ -982,7 +998,7 @@ function renderResidentPayments() {
       listHtml += '<div class="pay-prow-ic ' + p.status + '">' + (PAYMENT_ICONS[p.status] || PAYMENT_ICONS.pending) + '</div>';
       listHtml += '<div class="pay-prow-c"><p class="pay-prow-period">' + escapeHtml(PAYMENT_SVC_LABELS[p.service] || p.service) + '</p><p class="pay-prow-meta">' + escapeHtml(meta) + '</p></div>';
       listHtml += '<div class="pay-prow-r"><span class="pay-prow-amt">' + escapeHtml(p.amount) + '</span>';
-      listHtml += canPay ? '<button type="button" class="pay-prb" onclick="openPaymentSheet()">Pay now</button>' : '<span class="pay-stbadge ' + p.status + '">' + escapeHtml(stLabel) + '</span>';
+      listHtml += canPay ? '<button type="button" class="pay-prb" onclick="openPaymentSheet(\'' + String(p.service).replace(/'/g, "\\'") + '\', \'' + String(p.period).replace(/'/g, "\\'") + '\')">Pay now</button>' : '<span class="pay-stbadge ' + p.status + '">' + escapeHtml(stLabel) + '</span>';
       listHtml += '</div></div>';
     });
     listHtml += '</div>';
@@ -991,14 +1007,21 @@ function renderResidentPayments() {
   if (list) list.innerHTML = listHtml;
 }
 
-function openPaymentSheet() {
-  const payable = getPayablePayments();
-  const total = payable.reduce((sum, p) => sum + (p.amountNum || 0), 0);
+let paymentSheetScope = null; // null = pay all; { service, period } = pay single item
+function openPaymentSheet(service, period) {
+  let payable = getPayablePayments();
+  if (service != null && period != null) {
+    paymentSheetScope = { service, period };
+    payable = payable.filter((p) => p.service === service && p.period === period);
+  } else {
+    paymentSheetScope = null;
+  }
   if (payable.length === 0) return;
+  const total = payable.reduce((sum, p) => sum + (p.amountNum || 0), 0);
   const subEl = document.getElementById('paymentSheetSub');
   const breakdownEl = document.getElementById('paymentSheetBreakdown');
   const totalEl = document.getElementById('paymentSheetTotal');
-  if (subEl) subEl.textContent = 'House ' + (RESIDENT_UNIT || 'A-12') + ' · March 2026';
+  if (subEl) subEl.textContent = 'House ' + (RESIDENT_UNIT || 'A-12') + (payable.length === 1 ? ' · ' + payable[0].period : ' · March 2026');
   if (totalEl) totalEl.textContent = 'RWF ' + total.toLocaleString();
   let breakdownHtml = '';
   payable.forEach((p) => {
@@ -1041,7 +1064,11 @@ function formatPaymentCard(inp) {
 }
 
 function confirmPayment() {
-  const payable = getPayablePayments();
+  let payable = getPayablePayments();
+  if (paymentSheetScope) {
+    payable = payable.filter((p) => p.service === paymentSheetScope.service && p.period === paymentSheetScope.period);
+  }
+  if (payable.length === 0) return;
   const total = payable.reduce((sum, p) => sum + (p.amountNum || 0), 0);
   document.getElementById('paymentSuccessBody').innerHTML = '<strong>RWF ' + total.toLocaleString() + '</strong> sent successfully.<br/>Your balance is updated.';
   document.getElementById('paymentSheetStep1').classList.add('hidden');
@@ -1054,7 +1081,8 @@ function confirmPayment() {
   renderResidentPayments();
   renderResidentHomePaymentCard();
   renderResidentAtAGlance();
-  document.getElementById('residentPayNowWrap').style.display = 'none';
+  const stillDue = getPayablePayments();
+  document.getElementById('residentPayNowWrap').style.display = stillDue.length > 0 ? '' : 'none';
 }
 
 function openUploadProof() {
@@ -1123,10 +1151,9 @@ function submitCheckin() {
   document.getElementById('visitorName').value = '';
   document.getElementById('visitorPlate').value = '';
   document.getElementById('visitorHost').value = '';
-  const manualModal = document.getElementById('modal-security-manual');
-  if (manualModal && !manualModal.classList.contains('hidden')) {
-    manualModal.classList.add('hidden');
-  }
+  const purposeEl = document.getElementById('visitorPurpose');
+  if (purposeEl) purposeEl.value = '';
+  closeSecurityManualSheet();
   renderLogbook();
   handleResidentVisitorNotification(host, name);
   toast(name + ' checked in — ' + host, 'success');
@@ -1134,43 +1161,50 @@ function submitCheckin() {
 
 function renderLogbook() {
   const list = document.getElementById('securityLogbook');
-  const countEl = document.getElementById('logbookCount');
   if (!list) return;
-  if (countEl) countEl.textContent = logbook.length + ' visitor' + (logbook.length !== 1 ? 's' : '');
-  list.innerHTML = logbook.length === 0
-    ? '<p class="text-muted" style="text-align:center;padding:24px;">No visitors today yet.</p>'
-    : logbook.map(
-        (e, idx) => {
-          const timeText = e.checkOut
-            ? 'In ' + e.checkIn + ' · Out ' + e.checkOut
-            : 'In ' + e.checkIn;
-          const statusLabel = e.status === 'onsite' ? 'On-site' : 'Left';
-          const checkoutBtn = e.status === 'onsite'
-            ? '<button type="button" class="btn-mini" onclick="checkoutVisitor(' + idx + ')">Mark exit</button>'
-            : '';
-          return (
-            '<div class="logbook-item">' +
-            '<span class="name">' + escapeHtml(e.name) + '</span>' +
-            '<span class="time">' + timeText + '</span>' +
-            '<span class="plate">' + escapeHtml(e.plate) + '</span>' +
-            '<span class="status ' + e.status + '">' + statusLabel + '</span>' +
-            '<span class="host">' + escapeHtml(e.host) + '</span>' +
-            checkoutBtn +
-            '</div>'
-          );
-        }
-      ).join('');
+  const today = todayKey();
+  const todayEntries = logbook.filter(function (e) { return (e.dateKey || today) === today; });
+  const inside = todayEntries.filter(function (e) { return e.status === 'onsite'; }).length;
+  const exited = todayEntries.filter(function (e) { return e.status === 'left'; }).length;
 
-  // update simple stats
-  const today = logbook.length;
-  const inside = logbook.filter(e => e.status === 'onsite').length;
-  const exited = logbook.filter(e => e.status === 'left').length;
   const tEl = document.getElementById('securityVisitorsToday');
   const iEl = document.getElementById('securityVisitorsInside');
   const eEl = document.getElementById('securityVisitorsExited');
-  if (tEl) tEl.textContent = today;
+  if (tEl) tEl.textContent = todayEntries.length;
   if (iEl) iEl.textContent = inside;
   if (eEl) eEl.textContent = exited;
+
+  if (todayEntries.length === 0) {
+    list.innerHTML = '<p class="text-muted" style="text-align:center;padding:24px;">No visitors today yet.</p>';
+    return;
+  }
+
+  var html = '';
+  todayEntries.forEach(function (e, i) {
+    var idx = logbook.indexOf(e);
+    var timeText = e.checkOut ? 'In ' + e.checkIn + ' · Out ' + e.checkOut : 'In ' + e.checkIn;
+    var statusClass = e.status === 'onsite' ? 'onsite' : 'left';
+    var statusLabel = e.status === 'onsite' ? 'On site' : 'Left';
+    var plateDisplay = (e.plate && e.plate !== '—') ? escapeHtml(e.plate) : '—';
+    var hostDisplay = (e.host && e.host !== '—') ? ('Unit ' + escapeHtml(e.host)) : '—';
+    html += '<div class="security-v-card">';
+    html += '<div class="security-v-card-main">';
+    html += '<div class="security-v-card-body">';
+    html += '<p class="security-v-card-name">' + escapeHtml(e.name) + '</p>';
+    html += '<div class="security-v-card-plate">' + plateDisplay + '</div>';
+    html += '<p class="security-v-card-unit">' + hostDisplay + '</p>';
+    html += '</div>';
+    html += '<div class="security-v-card-right">';
+    html += '<div class="security-v-card-times"><span>In</span> ' + escapeHtml(e.checkIn) + (e.checkOut ? ' · <span>Out</span> ' + escapeHtml(e.checkOut) : '') + '</div>';
+    html += '<span class="security-v-status ' + statusClass + '">' + (e.status === 'onsite' ? '<span class="security-v-dot"></span>' : '') + statusLabel + '</span>';
+    html += '</div></div>';
+    if (e.status === 'onsite') {
+      html += '<div class="security-v-exit-row"><button type="button" class="security-v-exit-btn" onclick="checkoutVisitor(' + idx + ')">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Mark exit</button></div>';
+    }
+    html += '</div>';
+  });
+  list.innerHTML = html;
 }
 
 function getSurname(fullName) {
@@ -1255,7 +1289,9 @@ function renderResidentVisitors() {
 
 function openInviteSheet() {
   const sheet = document.getElementById('residentInviteSheetBg');
-  if (sheet) sheet.classList.add('open');
+  if (!sheet) return;
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => sheet.classList.add('open'));
   const dateInp = document.getElementById('inviteGuestDate');
   if (dateInp && !dateInp.value) {
     const t = new Date();
@@ -1267,7 +1303,9 @@ function openInviteSheet() {
 
 function closeInviteSheet() {
   const sheet = document.getElementById('residentInviteSheetBg');
-  if (sheet) sheet.classList.remove('open');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  setTimeout(() => sheet.classList.add('hidden'), 280);
 }
 
 function submitInviteGuest() {
@@ -1341,89 +1379,171 @@ function closeResidentNotifications() {
 }
 
 // Notices tab: filter tabs and poll vote
-function switchNoticeTab(btn) {
-  document.querySelectorAll('#noticeTabs .notice-tab').forEach((t) => t.classList.remove('active'));
-  btn.classList.add('active');
-  const filter = (btn.dataset && btn.dataset.filter) || 'all';
-  document.querySelectorAll('#residentNoticeList .notice-card').forEach((card) => {
-    const type = card.dataset.type || '';
-    const isMaintenance = card.dataset.maintenance === 'true';
-    const show =
-      filter === 'all' ||
-      type === filter ||
-      (filter === 'maintenance' && isMaintenance);
-    card.style.display = show ? '' : 'none';
-  });
-  document.querySelectorAll('#residentNoticeList .notice-list-divider').forEach((div) => {
-    div.style.display = '';
-  });
-}
+// ─── Resident Notices (redesigned) ──────────────────────────────────────────
+const RESIDENT_NOTICES = [
+  {
+    id: 'water', type: 'urgent', pinned: true,
+    title: 'Water Maintenance — Friday 7 Mar',
+    body: 'Water supply will be interrupted from 8:00 AM to 2:00 PM on Friday due to scheduled pipe maintenance. Please store sufficient water in advance and inform any visitors.',
+    fullText: 'The main water supply to the estate will be off on Friday 7 March 2026 from 8:00 AM to 2:00 PM due to scheduled maintenance on the main pipeline.\n\nAll residents are advised to store sufficient water before Friday morning. The estate tank will be partially topped up on Thursday evening.\n\nFor urgent issues during the maintenance window, contact the estate manager at +250 788 000 001.',
+    audience: 'All residents', date: 'Mar 2, 2026', poll: null,
+  },
+  {
+    id: 'payment', type: 'general', pinned: false,
+    title: 'March Payment Deadline — 10 March',
+    body: 'Monthly service fees are due by 10 March 2026. Late payments will incur a 10% penalty. Pay via Mobile Money or upload your receipt in the Payments tab.',
+    fullText: 'Monthly service fees for March 2026 are due by 10 March 2026. Payments received after the deadline will incur a 10% late penalty on the unpaid balance.\n\nYou can pay directly through the app via MTN MoMo, Airtel Money, card, or bank transfer. Tap the Payments tab to settle your balance.',
+    audience: 'All residents', date: 'Mar 1, 2026', poll: null,
+  },
+  {
+    id: 'gate', type: 'poll', pinned: false,
+    title: 'New Gate Opening Hours — Vote Now',
+    body: 'Should the main gate extend its operating hours to midnight on weekends? Your vote helps shape community decisions.',
+    fullText: 'Should the main gate extend its operating hours to midnight on weekends? Your vote helps shape community decisions. The result will be shared with the estate management.',
+    audience: 'All residents', date: 'Feb 28, 2026',
+    poll: { voted: null, options: [{ label: 'Yes, extend to midnight', votes: 23 }, { label: 'No, keep current hours', votes: 11 }] },
+  },
+  {
+    id: 'meeting', type: 'info', pinned: false,
+    title: 'Community Meeting — 15 March',
+    body: 'Quarterly community meeting on Saturday 15 March at 10:00 AM in the community hall. Agenda: security review and landscaping proposal.',
+    fullText: 'Quarterly community meeting on Saturday 15 March at 10:00 AM in the community hall.\n\nAgenda: security review, landscaping proposal, and estate updates. Attendance is encouraged for all residents.',
+    audience: 'All residents', date: 'Feb 26, 2026', poll: null,
+  },
+];
 
-let noticePollVoted = null;
-let noticePollTotal = 24;
-let noticePollVotes = { yes: 24 * 0.62, no: 24 * 0.38 };
+const RN_COLORS = { urgent: '#DC2626', general: '#1A9E6B', poll: '#D97706', info: '#2563EB' };
+let rnActiveFilter = '';
 
-function noticeVote(opt) {
-  if (noticePollVoted === opt) return;
-  if (!noticePollVoted) {
-    noticePollTotal += 1;
-    noticePollVotes[opt] += 1;
-  } else {
-    noticePollVotes[noticePollVoted] -= 1;
-    noticePollVotes[opt] += 1;
+function renderResidentNotices() {
+  const list = document.getElementById('residentNoticeList');
+  if (!list) return;
+  const rows = RESIDENT_NOTICES
+    .filter(n => !rnActiveFilter || n.type === rnActiveFilter)
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
+  if (!rows.length) {
+    list.innerHTML = `<div class="rn-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>No notices</p><span>Check back later</span></div>`;
+    return;
   }
-  noticePollVoted = opt;
-  const yp = Math.round((noticePollVotes.yes / noticePollTotal) * 100);
-  const np = 100 - yp;
-  const pctYes = document.getElementById('noticePollPctYes');
-  const pctNo = document.getElementById('noticePollPctNo');
-  const barYes = document.getElementById('noticePollBarYes');
-  const barNo = document.getElementById('noticePollBarNo');
-  if (pctYes) pctYes.textContent = yp + '%';
-  if (pctNo) pctNo.textContent = np + '%';
-  if (barYes) barYes.style.width = yp + '%';
-  if (barNo) barNo.style.width = np + '%';
-  ['yes', 'no'].forEach((o) => {
-    const el = document.getElementById('noticePollOpt' + (o === 'yes' ? 'Yes' : 'No'));
-    if (el) el.classList.toggle('notice-poll-voted', o === noticePollVoted);
-  });
-  const countEl = document.getElementById('noticePollCount');
-  if (countEl) countEl.textContent = noticePollTotal + " votes · your vote is counted ✓";
+
+  const pinned = rows.filter(n => n.pinned);
+  const rest = rows.filter(n => !n.pinned);
+  let html = '';
+  if (pinned.length) html += `<p class="rn-section-lbl">Pinned</p>` + pinned.map(rnCardHTML).join('');
+  if (rest.length) {
+    if (pinned.length) html += `<p class="rn-section-lbl">Recent</p>`;
+    html += rest.map(rnCardHTML).join('');
+  }
+  list.innerHTML = html;
 }
 
-const NOTICE_DETAIL_DATA = {
-  water: {
-    tags: '<span class="notice-ntag urgent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Urgent</span> <span class="notice-ntag maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Maintenance</span>',
-    title: 'Water supply off — Friday 7 March',
-    date: 'Posted 2 March 2026 · Estate management',
-    content: '<p>The main water supply to the estate will be off on <strong>Friday 7 March 2026</strong> from <strong>8:00 AM to 2:00 PM</strong> due to scheduled maintenance on the main pipeline.</p><p>All residents are advised to store sufficient water before Friday morning. The estate tank will be partially topped up on Thursday evening.</p><p>For urgent issues during the maintenance window, contact the estate manager at <strong>+250 788 000 001</strong>.</p>',
-  },
-  payment: {
-    tags: '<span class="notice-ntag general"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payment</span>',
-    title: 'March fees due 10 March',
-    date: 'Posted 1 March 2026 · Estate management',
-    content: '<p>Monthly service fees for <strong>March 2026</strong> are due by <strong>10 March 2026</strong>. Payments received after the deadline will incur a <strong>10% late penalty</strong> on the outstanding balance.</p><p>You can pay directly through the app via MTN MoMo, Airtel Money, card, or bank transfer. Tap the Payments tab to settle your balance.</p>',
-  },
-};
+function rnCardHTML(n) {
+  const color = RN_COLORS[n.type] || '#64748b';
+  const total = n.poll ? n.poll.options.reduce((s, o) => s + o.votes, 0) : 0;
+  const pinBadge = n.pinned
+    ? `<span class="rn-pin-badge-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>Pinned</span>`
+    : `<span class="rn-card-date">${n.date}</span>`;
+  const pollHTML = n.poll
+    ? `<div class="rn-poll-wrap">${n.poll.options.map(o => {
+        const pct = total ? Math.round(o.votes / total * 100) : 0;
+        return `<div class="rn-poll-opt"><div class="rn-poll-opt-head"><span class="rn-poll-lbl">${o.label}</span><span class="rn-poll-pct">${pct}%</span></div><div class="rn-poll-track"><div class="rn-poll-fill" style="width:${pct}%;background:${color}"></div></div></div>`;
+      }).join('')}<div class="rn-poll-votes">${total} votes · tap to vote</div></div>`
+    : '';
+  return `<div class="rn-card" onclick="openNoticeDetail('${n.id}')">
+    <div class="rn-card-bar" style="background:${color}"></div>
+    <div class="rn-card-inner">
+      <div class="rn-card-top">
+        <span class="rn-ntag rn-ntag-${n.type}">${n.type.toUpperCase()}</span>
+        ${pinBadge}
+      </div>
+      <p class="rn-card-title">${n.title}</p>
+      <p class="rn-card-body">${n.body}</p>
+      ${pollHTML}
+      <div class="rn-card-foot">
+        <span class="rn-card-aud">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          ${n.audience}
+        </span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function switchNoticeFilter(btn) {
+  document.querySelectorAll('#rnFilterRow .rn-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  rnActiveFilter = btn.dataset.filter || '';
+  renderResidentNotices();
+}
+
+// Keep old name so any other references still work
+function switchNoticeTab(btn) { switchNoticeFilter(btn); }
 
 function openNoticeDetail(id) {
-  const n = NOTICE_DETAIL_DATA[id];
+  const n = RESIDENT_NOTICES.find(x => x.id === id);
   if (!n) return;
-  const tagsEl = document.getElementById('noticeDetailTags');
-  const titleEl = document.getElementById('noticeDetailTitle');
-  const dateEl = document.getElementById('noticeDetailDate');
-  const contentEl = document.getElementById('noticeDetailContent');
-  if (tagsEl) tagsEl.innerHTML = n.tags;
+  const color = RN_COLORS[n.type] || '#64748b';
+  const tagEl = document.getElementById('rnSheetTag');
+  const pinEl = document.getElementById('rnSheetPin');
+  const titleEl = document.getElementById('rnSheetTitle');
+  const dateEl = document.getElementById('rnSheetDate');
+  const audEl = document.getElementById('rnSheetAud');
+  const textEl = document.getElementById('rnSheetText');
+  const pollEl = document.getElementById('rnSheetPoll');
+
+  if (tagEl) { tagEl.textContent = n.type.toUpperCase(); tagEl.className = `rn-ntag rn-ntag-${n.type}`; }
+  if (pinEl) pinEl.classList.toggle('hidden', !n.pinned);
   if (titleEl) titleEl.textContent = n.title;
   if (dateEl) dateEl.textContent = n.date;
-  if (contentEl) contentEl.innerHTML = n.content;
+  if (audEl) audEl.textContent = n.audience;
+  if (textEl) textEl.textContent = n.fullText;
+
+  if (pollEl) {
+    if (n.poll) {
+      const total = n.poll.options.reduce((s, o) => s + o.votes, 0);
+      pollEl.innerHTML = `<div class="rn-sheet-poll">
+        <p class="rn-sheet-poll-title">Cast your vote</p>
+        ${n.poll.options.map((o, i) => {
+          const pct = total ? Math.round(o.votes / total * 100) : 0;
+          const voted = n.poll.voted === i;
+          return `<div class="rn-sheet-poll-opt${voted ? ' voted' : ''}" onclick="rnVote('${id}',${i},this)">
+            <div class="rn-sheet-poll-top"><span class="rn-sheet-poll-lbl">${o.label}</span><span class="rn-sheet-poll-pct" style="color:${color}">${pct}%</span></div>
+            <div class="rn-sheet-poll-track"><div class="rn-sheet-poll-fill" style="width:${pct}%;background:${color}"></div></div>
+          </div>`;
+        }).join('')}
+        <p class="rn-sheet-poll-footer">${total} votes total</p>
+      </div>`;
+    } else {
+      pollEl.innerHTML = '';
+    }
+  }
+
   const sheet = document.getElementById('noticeDetailSheetBg');
-  if (sheet) sheet.classList.add('open');
+  if (!sheet) return;
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => sheet.classList.add('open'));
+}
+
+function rnVote(noticeId, optIdx, el) {
+  const n = RESIDENT_NOTICES.find(x => x.id === noticeId);
+  if (!n || !n.poll) return;
+  if (n.poll.voted !== null && n.poll.voted !== optIdx) {
+    n.poll.options[n.poll.voted].votes = Math.max(0, n.poll.options[n.poll.voted].votes - 1);
+  }
+  if (n.poll.voted !== optIdx) n.poll.options[optIdx].votes++;
+  n.poll.voted = optIdx;
+  openNoticeDetail(noticeId); // re-render sheet with updated counts
+  renderResidentNotices();    // update card inline bars
 }
 
 function closeNoticeDetail() {
   const sheet = document.getElementById('noticeDetailSheetBg');
-  if (sheet) sheet.classList.remove('open');
+  if (!sheet) return;
+  sheet.classList.remove('open');
+  setTimeout(() => sheet.classList.add('hidden'), 280);
 }
 
 function markAllNotificationsRead() {
@@ -1475,6 +1595,302 @@ function toast(msg, type) {
   }, 3000);
 }
 
+// ═══════════════════════════════════════════════════════════════════
+//  COMMUNITY CHAT
+// ═══════════════════════════════════════════════════════════════════
+
+const CHAT_KEY = 'wellage_chats';
+let _currentChatId  = null;
+let _currentChatIsAdmin = false;
+let _activeCommunityTab = { resident: 'notices', admin: 'notices' };
+
+// ── Default seed chats ──────────────────────────────────────────
+const SEED_CHATS = [
+  {
+    id: 'community',
+    type: 'group',
+    name: 'Community Chat',
+    emoji: '🏘️',
+    desc: 'Estate-wide group for all residents',
+    messages: [
+      { id: 1, sender: 'Management', role: 'admin', text: 'Welcome to Wellage Community Chat! Use this space to connect with your neighbours.', time: fmtChatTime(new Date(Date.now() - 86400000 * 2)), date: 'Mar 16' }
+    ],
+    unread: 1
+  },
+  {
+    id: 'dm-management',
+    type: 'dm',
+    name: 'Management',
+    emoji: '🏢',
+    desc: 'Direct line to estate management',
+    messages: [],
+    unread: 0
+  }
+];
+
+function fmtChatTime(d) {
+  return (d || new Date()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+function fmtChatDate(d) {
+  const now = new Date();
+  const diff = Math.floor((now - d) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+}
+
+function loadChats() {
+  try {
+    const raw = localStorage.getItem(CHAT_KEY);
+    const stored = raw ? JSON.parse(raw) : [];
+    // Merge any missing seed chats
+    const storedIds = new Set(stored.map(c => c.id));
+    const missing = SEED_CHATS.filter(s => !storedIds.has(s.id));
+    if (missing.length) {
+      const merged = [...missing, ...stored];
+      localStorage.setItem(CHAT_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return stored;
+  } catch (_) { return [...SEED_CHATS]; }
+}
+
+function saveChats(chats) {
+  try { localStorage.setItem(CHAT_KEY, JSON.stringify(chats)); } catch (_) {}
+}
+
+function getChat(id) {
+  return loadChats().find(c => c.id === id) || null;
+}
+
+function _totalUnread(chats) {
+  return chats.reduce((s, c) => s + (c.unread || 0), 0);
+}
+
+// ── Sub-tab switcher ────────────────────────────────────────────
+function openCommunityTab(tab, isAdmin) {
+  const prefix = isAdmin ? 'admin' : 'resident';
+  _activeCommunityTab[isAdmin ? 'admin' : 'resident'] = tab;
+
+  // Update subtab buttons
+  const bar = isAdmin
+    ? document.querySelector('#admin-screen-community .ch-subtab-bar')
+    : document.querySelector('#resident-community .ch-subtab-bar');
+  if (bar) bar.querySelectorAll('.ch-subtab').forEach(b => b.classList.toggle('active', b.dataset.subtab === tab));
+
+  // Show/hide panels
+  if (isAdmin) {
+    document.getElementById('adminCommunityNotices')?.classList.toggle('hidden', tab !== 'notices');
+    document.getElementById('adminCommunityChat')?.classList.toggle('hidden', tab !== 'chat');
+    if (tab === 'chat') renderChatList(true);
+  } else {
+    document.getElementById('residentCommunityNotices')?.classList.toggle('hidden', tab !== 'notices');
+    document.getElementById('residentCommunityChat')?.classList.toggle('hidden', tab !== 'chat');
+    if (tab === 'notices') renderResidentNotices();
+    if (tab === 'chat') renderChatList(false);
+  }
+}
+
+// ── Chat list ───────────────────────────────────────────────────
+function renderChatList(isAdmin) {
+  const listEl = document.getElementById(isAdmin ? 'adminChatList' : 'residentChatList');
+  if (!listEl) return;
+  const chats = loadChats();
+
+  // Update nav dots
+  const total = _totalUnread(chats);
+  ['adminChatDot', 'residentChatDot', 'adminChatSubDot', 'residentChatSubDot'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('hidden', total === 0);
+  });
+
+  if (!chats.length) {
+    listEl.innerHTML = `<div class="ch-list-empty"><p>No conversations yet</p></div>`;
+    return;
+  }
+
+  listEl.innerHTML = chats.map(chat => {
+    const lastMsg = chat.messages.length ? chat.messages[chat.messages.length - 1] : null;
+    const preview = lastMsg ? lastMsg.text.slice(0, 55) + (lastMsg.text.length > 55 ? '…' : '') : 'No messages yet';
+    const time    = lastMsg ? lastMsg.time : '';
+    const unread  = chat.unread || 0;
+    const typeTag = chat.type === 'group'
+      ? `<span class="ch-type-tag">Group</span>`
+      : (chat.type === 'dm' ? `<span class="ch-type-tag ch-tag-dm">DM</span>` : '');
+    return `<div class="ch-conv-card" onclick="openChatThread('${chat.id}',${isAdmin})">
+      <div class="ch-conv-avatar">${chat.emoji || '💬'}</div>
+      <div class="ch-conv-body">
+        <div class="ch-conv-top">
+          <span class="ch-conv-name">${chat.name}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            ${typeTag}
+            <span class="ch-conv-time">${time}</span>
+          </div>
+        </div>
+        <div class="ch-conv-bottom">
+          <span class="ch-conv-preview">${preview}</span>
+          ${unread ? `<span class="ch-unread-badge">${unread}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Chat thread ─────────────────────────────────────────────────
+function openChatThread(chatId, isAdmin) {
+  const chat = getChat(chatId);
+  if (!chat) return;
+  _currentChatId = chatId;
+  _currentChatIsAdmin = isAdmin;
+
+  // Clear unread
+  const chats = loadChats();
+  const idx = chats.findIndex(c => c.id === chatId);
+  if (idx !== -1) { chats[idx].unread = 0; saveChats(chats); }
+
+  // Populate header
+  const avatarEl = document.getElementById('chatThreadAvatar');
+  const nameEl   = document.getElementById('chatThreadName');
+  const subEl    = document.getElementById('chatThreadSub');
+  if (avatarEl) avatarEl.textContent = chat.emoji || '💬';
+  if (nameEl) nameEl.textContent = chat.name;
+  if (subEl) subEl.textContent = chat.type === 'group' ? chat.desc || 'Group chat' : 'Direct message';
+
+  renderChatMessages(chat);
+
+  const overlay = document.getElementById('chatThreadOverlay');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    requestAnimationFrame(() => overlay.classList.add('open'));
+  }
+  // Scroll to bottom
+  setTimeout(() => {
+    const msgs = document.getElementById('chatMessages');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  }, 80);
+}
+
+function renderChatMessages(chat) {
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
+  if (!chat.messages.length) {
+    container.innerHTML = `<div class="ch-msgs-empty"><p>No messages yet</p><span>Say hello! 👋</span></div>`;
+    return;
+  }
+
+  let html = '';
+  let lastDate = '';
+  chat.messages.forEach(msg => {
+    if (msg.date && msg.date !== lastDate) {
+      html += `<div class="ch-date-divider">${msg.date}</div>`;
+      lastDate = msg.date;
+    }
+    const isMine = _currentChatIsAdmin ? msg.role === 'admin' : msg.role === 'resident';
+    const bubbleClass = isMine ? 'ch-bubble ch-bubble-mine' : 'ch-bubble ch-bubble-theirs';
+    const senderLine = !isMine && chat.type === 'group'
+      ? `<span class="ch-bubble-sender">${msg.sender}</span>`
+      : '';
+    html += `<div class="ch-msg-row ${isMine ? 'ch-row-mine' : 'ch-row-theirs'}">
+      <div class="${bubbleClass}">
+        ${senderLine}
+        <p class="ch-bubble-text">${msg.text}</p>
+        <span class="ch-bubble-time">${msg.time}</span>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function closeChatThread() {
+  _currentChatId = null;
+  const overlay = document.getElementById('chatThreadOverlay');
+  if (overlay) {
+    overlay.classList.remove('open');
+    setTimeout(() => overlay.classList.add('hidden'), 300);
+  }
+  const input = document.getElementById('chatInput');
+  if (input) input.value = '';
+  // Refresh list
+  renderChatList(_currentChatIsAdmin);
+}
+
+// ── Send message ────────────────────────────────────────────────
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text  = (input?.value || '').trim();
+  if (!text || !_currentChatId) return;
+
+  const chats = loadChats();
+  const chat  = chats.find(c => c.id === _currentChatId);
+  if (!chat) return;
+
+  const now  = new Date();
+  const msg  = {
+    id:     Date.now(),
+    sender: _currentChatIsAdmin ? 'Management' : ('Unit ' + (RESIDENT_UNIT || 'A-12')),
+    senderUnit: RESIDENT_UNIT || 'A-12',
+    role:   _currentChatIsAdmin ? 'admin' : 'resident',
+    text,
+    time:   fmtChatTime(now),
+    date:   fmtChatDate(now)
+  };
+
+  chat.messages.push(msg);
+  chat.unread = 0;
+
+  // Mark unread for the other party's perspective
+  // (other chats track unread separately; storage event triggers re-render)
+  saveChats(chats);
+
+  if (input) input.value = '';
+  renderChatMessages(chat);
+  setTimeout(() => {
+    const msgs = document.getElementById('chatMessages');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  }, 30);
+}
+
+// ── Admin: New Group ────────────────────────────────────────────
+function openNewGroupModal() {
+  const bg = document.getElementById('newGroupModalBg');
+  if (!bg) return;
+  document.getElementById('newGroupName').value = '';
+  document.getElementById('newGroupDesc').value = '';
+  bg.classList.remove('hidden');
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+
+function closeNewGroupModal() {
+  const bg = document.getElementById('newGroupModalBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+}
+
+function submitNewGroup() {
+  const name = (document.getElementById('newGroupName')?.value || '').trim();
+  const desc = (document.getElementById('newGroupDesc')?.value || '').trim();
+  if (!name) { toast('Please enter a group name.', 'error'); return; }
+
+  const chats = loadChats();
+  const newGroup = {
+    id:       'group-' + Date.now(),
+    type:     'group',
+    name,
+    emoji:    '👥',
+    desc:     desc || 'Group created by management',
+    messages: [
+      { id: Date.now(), sender: 'Management', role: 'admin',
+        text: `Welcome to "${name}"!`, time: fmtChatTime(new Date()), date: fmtChatDate(new Date()) }
+    ],
+    unread: 1
+  };
+  chats.push(newGroup);
+  saveChats(chats);
+  closeNewGroupModal();
+  renderChatList(true);
+  toast(`Group "${name}" created.`, 'success');
+}
+
 // Init: ensure welcome is shown and resident QR drawn when entering resident view
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -1482,6 +1898,44 @@ document.addEventListener('DOMContentLoaded', () => {
   drawQRPlaceholder(RESIDENT_UNIT);
   updateQrExpiryLabel();
   initCommunityDropdown();
+  // Restore any active emergencies from a previous session or another tab
+  if (activeEmergencies.length > 0) {
+    updateEmergencyBanners();
+    updateAdminEmergencyState();
+  }
+  // Always render incident log (shows resolved history even when no active alerts)
+  renderIncidentLog();
+  // Render unified incidents tab
+  renderAdminIncidents();
+  renderResidentIncidents();
+  // Pre-render notices so they're ready when user opens the tab
+  renderResidentNotices();
+});
+
+// Sync emergency alert across tabs in real time
+window.addEventListener('storage', (e) => {
+  if (e.key === EMERGENCY_KEY) {
+    activeEmergencies = loadEmergencyFromStorage();
+    updateEmergencyBanners();
+    updateAdminEmergencyState();
+    updateAttentionCards();
+  }
+  if (e.key === EMERGENCY_LOG_KEY) {
+    renderIncidentLog();
+  }
+  if (e.key === INCIDENTS_KEY) {
+    renderAdminIncidents();
+    renderResidentIncidents();
+  }
+  if (e.key === CHAT_KEY) {
+    renderChatList(true);
+    renderChatList(false);
+    // If thread is open, refresh it too
+    if (_currentChatId) {
+      const chat = getChat(_currentChatId);
+      if (chat) renderChatMessages(chat);
+    }
+  }
 });
 
 // Close resident notifications when clicking outside (backdrop handles most cases; this is a fallback)
@@ -1493,11 +1947,753 @@ document.addEventListener('click', (e) => {
   closeResidentNotifications();
 });
 
-function openSecurityManualEntry() {
-  const modal = document.getElementById('modal-security-manual');
-  if (modal) modal.classList.remove('hidden');
+function openSecurityManualSheet() {
+  var sheet = document.getElementById('security-manual-sheet');
+  if (sheet) sheet.classList.add('open');
 }
 
-function securityScanPlaceholder() {
-  toast('QR scanning will be added in the full version. For now, use Manual entry.', 'info');
+function closeSecurityManualSheet() {
+  var sheet = document.getElementById('security-manual-sheet');
+  if (sheet) sheet.classList.remove('open');
+}
+
+function openSecurityQRModal() {
+  var modal = document.getElementById('security-qr-modal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeSecurityQRModal() {
+  var modal = document.getElementById('security-qr-modal');
+  if (modal) modal.classList.remove('open');
+  var success = document.getElementById('security-qr-success');
+  if (success) success.classList.remove('show');
+}
+
+function simulateSecurityScan() {
+  var success = document.getElementById('security-qr-success');
+  if (success) success.classList.add('show');
+}
+
+function confirmSecurityCheckin() {
+  closeSecurityQRModal();
+  // Optional: add demo check-in (e.g. Diane Mukamana) — for demo only
+  var now = new Date();
+  var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  var dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  logbook.unshift({
+    name: 'Diane Mukamana',
+    plate: 'RAB 441C',
+    host: 'B-07',
+    checkIn: timeStr,
+    checkOut: null,
+    status: 'onsite',
+    date: dateStr,
+    dateKey: formatDateKey(now),
+  });
+  renderLogbook();
+  renderResidentVisitors();
+  toast('Diane Mukamana checked in — B-07', 'success');
+}
+
+// ─── Emergency Alert ───────────────────────────────────────────────────────
+const EMERGENCY_KEY = 'wellage_active_emergency';
+const EMERGENCY_LOG_KEY = 'wellage_resolved_emergencies';
+const INCIDENTS_KEY = 'wellage_incidents';
+
+// ─── Seed / demo incidents (merged in if not already present) ─────────────────
+const SEED_INCIDENTS = [
+  {
+    id: 'seed-001',
+    type: 'Security Threat',
+    msg: 'Suspicious person spotted near Gate B. Security was alerted immediately.',
+    reportedAt: '17 Mar 2026 03:39 PM',
+    status: 'resolved',
+    note: 'Person identified as delivery worker. No threat. Gate secured.',
+    resolvedAt: '03:39 PM'
+  },
+  {
+    id: 'seed-002',
+    type: 'Fire',
+    msg: 'Small fire reported in the waste disposal area near Block A. Estate security responded promptly and extinguished the fire. No injuries were reported.',
+    reportedAt: '14 Mar 2026 02:10 PM',
+    status: 'resolved',
+    note: 'Fire extinguished by security. Area inspected and cleared.',
+    resolvedAt: '02:18 PM'
+  }
+];
+
+// ─── Unified Incident Log (active + resolved, manually logged + from alerts) ──
+function loadIncidents() {
+  try {
+    const raw = localStorage.getItem(INCIDENTS_KEY);
+    const stored = raw ? JSON.parse(raw) : [];
+    // Merge seed incidents that aren't already saved
+    const storedIds = new Set(stored.map(i => String(i.id)));
+    const missing = SEED_INCIDENTS.filter(s => !storedIds.has(s.id));
+    if (missing.length) {
+      const merged = [...stored, ...missing];
+      localStorage.setItem(INCIDENTS_KEY, JSON.stringify(merged));
+      return merged;
+    }
+    return stored;
+  } catch (_) { return SEED_INCIDENTS; }
+}
+
+function saveIncidents(list) {
+  try {
+    localStorage.setItem(INCIDENTS_KEY, JSON.stringify(list));
+  } catch (_) {}
+}
+
+function addIncidentEntry(entry) {
+  const list = loadIncidents();
+  list.unshift(entry);
+  saveIncidents(list);
+}
+
+function updateIncidentEntry(id, updates) {
+  const list = loadIncidents();
+  const idx = list.findIndex(i => i.id === id);
+  if (idx !== -1) Object.assign(list[idx], updates);
+  saveIncidents(list);
+}
+
+function renderAdminIncidents() {
+  const listEl = document.getElementById('adminIncidentList');
+  const emptyEl = document.getElementById('adminIncidentsEmpty');
+  const dotEl = document.getElementById('adminIncidentDot');
+  if (!listEl) return;
+
+  // Merge: active emergencies (as active incidents) + all stored incidents
+  const stored = loadIncidents();
+  // Active emergencies that haven't been stored yet appear first
+  const storedIds = new Set(stored.map(i => i.id));
+  const activeEntries = activeEmergencies
+    .filter(a => !storedIds.has(a.id))
+    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+  const all = [...activeEntries, ...stored];
+
+  const hasActive = all.some(i => i.status === 'active');
+  if (dotEl) dotEl.classList.toggle('hidden', !hasActive);
+
+  if (all.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.classList.remove('hidden');
+    return;
+  }
+  if (emptyEl) emptyEl.classList.add('hidden');
+
+  listEl.innerHTML = all.map(i => incidentCardHTML(i, true)).join('');
+}
+
+// ── Resident Incidents — type config ──────────────────────────
+const RI_CFG = {
+  'Fire':           { color: '#F97316', bg: '#FFF7ED', bar: 'ri-bar-fire',     label: 'Fire',     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>` },
+  'Security Threat':{ color: '#DC2626', bg: '#FEF2F2', bar: 'ri-bar-security', label: 'Security', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>` },
+  'Accident':       { color: '#7C3AED', bg: '#F5F3FF', bar: 'ri-bar-medical',  label: 'Medical',  icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>` },
+  'Other':          { color: '#8FA89F', bg: '#F0F4F2', bar: 'ri-bar-other',    label: 'Other',    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="9" x2="12" y2="13"/></svg>` },
+};
+function _riCfg(type) { return RI_CFG[type] || RI_CFG['Other']; }
+
+let _riActiveFilter = '';
+
+function setResidentIncidentFilter(btn) {
+  document.querySelectorAll('#riFilterRow .ri-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  _riActiveFilter = btn.dataset.filter || '';
+  renderResidentIncidents();
+}
+
+function renderResidentIncidents() {
+  const listEl = document.getElementById('residentIncidentList');
+  const dotEl  = document.getElementById('residentIncidentDot');
+  if (!listEl) return;
+
+  // Merge active emergencies + stored incidents
+  const stored = loadIncidents();
+  const storedIds = new Set(stored.map(i => i.id));
+  const activeEntries = activeEmergencies
+    .filter(a => !storedIds.has(a.id))
+    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+  let all = [...activeEntries, ...stored];
+
+  // Update nav dot
+  const hasActive = all.some(i => i.status === 'active');
+  if (dotEl) dotEl.classList.toggle('hidden', !hasActive);
+
+  // Apply filter
+  if (_riActiveFilter === 'active') {
+    all = all.filter(i => i.status === 'active');
+  } else if (_riActiveFilter === 'resolved') {
+    all = all.filter(i => i.status !== 'active');
+  } else if (_riActiveFilter) {
+    all = all.filter(i => i.type === _riActiveFilter);
+  }
+
+  if (!all.length) {
+    listEl.innerHTML = `<div class="ri-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p>No incidents found</p><span>All clear in this category</span></div>`;
+    return;
+  }
+
+  const active = all.filter(i => i.status === 'active');
+  const past   = all.filter(i => i.status !== 'active');
+  let html = '';
+
+  // Active alert cards
+  active.forEach(inc => {
+    const cfg = _riCfg(inc.type);
+    html += `<div class="ri-alert-card" onclick="openResidentIncidentSheet('${inc.id}')">
+      <div class="ri-alert-top">
+        <span class="ri-alert-badge"><span class="ri-badge-pulse"></span>ACTIVE</span>
+        <span class="ri-alert-time">${inc.reportedAt || '—'}</span>
+      </div>
+      <div class="ri-alert-type-row">
+        <div class="ri-alert-type-ic">${cfg.icon}</div>
+        <span class="ri-alert-type-name">${inc.type}</span>
+      </div>
+      <p class="ri-alert-desc">${(inc.msg || '').slice(0, 90)}${inc.msg && inc.msg.length > 90 ? '…' : ''}</p>
+      <div class="ri-alert-meta">
+        <span class="ri-alert-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Reported ${inc.reportedAt || '—'}</span>
+      </div>
+      <div class="ri-alert-actions">
+        <button class="ri-alert-btn ri-btn-secondary" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call Security
+        </button>
+        <button class="ri-alert-btn ri-btn-primary" onclick="event.stopPropagation();openResidentIncidentSheet('${inc.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          View Details
+        </button>
+      </div>
+    </div>`;
+  });
+
+  // Report strip (always shown unless filtering for resolved/type with no active)
+  if (!_riActiveFilter || _riActiveFilter === 'active') {
+    html += `<div class="ri-report-strip" onclick="openResidentReportSheet()">
+      <div class="ri-report-strip-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="ri-report-strip-text">
+        <div class="ri-report-strip-title">Report an incident</div>
+        <div class="ri-report-strip-sub">Fire, security, medical or other</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  }
+
+  // Past incidents
+  if (past.length) {
+    html += `<p class="ri-section-lbl">Past incidents</p>`;
+    past.forEach(inc => {
+      const cfg = _riCfg(inc.type);
+      const statusCls = inc.status === 'resolved' ? 'ri-status-resolved' : 'ri-status-monitoring';
+      const statusLbl = inc.status === 'resolved' ? 'RESOLVED' : inc.status.toUpperCase();
+      html += `<div class="ri-inc-card" onclick="openResidentIncidentSheet('${inc.id}')">
+        <div class="ri-inc-bar ${cfg.bar}"></div>
+        <div class="ri-inc-inner">
+          <div class="ri-inc-top">
+            <div class="ri-inc-title-row">
+              <div class="ri-inc-ic" style="background:${cfg.bg};color:${cfg.color}">${cfg.icon}</div>
+              <span class="ri-inc-name">${inc.type}</span>
+            </div>
+            <span class="ri-inc-status ${statusCls}">${statusLbl}</span>
+          </div>
+          <p class="ri-inc-body">${inc.msg || '—'}</p>
+          <div class="ri-inc-foot">
+            <span class="ri-inc-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${inc.reportedAt || '—'}</span>
+            ${inc.note ? `<span class="ri-inc-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${inc.note.slice(0, 40)}${inc.note.length > 40 ? '…' : ''}</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  listEl.innerHTML = html;
+}
+
+function incidentCardHTML(i, isAdmin) {
+  // Used only by admin incidents tab — kept for compatibility
+  const typeColors = { 'Fire': '#F97316', 'Security Threat': '#DC2626', 'Accident': '#7C3AED', 'Other': '#64748b' };
+  const color = typeColors[i.type] || '#64748b';
+  const isActive = i.status === 'active';
+  const statusBadge = isActive
+    ? `<span class="incident-badge incident-badge-active">Active</span>`
+    : `<span class="incident-badge incident-badge-resolved">Resolved</span>`;
+  const meta = isActive
+    ? `<span class="incident-meta">Reported at ${i.reportedAt || '—'}</span>`
+    : `<span class="incident-meta">Reported ${i.reportedAt || '—'}${i.resolvedAt ? ' · Resolved ' + i.resolvedAt : ''}</span>`;
+  const note = !isActive && i.note
+    ? `<p class="incident-note">${i.note}</p>`
+    : (!isActive ? `<p class="incident-note incident-note-muted">No resolution note.</p>` : '');
+  const pulseHtml = isActive ? `<span class="incident-card-pulse"></span>` : '';
+  return `
+    <div class="incident-card ${isActive ? 'incident-card-active' : 'incident-card-resolved'}">
+      ${pulseHtml}
+      <div class="incident-card-left">
+        <span class="incident-type-dot" style="background:${color}"></span>
+        <div class="incident-card-body">
+          <div class="incident-card-top">
+            <span class="incident-type-label">${i.type}</span>
+            ${statusBadge}
+          </div>
+          ${i.msg ? `<p class="incident-msg">${i.msg}</p>` : ''}
+          ${note}
+          ${meta}
+        </div>
+      </div>
+    </div>`;
+}
+
+// Resident incident detail sheet
+function _riGetAll() {
+  const stored = loadIncidents();
+  const storedIds = new Set(stored.map(i => i.id));
+  const activeEntries = activeEmergencies
+    .filter(a => !storedIds.has(a.id))
+    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+  return [...activeEntries, ...stored];
+}
+
+function openResidentIncidentSheet(id) {
+  const all = _riGetAll();
+  const inc = all.find(x => String(x.id) === String(id));
+  if (!inc) return;
+  const cfg = _riCfg(inc.type);
+
+  const tagEl    = document.getElementById('riSheetTag');
+  const subEl    = document.getElementById('riSheetSub');
+  const titleEl  = document.getElementById('riSheetTitle');
+  const metaEl   = document.getElementById('riSheetMeta');
+  const textEl   = document.getElementById('riSheetText');
+  const detailEl = document.getElementById('riSheetDetails');
+  const tlEl     = document.getElementById('riSheetTimeline');
+  const footEl   = document.getElementById('riSheetFooter');
+
+  if (tagEl) {
+    tagEl.textContent = inc.status === 'active' ? 'ACTIVE' : inc.status.toUpperCase();
+    tagEl.className = 'ri-status-tag ' + (inc.status === 'active' ? 'ri-tag-active' : inc.status === 'resolved' ? 'ri-tag-resolved' : 'ri-tag-monitoring');
+  }
+  if (subEl) subEl.textContent = cfg.label;
+  if (titleEl) titleEl.textContent = inc.type;
+  if (metaEl) metaEl.innerHTML = `
+    <span class="ri-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${inc.reportedAt || '—'}</span>
+    ${inc.resolvedAt ? `<span class="ri-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Resolved ${inc.resolvedAt}</span>` : ''}`;
+  if (textEl) textEl.textContent = inc.msg || 'No description provided.';
+  if (detailEl) detailEl.innerHTML = `
+    <div class="ri-detail-row"><span class="ri-detail-key">Type</span><span class="ri-detail-val">${cfg.label}</span></div>
+    <div class="ri-detail-row"><span class="ri-detail-key">Status</span><span class="ri-detail-val">${inc.status.charAt(0).toUpperCase() + inc.status.slice(1)}</span></div>
+    ${inc.note ? `<div class="ri-detail-row"><span class="ri-detail-key">Resolution note</span><span class="ri-detail-val" style="max-width:60%;text-align:right">${inc.note}</span></div>` : ''}
+    <div class="ri-detail-row"><span class="ri-detail-key">Reported at</span><span class="ri-detail-val">${inc.reportedAt || '—'}</span></div>`;
+
+  // Build simple timeline from available data
+  const tl = [{ dot: 'ri-tl-red', time: inc.reportedAt || '—', text: 'Incident reported' }];
+  if (inc.status === 'active') {
+    tl.push({ dot: 'ri-tl-amber', time: 'Now', text: 'Security team notified and monitoring' });
+  } else {
+    tl.push({ dot: 'ri-tl-amber', time: '—', text: 'Security team responded' });
+    tl.push({ dot: 'ri-tl-green', time: inc.resolvedAt || '—', text: inc.note ? `Resolved — ${inc.note}` : 'Situation resolved' });
+  }
+  if (tlEl) tlEl.innerHTML = tl.map(t => `
+    <div class="ri-tl-item"><div class="ri-tl-dot ${t.dot}"></div><div class="ri-tl-time">${t.time}</div><div class="ri-tl-text">${t.text}</div></div>`).join('');
+
+  if (footEl) footEl.innerHTML = inc.status === 'active'
+    ? `<button class="ri-sheet-btn ri-btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call Security</button>
+       <button class="ri-sheet-btn ri-btn-primary" onclick="closeResidentIncidentSheet()">Understood</button>`
+    : `<button class="ri-sheet-btn ri-btn-primary" onclick="closeResidentIncidentSheet()" style="flex:1">Close</button>`;
+
+  const overlay = document.getElementById('riDetailOverlay');
+  const sheet   = document.getElementById('riDetailSheet');
+  if (!sheet) return;
+  overlay?.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => { overlay?.classList.add('open'); sheet.classList.add('open'); });
+}
+
+function closeResidentIncidentSheet() {
+  const overlay = document.getElementById('riDetailOverlay');
+  const sheet   = document.getElementById('riDetailSheet');
+  overlay?.classList.remove('open');
+  sheet?.classList.remove('open');
+  setTimeout(() => { overlay?.classList.add('hidden'); sheet?.classList.add('hidden'); }, 320);
+}
+
+// Resident Report Sheet
+function openResidentReportSheet() {
+  const overlay = document.getElementById('riReportOverlay');
+  const sheet   = document.getElementById('riReportSheet');
+  if (!sheet) return;
+  // Reset
+  document.querySelectorAll('#riReportTypeGrid .ri-type-opt').forEach((o, i) => o.classList.toggle('ri-type-sel', i === 0));
+  const loc  = document.getElementById('riReportLoc');
+  const desc = document.getElementById('riReportDesc');
+  if (loc)  loc.value  = '';
+  if (desc) desc.value = '';
+  overlay?.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => { overlay?.classList.add('open'); sheet.classList.add('open'); });
+}
+
+function closeResidentReportSheet() {
+  const overlay = document.getElementById('riReportOverlay');
+  const sheet   = document.getElementById('riReportSheet');
+  overlay?.classList.remove('open');
+  sheet?.classList.remove('open');
+  setTimeout(() => { overlay?.classList.add('hidden'); sheet?.classList.add('hidden'); }, 320);
+}
+
+function selectResidentReportType(el) {
+  document.querySelectorAll('#riReportTypeGrid .ri-type-opt').forEach(o => o.classList.remove('ri-type-sel'));
+  el.classList.add('ri-type-sel');
+}
+
+function submitResidentReport() {
+  const typeEl = document.querySelector('#riReportTypeGrid .ri-type-opt.ri-type-sel');
+  const type   = typeEl ? typeEl.dataset.type : 'Other';
+  const loc    = (document.getElementById('riReportLoc')?.value || '').trim();
+  const desc   = (document.getElementById('riReportDesc')?.value || '').trim();
+  if (!desc) { toast('Please describe the incident.', 'error'); return; }
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const entry = {
+    id: Date.now(),
+    type,
+    msg: loc ? `[${loc}] ${desc}` : desc,
+    reportedAt: dateStr + ' ' + timeStr,
+    status: 'active',
+    note: null,
+    resolvedAt: null
+  };
+  addIncidentEntry(entry);
+  closeResidentReportSheet();
+  renderResidentIncidents();
+  renderAdminIncidents();
+  toast('Your report has been sent to security.', 'success');
+}
+
+// Log Incident modal (non-emergency, manual entry)
+let _logIncidentStatus = 'resolved';
+
+function openLogIncidentModal() {
+  const bg = document.getElementById('logIncidentModalBg');
+  if (!bg) return;
+  // Reset form
+  document.querySelectorAll('#logIncidentTypeGrid .emergency-type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  const desc = document.getElementById('logIncidentDesc');
+  const note = document.getElementById('logIncidentNote');
+  if (desc) desc.value = '';
+  if (note) note.value = '';
+  _logIncidentStatus = 'resolved';
+  document.getElementById('logIncidentStatusResolved')?.classList.add('active');
+  document.getElementById('logIncidentStatusActive')?.classList.remove('active');
+  bg.classList.remove('hidden');
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+
+function closeLogIncidentModal() {
+  const bg = document.getElementById('logIncidentModalBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+}
+
+function selectLogIncidentType(btn) {
+  document.querySelectorAll('#logIncidentTypeGrid .emergency-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function selectLogIncidentStatus(btn) {
+  document.querySelectorAll('.incident-status-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _logIncidentStatus = btn.getAttribute('data-status');
+}
+
+function submitLogIncident() {
+  const typeBtn = document.querySelector('#logIncidentTypeGrid .emergency-type-btn.active');
+  const type = typeBtn ? typeBtn.getAttribute('data-type') : 'Other';
+  const msg = (document.getElementById('logIncidentDesc')?.value || '').trim();
+  const note = (document.getElementById('logIncidentNote')?.value || '').trim();
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const entry = {
+    id: Date.now(),
+    type,
+    msg,
+    reportedAt: dateStr + ' ' + timeStr,
+    status: _logIncidentStatus,
+    note: note || null,
+    resolvedAt: _logIncidentStatus === 'resolved' ? timeStr : null
+  };
+  addIncidentEntry(entry);
+  closeLogIncidentModal();
+  renderAdminIncidents();
+  renderResidentIncidents();
+  toast('Incident logged successfully.', 'success');
+}
+
+function loadResolvedLog() {
+  try {
+    const raw = localStorage.getItem(EMERGENCY_LOG_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (_) { return []; }
+}
+
+function saveResolvedLog(log) {
+  try {
+    localStorage.setItem(EMERGENCY_LOG_KEY, JSON.stringify(log.slice(0, 20)));
+  } catch (_) {}
+}
+
+function loadEmergencyFromStorage() {
+  try {
+    const raw = localStorage.getItem(EMERGENCY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    // Backward compat: old format was a single object
+    if (Array.isArray(parsed)) return parsed;
+    return [{ id: Date.now(), ...parsed }];
+  } catch (_) { return []; }
+}
+
+function saveEmergencyToStorage(arr) {
+  try {
+    if (arr && arr.length > 0) localStorage.setItem(EMERGENCY_KEY, JSON.stringify(arr));
+    else localStorage.removeItem(EMERGENCY_KEY);
+  } catch (_) {}
+}
+
+let activeEmergencies = loadEmergencyFromStorage();
+
+const emergencyInstructions = {
+  'Security Threat': ['Stay inside and lock your doors', 'Do not approach suspicious individuals', 'Contact authorities if needed: 112', 'Wait for an all-clear from the admin'],
+  'Fire':            ['Evacuate the building immediately', 'Use stairs — do not use lifts', 'Move to the assembly point at the main gate', 'Call fire services: 112'],
+  'Accident':        ['Keep clear of the affected area', 'Call emergency services if needed: 912', 'First aid kit is at the security booth', 'Wait for admin instructions'],
+  'Other':           ['Stay alert and follow admin instructions', 'Contact the admin if you need assistance'],
+};
+
+function openEmergencyModal() {
+  const bg = document.getElementById('emergencyComposeBg');
+  if (bg) bg.classList.add('open');
+  const ta = document.getElementById('emergencyMsgInput');
+  if (ta) ta.value = '';
+  // Reset type selection to first option
+  document.querySelectorAll('.emergency-type-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === 0);
+  });
+}
+
+function closeEmergencyModal() {
+  const bg = document.getElementById('emergencyComposeBg');
+  if (bg) bg.classList.remove('open');
+}
+
+function selectEmergencyType(btn) {
+  document.querySelectorAll('.emergency-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function sendEmergencyAlert() {
+  const typeBtn = document.querySelector('.emergency-type-btn.active');
+  const type = typeBtn ? typeBtn.getAttribute('data-type') : 'Other';
+  const msg = (document.getElementById('emergencyMsgInput')?.value || '').trim();
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const alertId = Date.now();
+
+  activeEmergencies.push({ id: alertId, type, msg, time: timeStr });
+  saveEmergencyToStorage(activeEmergencies);
+
+  // Also log in unified incidents list
+  addIncidentEntry({ id: alertId, type, msg, reportedAt: dateStr + ' ' + timeStr, status: 'active', note: null, resolvedAt: null });
+
+  closeEmergencyModal();
+  updateEmergencyBanners();
+  updateAdminEmergencyState();
+  updateAttentionCards();
+  renderAdminIncidents();
+  renderResidentIncidents();
+  toast('Emergency alert sent to all residents and security.', 'danger');
+}
+
+let _resolvingAlertId = null;
+
+function resolveEmergencyAlert(id) {
+  _resolvingAlertId = id;
+  const alert = activeEmergencies.find(a => a.id === id);
+  const bg = document.getElementById('emergencyResolveBg');
+  const subtitle = document.getElementById('emergencyResolveSubtitle');
+  const noteEl = document.getElementById('emergencyResolveNote');
+  if (subtitle) subtitle.textContent = alert ? alert.type : '';
+  if (noteEl) noteEl.value = '';
+  if (bg) {
+    bg.classList.remove('hidden');
+    requestAnimationFrame(() => bg.classList.add('open'));
+  }
+}
+
+function closeResolveSheet() {
+  const bg = document.getElementById('emergencyResolveBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+  _resolvingAlertId = null;
+}
+
+function confirmResolveAlert() {
+  const id = _resolvingAlertId;
+  const note = (document.getElementById('emergencyResolveNote')?.value || '').trim();
+  const alert = activeEmergencies.find(a => a.id === id);
+
+  if (alert) {
+    const now = new Date();
+    const resolvedTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const log = loadResolvedLog();
+    log.unshift({ id: alert.id, type: alert.type, msg: alert.msg, sentTime: alert.time, resolvedTime, note });
+    saveResolvedLog(log);
+    // Update in unified incidents list
+    updateIncidentEntry(alert.id, { status: 'resolved', note: note || null, resolvedAt: resolvedTime });
+  }
+
+  activeEmergencies = id !== undefined ? activeEmergencies.filter(a => a.id !== id) : [];
+  saveEmergencyToStorage(activeEmergencies);
+  closeResolveSheet();
+  updateEmergencyBanners();
+  updateAdminEmergencyState();
+  updateAttentionCards();
+  renderIncidentLog();
+  renderAdminIncidents();
+  renderResidentIncidents();
+  toast('Emergency alert resolved.', 'success');
+}
+
+function updateEmergencyBanners() {
+  const active = activeEmergencies.length > 0;
+
+  // Resident home — one card per active alert
+  const homeList = document.getElementById('residentEmergencyList');
+  if (homeList) {
+    if (active) {
+      const svgAlert = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      const svgArrow = '<svg class="resident-emergency-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>';
+      homeList.innerHTML = activeEmergencies.map(a => `
+        <button type="button" class="resident-emergency-card" onclick="openEmergencyDetail(${a.id})">
+          <span class="resident-emergency-card-pulse"></span>
+          <span class="resident-emergency-card-ic">${svgAlert}</span>
+          <span class="resident-emergency-card-text">
+            <span class="resident-emergency-card-label">EMERGENCY ALERT</span>
+            <span class="resident-emergency-card-type">${a.type}</span>
+          </span>
+          ${svgArrow}
+        </button>
+      `).join('');
+    } else {
+      homeList.innerHTML = '';
+    }
+  }
+
+  // Slim strip below topbar (for non-home screens)
+  updateResidentEmergencyStrip();
+}
+
+function updateResidentEmergencyStrip() {
+  const active = activeEmergencies.length > 0;
+  const strip = document.getElementById('residentEmergencyStrip');
+  if (!strip) return;
+  const onHome = !!document.querySelector('#resident-home.active');
+  strip.classList.toggle('hidden', !active || onHome);
+  if (active) {
+    const first = activeEmergencies[0];
+    const count = activeEmergencies.length;
+    const label = document.getElementById('residentEmergencyStripType');
+    if (label) label.textContent = 'Emergency Alert · ' + first.type + (count > 1 ? ' +' + (count - 1) + ' more' : '');
+  }
+}
+
+function renderIncidentLog() {
+  const wrap = document.getElementById('incidentLogWrap');
+  const list = document.getElementById('incidentLogList');
+  if (!wrap || !list) return;
+  const log = loadResolvedLog();
+  if (log.length === 0) {
+    wrap.classList.add('hidden');
+    return;
+  }
+  wrap.classList.remove('hidden');
+  list.innerHTML = log.map(r => `
+    <div class="incident-log-item">
+      <span class="incident-log-ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+      <div class="incident-log-body">
+        <span class="incident-log-type">${r.type}</span>
+        ${r.note ? `<p class="incident-log-note">${r.note}</p>` : '<p class="incident-log-note muted">No resolution note provided.</p>'}
+        <span class="incident-log-meta">Resolved at ${r.resolvedTime}${r.sentTime ? ' · Reported at ' + r.sentTime : ''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateAdminEmergencyState() {
+  const idle = document.getElementById('adminEmergencyIdle');
+  const listEl = document.getElementById('adminEmergencyList');
+  const addBtn = document.getElementById('adminEmergencyAddBtn');
+  if (!idle) return;
+
+  if (activeEmergencies.length > 0) {
+    idle.classList.add('hidden');
+    if (listEl) {
+      listEl.classList.remove('hidden');
+      listEl.innerHTML = activeEmergencies.map(a => `
+        <div class="admin-emergency-active-card">
+          <div class="admin-emergency-active-header">
+            <span class="admin-emergency-pulse"></span>
+            <span class="admin-emergency-active-label">LIVE ALERT</span>
+            <span class="admin-emergency-active-type">${a.type}</span>
+          </div>
+          <p class="admin-emergency-active-msg">${a.msg || ''}</p>
+          <p class="admin-emergency-active-meta">Sent at ${a.time} · All residents and security notified</p>
+          <button type="button" class="admin-emergency-resolve-btn" onclick="resolveEmergencyAlert(${a.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Mark as Resolved
+          </button>
+        </div>
+      `).join('');
+    }
+    if (addBtn) addBtn.classList.remove('hidden');
+  } else {
+    idle.classList.remove('hidden');
+    if (listEl) listEl.classList.add('hidden');
+    if (addBtn) addBtn.classList.add('hidden');
+  }
+}
+
+function openEmergencyDetail(id) {
+  const alert = id !== undefined
+    ? activeEmergencies.find(a => a.id === id)
+    : activeEmergencies[0];
+  if (!alert) return;
+  const bg = document.getElementById('emergencyDetailBg');
+  if (bg) bg.classList.remove('hidden');
+
+  const typeEl = document.getElementById('emergencyDetailType');
+  const msgEl = document.getElementById('emergencyDetailMsg');
+  const metaEl = document.getElementById('emergencyDetailMeta');
+  const instrEl = document.getElementById('emergencyDetailInstr');
+
+  if (typeEl) typeEl.textContent = alert.type;
+  if (msgEl) msgEl.textContent = alert.msg || 'Please follow the instructions below and stay safe.';
+  if (metaEl) metaEl.textContent = 'Alert sent at ' + alert.time;
+
+  const instructions = emergencyInstructions[alert.type] || emergencyInstructions['Other'];
+  if (instrEl) instrEl.innerHTML = instructions.map(i => '<li>' + i + '</li>').join('');
+}
+
+function closeEmergencyDetail() {
+  const bg = document.getElementById('emergencyDetailBg');
+  if (bg) bg.classList.add('hidden');
 }

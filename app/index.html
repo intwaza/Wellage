@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -25,12 +25,7 @@
         <div class="welcome-hero">
           <div class="welcome-hero-logo">
             <div class="welcome-hero-mark">
-              <svg viewBox="0 0 52 52" fill="none" aria-hidden="true">
-                <path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-                <line x1="8" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                <line x1="32" y1="44" x2="44" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                <circle cx="26" cy="11" r="3.5" fill="currentColor"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <span class="welcome-hero-name">Wellage</span>
           </div>
@@ -114,7 +109,7 @@
             <div class="admin-tbar-row">
               <div class="admin-tbar-logo">
                 <div class="admin-logo-mark">
-                  <svg viewBox="0 0 52 52" fill="none"><path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="#22C587" stroke-width="3" fill="none" stroke-linecap="round"/><line x1="8" y1="44" x2="20" y2="44" stroke="#22C587" stroke-width="3" stroke-linecap="round"/><line x1="32" y1="44" x2="44" y2="44" stroke="#22C587" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="11" r="3.5" fill="#22C587"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
                 <span class="admin-logo-name">Wellage</span>
                 <span class="admin-logo-badge">Admin</span>
@@ -124,7 +119,13 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                   <span class="admin-tact-dot"></span>
                 </button>
-                <button type="button" class="admin-tact" onclick="adminLogout()" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+                <button type="button" class="admin-tact" onclick="adminLogout()" aria-label="Sign out">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </button>
               </div>
             </div>
             <div class="admin-topbar-greeting">
@@ -147,21 +148,43 @@
           <!-- Overview -->
           <div class="admin-screen active" id="admin-screen-overview">
             <div class="admin-overview-scroll">
-              <div class="admin-sec-head">
+              <!-- Emergency Alert Section -->
+              <div class="admin-emergency-wrap" id="adminEmergencyWrap">
+                <!-- Idle: big send button -->
+                <div class="admin-emergency-idle" id="adminEmergencyIdle">
+                  <button type="button" class="admin-emergency-btn" onclick="openEmergencyModal()">
+                    <span class="admin-emergency-btn-ic">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </span>
+                    Send Emergency Alert
+                  </button>
+                </div>
+                <!-- Active: list of live alerts -->
+                <div class="admin-emergency-list hidden" id="adminEmergencyList">
+                  <!-- Cards injected dynamically by updateAdminEmergencyState() -->
+                </div>
+                <!-- Add another alert button (shown alongside active alerts) -->
+                <button type="button" class="admin-emergency-add-btn hidden" id="adminEmergencyAddBtn" onclick="openEmergencyModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Log Another Alert
+                </button>
+              </div>
+
+              <div class="admin-sec-head" id="adminAttnSectionHead">
                 <span class="admin-sec-title">Needs your attention</span>
               </div>
               <div class="admin-attn-list">
-                <button type="button" class="admin-attn-card" onclick="adminNav('payments')">
+                <button type="button" id="adminAttnPayments" class="admin-attn-card" onclick="adminNav('payments')">
                   <div class="admin-attn-ic admin-attn-ic-red">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                   </div>
                   <div class="admin-attn-body">
                     <p class="admin-attn-title">Payments to approve</p>
-                    <p class="admin-attn-meta admin-attn-meta-red"><strong>3 overdue</strong> · 3 pending confirmation</p>
+                    <p class="admin-attn-meta admin-attn-meta-red" id="adminAttnPaymentsMeta"></p>
                   </div>
                   <div class="admin-attn-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </button>
-                <button type="button" class="admin-attn-card" onclick="adminNav('residents')">
+                <button type="button" id="adminAttnResidents" class="admin-attn-card" onclick="adminNav('residents')">
                   <div class="admin-attn-ic admin-attn-ic-amber">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                   </div>
@@ -171,13 +194,13 @@
                   </div>
                   <div class="admin-attn-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </button>
-                <button type="button" class="admin-attn-card" onclick="adminNav('visitors')">
+                <button type="button" id="adminAttnVisitors" class="admin-attn-card" onclick="adminNav('visitors')">
                   <div class="admin-attn-ic admin-attn-ic-green">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                   </div>
                   <div class="admin-attn-body">
                     <p class="admin-attn-title">Active gate visitors</p>
-                    <p class="admin-attn-meta"><strong>14 visitors</strong> checked in today</p>
+                    <p class="admin-attn-meta"><strong id="adminAttnVisitorCount">14 visitors</strong> checked in today</p>
                   </div>
                   <div class="admin-attn-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></div>
                 </button>
@@ -466,10 +489,10 @@
                   <span class="admin-visit-sec-title">ON SITE NOW · 3</span>
                 </div>
                 <div class="admin-visit-onsite-list">
-                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Diane Mukamana','DM','C-02','Kamana Eric','09:17 AM','Still on site','RAB 342 C',true)">
-                    <div class="admin-visit-avatar">DM</div>
+                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Kamana Eric','KE','C-02','+250 788 123 001','09:17 AM','Still on site','RAB 342 C',true)">
+                    <div class="admin-visit-avatar">KE</div>
                     <div class="admin-visit-info">
-                      <p class="admin-visit-name">Diane Mukamana</p>
+                      <p class="admin-visit-name">Kamana Eric</p>
                       <div class="admin-visit-meta">
                         <span class="admin-visit-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>C-02</span>
                         <span class="admin-visit-chip">RAB 342 C</span>
@@ -480,10 +503,10 @@
                       <span class="admin-visit-status admin-visit-status-onsite"><span class="admin-visit-dot"></span>On site</span>
                     </div>
                   </button>
-                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Samuel Nzeyimana','SN','A-07','Uwase Claire','08:45 AM','Still on site','RAC 118 B',true)">
-                    <div class="admin-visit-avatar">SN</div>
+                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Uwase Claire','UC','A-07','+250 788 123 002','08:45 AM','Still on site','RAC 118 B',true)">
+                    <div class="admin-visit-avatar">UC</div>
                     <div class="admin-visit-info">
-                      <p class="admin-visit-name">Samuel Nzeyimana</p>
+                      <p class="admin-visit-name">Uwase Claire</p>
                       <div class="admin-visit-meta">
                         <span class="admin-visit-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>A-07</span>
                         <span class="admin-visit-chip">RAC 118 B</span>
@@ -494,10 +517,10 @@
                       <span class="admin-visit-status admin-visit-status-onsite"><span class="admin-visit-dot"></span>On site</span>
                     </div>
                   </button>
-                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Patrick Habimana','PH','D-03','Mutoni Alice','07:58 AM','Still on site','RAD 005 A',true)">
-                    <div class="admin-visit-avatar">PH</div>
+                  <button type="button" class="admin-visit-card" onclick="adminOpenVisitorSheet('Mutoni Alice','MA','D-03','+250 788 123 003','07:58 AM','Still on site','RAD 005 A',true)">
+                    <div class="admin-visit-avatar">MA</div>
                     <div class="admin-visit-info">
-                      <p class="admin-visit-name">Patrick Habimana</p>
+                      <p class="admin-visit-name">Mutoni Alice</p>
                       <div class="admin-visit-meta">
                         <span class="admin-visit-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>D-03</span>
                         <span class="admin-visit-chip">RAD 005 A</span>
@@ -517,18 +540,18 @@
               <div class="admin-visit-log-wrap">
                 <div class="admin-visit-log-table">
                   <div class="admin-visit-log-grid admin-visit-log-thead">
-                    <span class="admin-visit-log-th">Visitor</span>
                     <span class="admin-visit-log-th">Host</span>
+                    <span class="admin-visit-log-th">Unit</span>
                     <span class="admin-visit-log-th">Check in</span>
                     <span class="admin-visit-log-th">Status</span>
                   </div>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Diane Mukamana','DM','C-02','Kamana Eric','09:17 AM','Still on site','RAB 342 C',true)"><span class="admin-visit-log-name">Diane M.</span><span class="admin-visit-log-host">C-02</span><span class="admin-visit-log-time">09:17</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Samuel Nzeyimana','SN','A-07','Uwase Claire','08:45 AM','Still on site','RAC 118 B',true)"><span class="admin-visit-log-name">Samuel N.</span><span class="admin-visit-log-host">A-07</span><span class="admin-visit-log-time">08:45</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Patrick Habimana','PH','D-03','Mutoni Alice','07:58 AM','Still on site','RAD 005 A',true)"><span class="admin-visit-log-name">Patrick H.</span><span class="admin-visit-log-host">D-03</span><span class="admin-visit-log-time">07:58</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Aline Uwera','AU','B-05','Nkusi Jean','07:30 AM','08:55 AM','RAB 201 D',false)"><span class="admin-visit-log-name">Aline Uwera</span><span class="admin-visit-log-host">B-05</span><span class="admin-visit-log-time">07:30</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Jean Ndayisaba','JN','A-02','Habimana P.','07:12 AM','08:20 AM','RAC 077 A',false)"><span class="admin-visit-log-name">Jean Ndayis.</span><span class="admin-visit-log-host">A-02</span><span class="admin-visit-log-time">07:12</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Celine Iradukundwa','CI','C-09','Ingabire M.','06:55 AM','07:40 AM','RAD 312 B',false)"><span class="admin-visit-log-name">Celine Iraduk.</span><span class="admin-visit-log-host">C-09</span><span class="admin-visit-log-time">06:55</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
-                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Eric Bizimana','EB','D-01','Bizimana T.','06:40 AM','07:15 AM','RAB 445 C',false)"><span class="admin-visit-log-name">Eric Bizimana</span><span class="admin-visit-log-host">D-01</span><span class="admin-visit-log-time">06:40</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Kamana Eric','KE','C-02','+250 788 123 001','09:17 AM','Still on site','RAB 342 C',true)"><span class="admin-visit-log-name">Kamana Eric</span><span class="admin-visit-log-host">C-02</span><span class="admin-visit-log-time">09:17</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Uwase Claire','UC','A-07','+250 788 123 002','08:45 AM','Still on site','RAC 118 B',true)"><span class="admin-visit-log-name">Uwase Claire</span><span class="admin-visit-log-host">A-07</span><span class="admin-visit-log-time">08:45</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite" onclick="adminOpenVisitorSheet('Mutoni Alice','MA','D-03','+250 788 123 003','07:58 AM','Still on site','RAD 005 A',true)"><span class="admin-visit-log-name">Mutoni Alice</span><span class="admin-visit-log-host">D-03</span><span class="admin-visit-log-time">07:58</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Nkusi Jean','NJ','B-05','+250 788 123 004','07:30 AM','08:55 AM','RAB 201 D',false)"><span class="admin-visit-log-name">Nkusi Jean</span><span class="admin-visit-log-host">B-05</span><span class="admin-visit-log-time">07:30</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Habimana P.','HP','A-02','+250 788 123 005','07:12 AM','08:20 AM','RAC 077 A',false)"><span class="admin-visit-log-name">Habimana P.</span><span class="admin-visit-log-host">A-02</span><span class="admin-visit-log-time">07:12</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Ingabire M.','IM','C-09','+250 788 123 006','06:55 AM','07:40 AM','RAD 312 B',false)"><span class="admin-visit-log-name">Ingabire M.</span><span class="admin-visit-log-host">C-09</span><span class="admin-visit-log-time">06:55</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
+                  <button type="button" class="admin-visit-log-grid admin-visit-log-row admin-visit-log-left" onclick="adminOpenVisitorSheet('Bizimana T.','BT','D-01','+250 788 123 007','06:40 AM','07:15 AM','RAB 445 C',false)"><span class="admin-visit-log-name">Bizimana T.</span><span class="admin-visit-log-host">D-01</span><span class="admin-visit-log-time">06:40</span><span class="admin-visit-log-badge admin-visit-log-badge-left">Left</span></button>
                 </div>
               </div>
               </div>
@@ -556,7 +579,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="admin-visitor-detail-row"><span class="admin-visitor-detail-l">Visiting</span><span class="admin-visitor-detail-v" id="adminVisitorSheetHost">—</span></div>
+                  <div class="admin-visitor-detail-row"><span class="admin-visitor-detail-l">Phone</span><span class="admin-visitor-detail-v" id="adminVisitorSheetPhone">—</span></div>
                   <div class="admin-visitor-detail-row"><span class="admin-visitor-detail-l">Unit</span><span class="admin-visitor-detail-v" id="adminVisitorSheetUnit">—</span></div>
                   <div class="admin-visitor-detail-row"><span class="admin-visitor-detail-l">Check-in</span><span class="admin-visitor-detail-v" id="adminVisitorSheetIn">—</span></div>
                   <div class="admin-visitor-detail-row"><span class="admin-visitor-detail-l">Check-out</span><span class="admin-visitor-detail-v" id="adminVisitorSheetOut">—</span></div>
@@ -571,22 +594,163 @@
               </div>
             </div>
           </div>
-          <!-- Notices -->
-          <div class="admin-screen" id="admin-screen-notices">
-            <div class="admin-notice-cards"><div class="admin-notice-card"><span class="admin-notice-tag urgent">Urgent</span><p class="admin-notice-title">Water Maintenance — Friday 7 Mar</p><p class="admin-notice-body">Water supply interrupted 8:00 AM – 2:00 PM. Store water in advance.</p></div><div class="admin-notice-card"><span class="admin-notice-tag general">General</span><p class="admin-notice-title">March Payment Deadline — 10 March</p><p class="admin-notice-body">Monthly fees due by 10 March. Late payments incur 10% penalty.</p></div></div>
+          <!-- Community (Notices + Chat) -->
+          <div class="admin-screen" id="admin-screen-community">
+            <!-- Sub-tab switcher -->
+            <div class="ch-subtab-bar">
+              <button class="ch-subtab active" data-subtab="notices" onclick="openCommunityTab('notices',true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Notices
+              </button>
+              <button class="ch-subtab" data-subtab="chat" onclick="openCommunityTab('chat',true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Chat
+                <span class="ch-subtab-dot hidden" id="adminChatSubDot"></span>
+              </button>
+            </div>
+            <!-- Notices panel -->
+            <div class="ch-panel" id="adminCommunityNotices">
+              <div class="admin-notice-cards"><div class="admin-notice-card"><span class="admin-notice-tag urgent">Urgent</span><p class="admin-notice-title">Water Maintenance — Friday 7 Mar</p><p class="admin-notice-body">Water supply interrupted 8:00 AM – 2:00 PM. Store water in advance.</p></div><div class="admin-notice-card"><span class="admin-notice-tag general">General</span><p class="admin-notice-title">March Payment Deadline — 10 March</p><p class="admin-notice-body">Monthly fees due by 10 March. Late payments incur 10% penalty.</p></div></div>
+            </div>
+            <!-- Chat panel -->
+            <div class="ch-panel hidden" id="adminCommunityChat">
+              <div class="ch-list-header">
+                <span class="ch-list-title">Messages</span>
+                <button class="ch-new-group-btn" onclick="openNewGroupModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  New Group
+                </button>
+              </div>
+              <div class="ch-list" id="adminChatList"></div>
+            </div>
           </div>
           <!-- Residents -->
           <div class="admin-screen" id="admin-screen-residents">
             <div class="admin-card" id="adminPendingCard"><div class="admin-card-head"><span class="admin-card-title">Pending approvals</span><span class="admin-card-meta" id="adminAppPendingMeta">0 requests</span></div><div class="admin-card-body"><p class="admin-empty-state" id="adminPendingEmpty">No pending signups.</p><table class="admin-table hidden" id="adminPendingTable"><thead><tr><th>Name</th><th>Unit</th><th>Actions</th></tr></thead><tbody id="adminPendingTbody"></tbody></table></div></div>
             <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">All Residents</span><span class="admin-card-meta">48 registered</span></div><div class="admin-card-body"><table class="admin-table"><thead><tr><th>Name</th><th>Unit</th><th>Payment</th></tr></thead><tbody><tr><td>Kamana Eric</td><td>B-04</td><td><span class="admin-badge paid">Paid</span></td></tr><tr><td>Uwase Claire</td><td>A-08</td><td><span class="admin-badge pending">Pending</span></td></tr></tbody></table></div></div>
           </div>
+          <!-- Incidents -->
+          <div class="admin-screen" id="admin-screen-incidents">
+            <div class="admin-incidents-scroll">
+              <div class="admin-incidents-topbar">
+                <span class="admin-incidents-heading">Incidents</span>
+                <button type="button" class="admin-incidents-new-btn" onclick="openLogIncidentModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Log Incident
+                </button>
+              </div>
+              <div id="adminIncidentList"></div>
+              <div class="admin-incidents-empty hidden" id="adminIncidentsEmpty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <p>No incidents logged yet</p>
+                <span>Use the button above to log an incident</span>
+              </div>
+            </div>
+          </div>
         </main>
+        <!-- Log Incident modal (non-emergency) -->
+        <div class="modal-backdrop hidden" id="logIncidentModalBg" onclick="if(event.target===this)closeLogIncidentModal()">
+          <div class="modal">
+            <div class="modal-head">
+              <span class="modal-title">Log an Incident</span>
+              <button class="modal-close" onclick="closeLogIncidentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p class="modal-hint">This records an incident for residents to see. It does not send an emergency alert.</p>
+              <div class="field">
+                <label>Incident type</label>
+                <div class="log-incident-type-grid" id="logIncidentTypeGrid">
+                  <button type="button" class="log-incident-type-btn active" data-type="Security Threat" onclick="selectLogIncidentType(this)">🚨 Security</button>
+                  <button type="button" class="log-incident-type-btn" data-type="Fire" onclick="selectLogIncidentType(this)">🔥 Fire</button>
+                  <button type="button" class="log-incident-type-btn" data-type="Accident" onclick="selectLogIncidentType(this)">🚑 Accident</button>
+                  <button type="button" class="log-incident-type-btn" data-type="Other" onclick="selectLogIncidentType(this)">⚠️ Other</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Description <span class="field-opt">(optional)</span></label>
+                <textarea class="field-textarea" id="logIncidentDesc" placeholder="Briefly describe what happened…" rows="3"></textarea>
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <div class="log-incident-status-row">
+                  <button type="button" class="log-incident-status-btn active" data-status="resolved" id="logIncidentStatusResolved" onclick="selectLogIncidentStatus(this)">✔ Resolved</button>
+                  <button type="button" class="log-incident-status-btn" data-status="active" id="logIncidentStatusActive" onclick="selectLogIncidentStatus(this)">⚡ Ongoing</button>
+                </div>
+              </div>
+              <div class="field">
+                <label>Resolution note <span class="field-opt">(optional)</span></label>
+                <textarea class="field-textarea" id="logIncidentNote" placeholder="How was it handled?" rows="2"></textarea>
+              </div>
+              <button class="btn-full" type="button" onclick="submitLogIncident()">Save Incident</button>
+              <button class="btn-full btn-ghost-full" type="button" onclick="closeLogIncidentModal()">Cancel</button>
+            </div>
+          </div>
+        </div>
+        <!-- Emergency compose sheet -->
+        <div class="emergency-compose-bg" id="emergencyComposeBg" onclick="if(event.target===this)closeEmergencyModal()">
+          <div class="emergency-compose-sheet" onclick="event.stopPropagation()">
+            <div class="emergency-compose-handle"><div class="emergency-compose-bar"></div></div>
+            <div class="emergency-compose-header">
+              <div class="emergency-compose-header-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h2 class="emergency-compose-title">Send Emergency Alert</h2>
+              <p class="emergency-compose-sub">Immediately notifies all residents and the security guard.</p>
+            </div>
+            <div class="emergency-compose-body">
+              <p class="emergency-compose-label">Alert type</p>
+              <div class="emergency-type-grid" id="emergencyTypeGrid">
+                <button type="button" class="emergency-type-btn active" data-type="Security Threat" onclick="selectEmergencyType(this)">🚨 Security Threat</button>
+                <button type="button" class="emergency-type-btn" data-type="Fire" onclick="selectEmergencyType(this)">🔥 Fire</button>
+                <button type="button" class="emergency-type-btn" data-type="Accident" onclick="selectEmergencyType(this)">🚑 Accident</button>
+                <button type="button" class="emergency-type-btn" data-type="Other" onclick="selectEmergencyType(this)">⚠️ Other</button>
+              </div>
+              <p class="emergency-compose-label">Details <span class="emergency-compose-label-opt">(optional)</span></p>
+              <textarea class="emergency-compose-textarea" id="emergencyMsgInput" placeholder="e.g. Suspicious person seen near gate B, residents should stay indoors…" rows="3"></textarea>
+            </div>
+            <div class="emergency-compose-footer">
+              <button type="button" class="emergency-send-btn" onclick="sendEmergencyAlert()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Send Alert Now
+              </button>
+              <button type="button" class="emergency-cancel-btn" onclick="closeEmergencyModal()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resolve alert sheet -->
+        <div class="emergency-resolve-bg hidden" id="emergencyResolveBg" onclick="if(event.target===this)closeResolveSheet()">
+          <div class="emergency-resolve-sheet" onclick="event.stopPropagation()">
+            <div class="emergency-compose-handle"><div class="emergency-compose-bar"></div></div>
+            <div class="emergency-resolve-header">
+              <span class="emergency-resolve-ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <h2 class="emergency-resolve-title">Mark as Resolved</h2>
+                <p class="emergency-resolve-sub" id="emergencyResolveSubtitle"></p>
+              </div>
+            </div>
+            <div class="emergency-resolve-body">
+              <p class="emergency-compose-label">Resolution note <span class="emergency-compose-label-opt">(optional — visible to all residents)</span></p>
+              <textarea class="emergency-compose-textarea" id="emergencyResolveNote" placeholder="e.g. Fire extinguished, no injuries. Building is safe to re-enter." rows="3"></textarea>
+            </div>
+            <div class="emergency-compose-footer">
+              <button type="button" class="emergency-resolve-confirm-btn" onclick="confirmResolveAlert()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Confirm Resolution
+              </button>
+              <button type="button" class="emergency-cancel-btn" onclick="closeResolveSheet()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
         <nav class="admin-bottom-nav" aria-label="Admin navigation">
           <button type="button" class="admin-bottom-nav-item active" data-tab="overview" onclick="adminNav('overview')"><span class="admin-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="admin-bottom-nav-label">Overview</span></button>
           <button type="button" class="admin-bottom-nav-item" data-tab="payments" onclick="adminNav('payments')"><span class="admin-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span><span class="admin-bottom-nav-label">Payments</span></button>
           <button type="button" class="admin-bottom-nav-item" data-tab="visitors" onclick="adminNav('visitors')"><span class="admin-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="admin-bottom-nav-label">Visitors</span></button>
-          <button type="button" class="admin-bottom-nav-item" data-tab="notices" onclick="adminNav('notices')"><span class="admin-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span class="admin-bottom-nav-label">Notices</span></button>
-          <button type="button" class="admin-bottom-nav-item" data-tab="residents" onclick="adminNav('residents')"><span class="admin-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="admin-bottom-nav-label">Residents</span></button>
+          <button type="button" class="admin-bottom-nav-item" data-tab="community" onclick="adminNav('community')"><span class="admin-bottom-nav-icon" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="ch-nav-dot hidden" id="adminChatDot"></span></span><span class="admin-bottom-nav-label">Community</span></button>
+          <button type="button" class="admin-bottom-nav-item" data-tab="incidents" onclick="adminNav('incidents')"><span class="admin-bottom-nav-icon" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="admin-nav-incident-dot hidden" id="adminIncidentDot"></span></span><span class="admin-bottom-nav-label">Incidents</span></button>
         </nav>
         <div class="admin-hind"><div class="admin-hind-bar"></div></div>
       </div>
@@ -601,12 +765,7 @@
           <div class="resident-sidebar-inner">
             <div class="resident-logo">
               <div class="logo-mark sidebar-logo-mark">
-                <svg viewBox="0 0 52 52" fill="none" aria-hidden="true">
-                  <path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-                  <line x1="8" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                  <line x1="32" y1="44" x2="44" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                  <circle cx="26" cy="11" r="3.5" fill="currentColor"/>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               </div>
               <span class="logo-name">Wellage</span>
             </div>
@@ -635,12 +794,7 @@
             </button>
             <a href="#" class="resident-topbar-logo" onclick="residentNav('home'); return false;" aria-label="Wellage Home">
               <div class="logo-mark">
-                <svg viewBox="0 0 52 52" fill="none" aria-hidden="true">
-                  <path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-                  <line x1="8" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                  <line x1="32" y1="44" x2="44" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                  <circle cx="26" cy="11" r="3.5" fill="currentColor"/>
-                </svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               </div>
               <span class="logo-name">Wellage</span>
             </a>
@@ -680,16 +834,23 @@
                   </div>
                 </div>
               </div>
+              <button class="resident-icon-btn" onclick="residentNav('profile')" aria-label="My profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
               <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
-                <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                  <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
                 </svg>
               </button>
             </div>
           </header>
+
+          <!-- Slim emergency strip — shows on non-home screens when alert is active -->
+          <button type="button" class="resident-emergency-strip hidden" id="residentEmergencyStrip" onclick="openEmergencyDetail()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="residentEmergencyStripType">Emergency Alert · Security Threat</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
 
           <main class="app-main resident-main" id="residentMain">
         <!-- Resident Home (reference layout, our logo) -->
@@ -709,6 +870,9 @@
                 </div>
               </div>
             </div>
+
+            <!-- Emergency alert cards — one per active alert, rendered by updateEmergencyBanners() -->
+            <div id="residentEmergencyList"></div>
 
             <div class="alert-banner danger hidden" id="residentHomePaymentCard">
               <div class="alert-icon">
@@ -731,7 +895,7 @@
                 <div class="quick-icon amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
                 <span class="quick-label">Guest QR</span>
               </button>
-              <button type="button" class="quick-card" onclick="residentNav('notices')">
+              <button type="button" class="quick-card" onclick="residentNav('community')">
                 <div class="quick-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
                 <span class="quick-label">Notices</span>
               </button>
@@ -740,7 +904,7 @@
             <div class="card notice-card">
               <div class="notice-card-head">
                 <span class="notice-card-title"><span class="notice-dot"></span>Latest notice</span>
-                <button type="button" class="notice-card-link" onclick="residentNav('notices')">See board <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+                <button type="button" class="notice-card-link" onclick="residentNav('community')">See board <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
               </div>
               <div class="notice-card-body">
                 <span class="notice-tag maintenance">Maintenance</span>
@@ -755,6 +919,7 @@
                   <div class="glance-meta">
                     <p class="glance-label">Next payment due</p>
                     <p class="glance-value overdue" id="residentNextDueValue">March 2026 — Overdue</p>
+                    <div class="home-due-services" id="residentNextDueServices"></div>
                   </div>
                 </div>
               </div>
@@ -769,6 +934,14 @@
                 <!-- Filled by JS: up to 5 visitors (name, date, time) -->
               </div>
             </div>
+
+            <!-- Incident log — resolved alerts with resolution notes -->
+            <div class="incident-log-wrap hidden" id="incidentLogWrap">
+              <div class="home-section-head">
+                <span class="home-section-title">Recent Incidents</span>
+              </div>
+              <div id="incidentLogList"></div>
+            </div>
           </div>
         </div>
 
@@ -779,9 +952,9 @@
               <p class="pay-ph-sub" id="residentPayPhSub">House A-12 · March 2026</p>
               <h1 class="pay-ph-title">My Payments</h1>
             </div>
-            <div class="pay-sc-summary">
+              <div class="pay-sc-summary">
               <div class="pay-sc-inner">
-                <p class="pay-sc-lbl">Total outstanding</p>
+                <p class="pay-sc-lbl">Total due</p>
                 <div class="pay-sc-amt" id="residentPaySummaryAmount"><span>RWF</span>0</div>
                 <div class="pay-sc-badges" id="residentPaySummaryBadges"></div>
               </div>
@@ -789,7 +962,7 @@
             <div class="pay-pnw" id="residentPayNowWrap">
               <button type="button" class="pay-pnb" id="residentPayNowBtn" onclick="openPaymentSheet()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                <span id="residentPayNowLabel">Pay all outstanding — RWF 0</span>
+                <span id="residentPayNowLabel">Pay all due — RWF 0</span>
               </button>
             </div>
             <div class="pay-tabs-wrap">
@@ -798,7 +971,7 @@
                 <button type="button" class="pay-tab" data-tab="security" onclick="switchPaymentTab(this)">Security <span class="pay-tbadge hidden" id="payTabBadgeSecurity">0</span></button>
                 <button type="button" class="pay-tab" data-tab="cleaning" onclick="switchPaymentTab(this)">Cleaning</button>
                 <button type="button" class="pay-tab" data-tab="waste" onclick="switchPaymentTab(this)">Waste</button>
-                <button type="button" class="pay-tab" data-tab="pool" onclick="switchPaymentTab(this)">Pool maint.</button>
+                <button type="button" class="pay-tab" data-tab="pool" onclick="switchPaymentTab(this)">Others</button>
               </div>
             </div>
             <div class="pay-plist" id="residentPaymentsList"></div>
@@ -810,9 +983,9 @@
           <div class="pay-bsheet" id="paymentSheet">
             <div id="paymentSheetStep1">
               <div class="pay-sh-handle"><div class="pay-sh-bar"></div></div>
-              <div class="pay-sh-head">
+                <div class="pay-sh-head">
                 <div>
-                  <div class="pay-sh-title">Pay outstanding</div>
+                    <div class="pay-sh-title">Pay amount due</div>
                   <div class="pay-sh-sub" id="paymentSheetSub">House A-12 · March 2026</div>
                 </div>
                 <button type="button" class="pay-sh-cls" onclick="closePaymentSheet()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -912,99 +1085,126 @@
           </div>
         </div>
 
-        <!-- Resident Notices -->
-        <div class="screen" id="resident-notices">
-          <div class="notice-ph">
-            <p class="notice-ph-sub" id="noticePhSub">Your estate · March 2026</p>
-            <h1 class="notice-ph-title">Notices</h1>
+        <!-- Resident Community (Notices + Chat) -->
+        <div class="screen ch-community-screen" id="resident-community">
+          <!-- Sub-tab switcher -->
+          <div class="ch-subtab-bar">
+            <button class="ch-subtab active" data-subtab="notices" onclick="openCommunityTab('notices',false)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Notices
+            </button>
+            <button class="ch-subtab" data-subtab="chat" onclick="openCommunityTab('chat',false)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat
+              <span class="ch-subtab-dot hidden" id="residentChatSubDot"></span>
+            </button>
           </div>
-          <div class="notice-tabs-wrap">
-            <div class="notice-tabs" id="noticeTabs">
-              <button type="button" class="notice-tab active" data-filter="all" onclick="switchNoticeTab(this)">All <span class="notice-tbadge" id="noticeBadgeAll">3</span></button>
-              <button type="button" class="notice-tab" data-filter="urgent" onclick="switchNoticeTab(this)">Urgent <span class="notice-tbadge" id="noticeBadgeUrgent">1</span></button>
-              <button type="button" class="notice-tab" data-filter="general" onclick="switchNoticeTab(this)">General</button>
-              <button type="button" class="notice-tab" data-filter="poll" onclick="switchNoticeTab(this)">Polls <span class="notice-tbadge" id="noticeBadgePoll">1</span></button>
-              <button type="button" class="notice-tab" data-filter="maintenance" onclick="switchNoticeTab(this)">Maintenance</button>
+
+          <!-- Notices panel -->
+          <div class="ch-panel rn-screen" id="residentCommunityNotices">
+            <div class="rn-header">
+              <div class="rn-header-top">
+                <div>
+                  <h1 class="rn-title">Notices</h1>
+                  <p class="rn-sub" id="noticePhSub">Community announcements</p>
+                </div>
+              </div>
+              <div class="rn-filter-row" id="rnFilterRow">
+                <button type="button" class="rn-chip active" data-filter="" onclick="switchNoticeFilter(this)">All</button>
+                <button type="button" class="rn-chip" data-filter="urgent" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-urgent"></span>Urgent</button>
+                <button type="button" class="rn-chip" data-filter="general" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-general"></span>General</button>
+                <button type="button" class="rn-chip" data-filter="poll" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-poll"></span>Poll</button>
+                <button type="button" class="rn-chip" data-filter="info" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-info"></span>Info</button>
+              </div>
             </div>
+            <div class="rn-scroll" id="residentNoticeList"></div>
           </div>
-          <div class="notice-nlist" id="residentNoticeList">
-            <p class="notice-list-divider">This week</p>
 
-            <article class="notice-card notice-card-urgent" data-type="urgent" data-maintenance="true" onclick="openNoticeDetail('water')">
-              <div class="notice-urgent-bar"></div>
-              <div class="notice-card-body">
-                <div class="notice-card-tag-row">
-                  <span class="notice-ntag urgent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Urgent</span>
-                  <span class="notice-ntag maintenance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Maintenance</span>
-                  <span class="notice-card-date">2 Mar</span>
-                </div>
-                <p class="notice-card-title">Water supply off — Friday 7 March</p>
-                <p class="notice-card-body-text">Supply interrupted 8:00 AM – 2:00 PM. Store water in advance.</p>
-                <span class="notice-time-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Fri 7 Mar · 8:00 AM – 2:00 PM</span>
-              </div>
-            </article>
-
-            <article class="notice-card" data-type="general" onclick="openNoticeDetail('payment')">
-              <div class="notice-card-body">
-                <div class="notice-card-tag-row">
-                  <span class="notice-ntag general"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payment</span>
-                  <span class="notice-card-date">1 Mar</span>
-                </div>
-                <p class="notice-card-title">March fees due 10 March</p>
-                <p class="notice-card-body-text">Monthly fees due by 10 March. Late payments incur a 10% penalty.</p>
-              </div>
-            </article>
-
-            <!-- <p class="notice-list-divider">Active poll</p> -->
-            <article class="notice-card notice-card-poll" data-type="poll" id="noticePollCard">
-              <div class="notice-card-body" style="padding-bottom:10px">
-                <div class="notice-card-tag-row">
-                  <span class="notice-ntag poll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Poll</span>
-                  <span class="notice-card-date">28 Feb</span>
-                </div>
-                <p class="notice-card-title">Extend gate hours to midnight?</p>
-                <p class="notice-card-body-text">Should the main gate stay open until midnight on weekends?</p>
-              </div>
-              <div class="notice-poll-options">
-                <div class="notice-poll-opt" id="noticePollOptYes" onclick="noticeVote('yes')">
-                  <div class="notice-poll-opt-bar" id="noticePollBarYes" style="width:62%"></div>
-                  <div class="notice-poll-opt-inner">
-                    <div style="display:flex;align-items:center">
-                      <div class="notice-poll-check" id="noticePollChkYes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                      <span class="notice-poll-opt-label">Yes, extend to midnight</span>
-                    </div>
-                    <span class="notice-poll-pct" id="noticePollPctYes">62%</span>
-                  </div>
-                </div>
-                <div class="notice-poll-opt" id="noticePollOptNo" onclick="noticeVote('no')">
-                  <div class="notice-poll-opt-bar" id="noticePollBarNo" style="width:38%"></div>
-                  <div class="notice-poll-opt-inner">
-                    <div style="display:flex;align-items:center">
-                      <div class="notice-poll-check" id="noticePollChkNo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                      <span class="notice-poll-opt-label">No, keep current hours</span>
-                    </div>
-                    <span class="notice-poll-pct" id="noticePollPctNo">38%</span>
-                  </div>
-                </div>
-              </div>
-              <div class="notice-poll-footer">
-                <span class="notice-poll-votes" id="noticePollCount">24 votes · you haven't voted</span>
-                <span class="notice-poll-deadline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Closes 10 Mar</span>
-              </div>
-            </article>
+          <!-- Chat panel -->
+          <div class="ch-panel hidden" id="residentCommunityChat">
+            <div class="ch-list-header">
+              <span class="ch-list-title">Messages</span>
+            </div>
+            <div class="ch-list" id="residentChatList"></div>
           </div>
         </div>
 
-        <!-- Notice detail bottom sheet -->
-        <div class="notice-detail-sheet-bg" id="noticeDetailSheetBg" onclick="if(event.target===this)closeNoticeDetail()">
-          <div class="notice-detail-sheet">
-            <div class="notice-detail-sheet-handle"><div class="notice-detail-sheet-bar"></div></div>
-            <div class="notice-detail-sheet-body">
-              <div class="notice-detail-tag-row" id="noticeDetailTags"></div>
-              <p class="notice-detail-title" id="noticeDetailTitle"></p>
-              <p class="notice-detail-date" id="noticeDetailDate"></p>
-              <div class="notice-detail-content" id="noticeDetailContent"></div>
-              <button type="button" class="notice-detail-dismiss" onclick="closeNoticeDetail()">Got it</button>
+        <!-- Notice detail bottom sheet (redesigned) -->
+        <div class="rn-overlay hidden" id="noticeDetailSheetBg" onclick="if(event.target===this)closeNoticeDetail()">
+          <div class="rn-sheet" id="noticeDetailSheet">
+            <div class="rn-sheet-handle-wrap"><div class="rn-sheet-handle"></div></div>
+            <div class="rn-sheet-head">
+              <div class="rn-sheet-tag-row">
+                <span class="rn-ntag" id="rnSheetTag"></span>
+                <span class="rn-pin-badge hidden" id="rnSheetPin">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>
+                  Pinned
+                </span>
+              </div>
+              <h2 class="rn-sheet-title" id="rnSheetTitle"></h2>
+              <div class="rn-sheet-meta">
+                <span class="rn-sheet-date">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span id="rnSheetDate"></span>
+                </span>
+                <span class="rn-sheet-aud">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span id="rnSheetAud"></span>
+                </span>
+              </div>
+            </div>
+            <div class="rn-sheet-body">
+              <p class="rn-sheet-text" id="rnSheetText"></p>
+              <div id="rnSheetPoll"></div>
+            </div>
+            <div class="rn-sheet-footer">
+              <button type="button" class="rn-sheet-close" onclick="closeNoticeDetail()">Close</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ CHAT THREAD OVERLAY (shared: resident + admin) ═══ -->
+        <div class="ch-thread-overlay hidden" id="chatThreadOverlay">
+          <div class="ch-thread-header">
+            <button class="ch-back-btn" onclick="closeChatThread()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="ch-thread-info">
+              <div class="ch-thread-avatar" id="chatThreadAvatar"></div>
+              <div>
+                <p class="ch-thread-name" id="chatThreadName"></p>
+                <p class="ch-thread-sub" id="chatThreadSub"></p>
+              </div>
+            </div>
+          </div>
+          <div class="ch-messages" id="chatMessages"></div>
+          <div class="ch-input-bar">
+            <textarea class="ch-input" id="chatInput" placeholder="Type a message…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage()}"></textarea>
+            <button class="ch-send-btn" onclick="sendChatMessage()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ═══ NEW GROUP MODAL (admin only) ═══ -->
+        <div class="modal-backdrop hidden" id="newGroupModalBg" onclick="if(event.target===this)closeNewGroupModal()">
+          <div class="modal">
+            <div class="modal-head">
+              <span class="modal-title">New Group</span>
+              <button class="modal-close" onclick="closeNewGroupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p class="modal-hint">Create a group chat visible to all residents.</p>
+              <div class="field">
+                <label class="field-label">Group name</label>
+                <input class="field-input" type="text" id="newGroupName" placeholder="e.g. Block A Residents, Committee…"/>
+              </div>
+              <div class="field">
+                <label class="field-label">Description <span style="font-weight:400;opacity:.5;font-size:11px">(optional)</span></label>
+                <input class="field-input" type="text" id="newGroupDesc" placeholder="What's this group for?"/>
+              </div>
+              <button class="btn-full" onclick="submitNewGroup()">Create Group</button>
+              <button class="btn-full btn-ghost-full" onclick="closeNewGroupModal()">Cancel</button>
             </div>
           </div>
         </div>
@@ -1139,7 +1339,7 @@
         </div>
 
         <!-- Sign out bottom sheet (resident profile) -->
-        <div class="signout-sheet-bg" id="signoutSheetBg" onclick="if(event.target===this)closeSignoutSheet()">
+        <div class="signout-sheet-bg hidden" id="signoutSheetBg" onclick="if(event.target===this)closeSignoutSheet()">
           <div class="signout-sheet">
             <div class="signout-sheet-handle"><div class="signout-sheet-bar"></div></div>
             <div class="signout-sheet-body">
@@ -1159,7 +1359,7 @@
         </div>
 
         <!-- Invite guest bottom sheet (My Visitors) -->
-        <div class="resident-invite-sheet-bg" id="residentInviteSheetBg" onclick="if(event.target===this)closeInviteSheet()">
+        <div class="resident-invite-sheet-bg hidden" id="residentInviteSheetBg" onclick="if(event.target===this)closeInviteSheet()">
           <div class="resident-invite-sheet">
             <div class="resident-invite-sheet-handle"><div class="resident-invite-sheet-bar"></div></div>
             <div class="resident-invite-sheet-head">
@@ -1198,6 +1398,107 @@
             </div>
           </div>
         </div>
+        <!-- Resident Incidents -->
+        <div class="screen ri-screen" id="resident-incidents">
+          <!-- Header -->
+          <div class="ri-header">
+            <div class="ri-header-top">
+              <div>
+                <h1 class="ri-title">Incidents</h1>
+                <p class="ri-sub">Safety &amp; estate alerts</p>
+              </div>
+              <button class="ri-hdr-btn" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </button>
+            </div>
+            <div class="ri-filter-row" id="riFilterRow">
+              <button class="ri-chip active" data-filter="" onclick="setResidentIncidentFilter(this)">All</button>
+              <button class="ri-chip" data-filter="active" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-active"></span>Active</button>
+              <button class="ri-chip" data-filter="Fire" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-fire"></span>Fire</button>
+              <button class="ri-chip" data-filter="Security Threat" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-security"></span>Security</button>
+              <button class="ri-chip" data-filter="Accident" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-medical"></span>Medical</button>
+              <button class="ri-chip" data-filter="resolved" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-resolved"></span>Resolved</button>
+            </div>
+          </div>
+          <!-- Scrollable list -->
+          <div class="ri-scroll" id="residentIncidentList"></div>
+        </div>
+
+        <!-- Resident Incident Detail Sheet -->
+        <div class="ri-overlay hidden" id="riDetailOverlay" onclick="closeResidentIncidentSheet()"></div>
+        <div class="ri-sheet hidden" id="riDetailSheet">
+          <div class="ri-sheet-handle-wrap"><div class="ri-sheet-handle"></div></div>
+          <div class="ri-sheet-head">
+            <div class="ri-sheet-status-row">
+              <span class="ri-status-tag" id="riSheetTag">ACTIVE</span>
+              <span class="ri-sheet-sub" id="riSheetSub"></span>
+            </div>
+            <h2 class="ri-sheet-title" id="riSheetTitle"></h2>
+            <div class="ri-sheet-meta" id="riSheetMeta"></div>
+          </div>
+          <div class="ri-sheet-body">
+            <p class="ri-sheet-text" id="riSheetText"></p>
+            <div class="ri-detail-block" id="riSheetDetails"></div>
+            <p class="ri-tl-lbl">Timeline</p>
+            <div class="ri-timeline" id="riSheetTimeline"></div>
+          </div>
+          <div class="ri-sheet-footer" id="riSheetFooter"></div>
+        </div>
+
+        <!-- Resident Report Sheet -->
+        <div class="ri-report-overlay hidden" id="riReportOverlay" onclick="closeResidentReportSheet()"></div>
+        <div class="ri-report-sheet hidden" id="riReportSheet">
+          <div class="ri-sheet-handle-wrap"><div class="ri-sheet-handle"></div></div>
+          <div class="ri-sheet-head">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <h2 class="ri-sheet-title" style="font-size:20px">Report Incident</h2>
+                <p style="font-size:12px;color:var(--text-muted);margin-top:3px">Alert security &amp; management</p>
+              </div>
+              <button onclick="closeResidentReportSheet()" style="width:30px;height:30px;border-radius:50%;background:var(--bg,#f5f6f8);border:1px solid var(--border,#e5e7eb);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="ri-sheet-body">
+            <div class="ri-field-group">
+              <label class="ri-field-lbl">Incident type</label>
+              <div class="ri-type-grid" id="riReportTypeGrid">
+                <div class="ri-type-opt ri-type-sel" data-type="Fire" onclick="selectResidentReportType(this)">
+                  <div class="ri-type-ic" style="background:#FFF7ED"><svg viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+                  <span class="ri-type-lbl">Fire</span>
+                </div>
+                <div class="ri-type-opt" data-type="Security Threat" onclick="selectResidentReportType(this)">
+                  <div class="ri-type-ic" style="background:#FEF2F2"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                  <span class="ri-type-lbl">Security</span>
+                </div>
+                <div class="ri-type-opt" data-type="Accident" onclick="selectResidentReportType(this)">
+                  <div class="ri-type-ic" style="background:#F5F3FF"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                  <span class="ri-type-lbl">Medical</span>
+                </div>
+                <div class="ri-type-opt" data-type="Other" onclick="selectResidentReportType(this)">
+                  <div class="ri-type-ic" style="background:var(--bg,#f5f6f8)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text-muted,#9ca3af)" stroke-width="2" stroke-linecap="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                  <span class="ri-type-lbl">Other</span>
+                </div>
+              </div>
+            </div>
+            <div class="ri-field-group">
+              <label class="ri-field-lbl">Location</label>
+              <input class="ri-field-inp" type="text" placeholder="e.g. Block B, near entrance" id="riReportLoc"/>
+            </div>
+            <div class="ri-field-group">
+              <label class="ri-field-lbl">Description</label>
+              <textarea class="ri-field-inp" rows="3" placeholder="Briefly describe what you see…" id="riReportDesc"></textarea>
+            </div>
+          </div>
+          <div class="ri-sheet-footer">
+            <button class="ri-sheet-btn ri-btn-ghost" onclick="closeResidentReportSheet()">Cancel</button>
+            <button class="ri-sheet-btn ri-btn-danger" onclick="submitResidentReport()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="15" height="15"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+              Send Alert
+            </button>
+          </div>
+        </div>
           </main>
 
           <!-- Bottom nav — WhatsApp/X style: icon on top, label below -->
@@ -1214,13 +1515,13 @@
               <span class="resident-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
               <span class="resident-bottom-nav-label">My Visitors</span>
             </button>
-            <button type="button" class="resident-bottom-nav-item" onclick="residentNav('notices')" data-tab="notices">
-              <span class="resident-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-              <span class="resident-bottom-nav-label">Notices</span>
+            <button type="button" class="resident-bottom-nav-item" onclick="residentNav('community')" data-tab="community">
+              <span class="resident-bottom-nav-icon" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="ch-nav-dot hidden" id="residentChatDot"></span></span>
+              <span class="resident-bottom-nav-label">Community</span>
             </button>
-            <button type="button" class="resident-bottom-nav-item" onclick="residentNav('profile')" data-tab="profile">
-              <span class="resident-bottom-nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-              <span class="resident-bottom-nav-label">Profile</span>
+            <button type="button" class="resident-bottom-nav-item" onclick="residentNav('incidents')" data-tab="incidents">
+              <span class="resident-bottom-nav-icon" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="resident-incident-dot hidden" id="residentIncidentDot"></span></span>
+              <span class="resident-bottom-nav-label">Incidents</span>
             </button>
           </nav>
         </div>
@@ -1229,55 +1530,103 @@
       <div class="resident-sidebar-backdrop hidden" id="residentSidebarBackdrop" onclick="toggleResidentSidebar()" aria-hidden="true"></div>
     </section>
 
+    <!-- Emergency detail sheet (used by both resident and security) -->
+    <div class="emergency-detail-bg hidden" id="emergencyDetailBg" onclick="if(event.target===this)closeEmergencyDetail()">
+      <div class="emergency-detail-sheet">
+        <div class="emergency-detail-handle"><div class="emergency-detail-bar"></div></div>
+        <div class="emergency-detail-header">
+          <div class="emergency-detail-header-ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <p class="emergency-detail-label">EMERGENCY ALERT</p>
+            <p class="emergency-detail-type" id="emergencyDetailType">Security Threat</p>
+          </div>
+        </div>
+        <div class="emergency-detail-body">
+          <p class="emergency-detail-msg" id="emergencyDetailMsg"></p>
+          <div class="emergency-detail-meta-row">
+            <span class="emergency-detail-pulse"></span>
+            <span class="emergency-detail-meta" id="emergencyDetailMeta">Alert is active</span>
+          </div>
+          <div class="emergency-detail-instructions">
+            <p class="emergency-detail-instr-title">What to do</p>
+            <ul class="emergency-detail-instr-list" id="emergencyDetailInstr"></ul>
+          </div>
+        </div>
+        <button type="button" class="emergency-detail-close-btn" onclick="closeEmergencyDetail()">Got it</button>
+      </div>
+    </div>
+
     <!-- ═══ SECURITY FLOW (Visitor Log) ═══ -->
     <section class="view" id="view-security">
-      <header class="app-header">
-        <button class="back-btn" onclick="showView('welcome')" aria-label="Back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <h1 class="app-title">Visitor Log</h1>
+      <div class="security-sbar">
+        <span class="security-sbar-time">9:41</span>
+        <div class="security-sbar-icons">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="16" width="3" height="6" rx="1"/><rect x="7" y="12" width="3" height="10" rx="1"/><rect x="12" y="8" width="3" height="14" rx="1"/><rect x="17" y="4" width="3" height="18" rx="1" opacity=".3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="7" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="9" width="13" height="6" rx="1"/><path d="M20 10v4a1.5 1.5 0 0 0 0-4z"/></svg>
+        </div>
+      </div>
+      <header class="security-app-header">
+        <div class="security-header-left">
+          <div class="security-logo-ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span class="security-logo-name">Wellage</span>
+        </div>
+        <div class="security-header-right">
+          <button type="button" class="security-header-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+          <button type="button" class="security-header-btn" onclick="showView('welcome')" aria-label="Sign out">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
       </header>
 
-      <main class="app-main security-main" id="securityMain">
-        <div class="card security-guard-banner">
-          <strong>Guard mode active</strong> — Scan guests into the estate.
+      <!-- <div class="security-guard-banner">
+        <span class="security-guard-dot"></span>
+        <span class="security-guard-text"><strong>Guard mode active</strong> — Scan or log guests at the gate.</span>
+      </div> -->
+      <div class="security-stats-strip">
+        <div class="security-stat-card">
+          <div class="security-stat-val green" id="securityVisitorsToday">0</div>
+          <div class="security-stat-lbl">Visitors today</div>
         </div>
-
-        <div class="security-stats">
-          <div class="security-stat">
-            <div class="security-stat-label">Visitors today</div>
-            <div class="security-stat-value" id="securityVisitorsToday">0</div>
-          </div>
-          <div class="security-stat">
-            <div class="security-stat-label">Currently inside</div>
-            <div class="security-stat-value" id="securityVisitorsInside">0</div>
-          </div>
-          <div class="security-stat">
-            <div class="security-stat-label">Exited</div>
-            <div class="security-stat-value" id="securityVisitorsExited">0</div>
-          </div>
+        <div class="security-stat-card">
+          <div class="security-stat-val green" id="securityVisitorsInside">0</div>
+          <div class="security-stat-lbl">Currently inside</div>
         </div>
-
-        <div class="card security-scan-card" onclick="securityScanPlaceholder()">
-          <div class="security-scan-inner">
-            <div class="security-scan-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            </div>
-            <div class="security-scan-text">
-              <div class="security-scan-title">Scan QR pass (coming soon)</div>
-              <div class="security-scan-sub">Placeholder for the camera scanner in the full app.</div>
-            </div>
-          </div>
+        <div class="security-stat-card">
+          <div class="security-stat-val green" id="securityVisitorsExited">0</div>
+          <div class="security-stat-lbl">Exited</div>
         </div>
-
-        <div class="security-list-head">
-          <span>Active visitors</span>
-          <button type="button" class="btn-mini" onclick="openSecurityManualEntry()">+ Manual entry</button>
+      </div>
+      <div class="security-scan-card" onclick="openSecurityQRModal()">
+        <div class="security-scan-ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><rect x="16" y="16" width="2" height="2"/><rect x="20" y="16" width="1" height="5"/><rect x="16" y="20" width="4" height="1"/><path d="M8 8h1v1H8z"/><path d="M16 8h1v1h-1z"/><path d="M8 16h1v1H8z"/></svg>
         </div>
-        <div class="logbook-list" id="securityLogbook">
+        <div class="security-scan-body">
+          <p class="security-scan-title">Scan QR pass</p>
+          <p class="security-scan-sub">Tap to open the camera scanner</p>
+        </div>
+        <svg class="security-scan-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="security-scroll">
+        <div class="security-sec-head">
+          <span class="security-sec-title">Active visitors</span>
+          <button type="button" class="security-sec-btn" onclick="openSecurityManualSheet()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Manual entry
+          </button>
+        </div>
+        <div class="security-visitor-list" id="securityLogbook">
           <!-- Filled by JS -->
         </div>
-      </main>
+      </div>
     </section>
   </div>
 
@@ -1294,6 +1643,10 @@
       <div class="modal-body">
         <p class="modal-hint">Create an account. An admin must approve your request before you can sign in.</p>
         <div class="field">
+          <label>Community</label>
+          <div class="field-readonly" id="residentSignupCommunityDisplay">—</div>
+        </div>
+        <div class="field">
           <label>Full name</label>
           <input type="text" id="residentSignupName" placeholder="Your full name">
         </div>
@@ -1304,29 +1657,6 @@
         <div class="field">
           <label>Unit / House</label>
           <input type="text" id="residentSignupUnit" placeholder="e.g. A-12">
-        </div>
-        <div class="field field-community">
-          <label>Community</label>
-          <div class="custom-select-wrap">
-            <button type="button" class="custom-select-trigger" id="residentSignupCommunityTrigger" onclick="toggleCommunityDropdown()" aria-haspopup="listbox" aria-expanded="false">
-              <span class="custom-select-value" id="residentSignupCommunityLabel">Select community</span>
-              <svg class="custom-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <ul class="custom-select-dropdown" id="residentSignupCommunityDropdown" role="listbox" aria-hidden="true">
-              <li role="option" data-value="">Select community</li>
-              <li role="option" data-value="Nyarutarama">Nyarutarama</li>
-              <li role="option" data-value="Kicukiro">Kicukiro</li>
-              <li role="option" data-value="Gacuriro">Gacuriro</li>
-              <li role="option" data-value="Kimihurura">Kimihurura</li>
-            </ul>
-            <select id="residentSignupCommunity" class="field-select-hidden" aria-hidden="true" tabindex="-1">
-              <option value="">Select community</option>
-              <option value="Nyarutarama">Nyarutarama</option>
-              <option value="Kicukiro">Kicukiro</option>
-              <option value="Gacuriro">Gacuriro</option>
-              <option value="Kimihurura">Kimihurura</option>
-            </select>
-          </div>
         </div>
         <div class="field">
           <label>Password</label>
@@ -1435,7 +1765,12 @@
         </div>
         <div class="field">
           <label>Estate code</label>
-          <input type="text" id="adminSuCode" placeholder="e.g. ESTATE-2026">
+          <input type="text" id="adminSuCode" placeholder="e.g. WELLAGE-2026" autocomplete="off" style="text-transform:uppercase">
+          <p class="field-hint">Create a unique code for your estate.</p>
+        </div>
+        <div class="field">
+          <label>Community name</label>
+          <input type="text" id="adminSuEstateName" placeholder="e.g. Wellage Estate">
         </div>
         <div class="field">
           <label>Password</label>
@@ -1488,28 +1823,87 @@
     </div>
   </div>
 
-  <!-- Security manual entry modal -->
-  <div class="modal-backdrop hidden" id="modal-security-manual">
-    <div class="modal">
-      <div class="modal-head">
-        <span class="modal-title">Manual entry</span>
-        <button class="modal-close" onclick="closeModal('modal-security-manual')">&times;</button>
+  <!-- Security manual entry bottom sheet -->
+  <div class="security-sheet-bg" id="security-manual-sheet" onclick="if(event.target===this) closeSecurityManualSheet()">
+    <div class="security-sheet">
+      <div class="security-sheet-handle"><div class="security-sheet-bar"></div></div>
+      <div class="security-sheet-head">
+        <div>
+          <p class="security-sheet-title">Manual entry</p>
+          <p class="security-sheet-sub">Log a visitor without a QR pass</p>
+        </div>
+        <button type="button" class="security-sheet-cls" onclick="closeSecurityManualSheet()" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="modal-body">
-        <div class="field">
-          <label>Visitor name</label>
-          <input type="text" id="visitorName" placeholder="Full name">
+      <div class="security-sheet-body">
+        <div class="security-field-group">
+          <label class="security-field-lbl">Full name</label>
+          <input class="security-field-inp" type="text" id="visitorName" placeholder="e.g. Diane Mukamana">
         </div>
-        <div class="field">
-          <label>Vehicle plate</label>
-          <input type="text" id="visitorPlate" placeholder="e.g. RAC 123A">
+        <div class="security-field-row">
+          <div class="security-field-group">
+            <label class="security-field-lbl">Plate number</label>
+            <input class="security-field-inp" type="text" id="visitorPlate" placeholder="RAB 000A">
+          </div>
+          <div class="security-field-group">
+            <label class="security-field-lbl">Host unit</label>
+            <input class="security-field-inp" type="text" id="visitorHost" placeholder="A-12">
+          </div>
         </div>
-        <div class="field">
-          <label>Host unit</label>
-          <input type="text" id="visitorHost" placeholder="e.g. A-12">
+        <div class="security-field-group">
+          <label class="security-field-lbl">Purpose of visit</label>
+          <input class="security-field-inp" type="text" id="visitorPurpose" placeholder="e.g. Family visit">
         </div>
-        <button class="btn-full" type="button" onclick="submitCheckin()">Check in visitor</button>
+        <button type="button" class="security-submit-btn" onclick="submitCheckin()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Check in visitor
+        </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Security QR scanner full-screen modal -->
+  <div class="security-qr-modal-bg" id="security-qr-modal">
+    <div class="security-qr-modal-bar">
+      <span class="security-qr-modal-bar-time">9:41</span>
+    </div>
+    <div class="security-qr-modal-topbar">
+      <button type="button" class="security-qr-back" onclick="closeSecurityQRModal()" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="security-qr-modal-title">Scan QR Pass</span>
+    </div>
+    <div class="security-qr-viewfinder">
+      <div class="security-qr-camera-feed">
+        <span class="security-qr-corner tl"></span>
+        <span class="security-qr-corner tr"></span>
+        <span class="security-qr-corner bl"></span>
+        <span class="security-qr-corner br"></span>
+        <div class="security-qr-scan-line"></div>
+        <div class="security-qr-camera-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7V1h-6M1 7V1h6M23 17v6h-6M1 17v6h6"/></svg>
+          <p>Camera preview<br/>appears here</p>
+        </div>
+      </div>
+      <div class="security-qr-hint">
+        <p class="security-qr-hint-text">Hold the <strong>resident's QR pass</strong><br/>inside the frame to check in</p>
+      </div>
+    </div>
+    <div class="security-qr-bottom">
+      <button type="button" class="security-qr-simulate-btn" onclick="simulateSecurityScan()">Simulate successful scan</button>
+      <button type="button" class="security-qr-manual-link" onclick="closeSecurityQRModal(); openSecurityManualSheet()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Enter manually instead
+      </button>
+    </div>
+    <div class="security-qr-success" id="security-qr-success">
+      <div class="security-qr-success-ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="security-qr-success-name">Diane Mukamana</p>
+      <p class="security-qr-success-meta">Unit B-07 · Visiting Patrick Habimana<br/>Plate: RAB 441C · Checked in 9:41 AM</p>
+      <button type="button" class="security-qr-success-done" onclick="confirmSecurityCheckin()">Done</button>
     </div>
   </div>
 

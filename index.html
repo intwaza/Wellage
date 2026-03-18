@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,11 +29,13 @@
       <div class="auth-side-grid"></div>
 
       <div class="side-logo">
-        <div class="wellage-emblem wellage-emblem--auth" aria-hidden="true">
-          <span class="wellage-w">W</span>
-          <span class="wellage-line"></span>
-          <span class="wellage-word">WELLAGE</span>
+        <div class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
         </div>
+        <div class="logo-text">Wellage</div>
       </div>
 
         <div class="side-body">
@@ -71,7 +73,7 @@
         </div>
       </div>
 
-      <div class="side-footer">© 2026 Wellage · Admin Portal · Residents & security use the app</div>
+      <div class="side-footer">© 2026 Wellage</div>
     </div>
 
     <!-- FORM PANEL -->
@@ -116,9 +118,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
 
-        <div class="switch-row switch-row-muted">
+        <!-- <div class="switch-row switch-row-muted">
           Residents and security: use the <a href="app/index.html" class="link-app">Wellage app</a>.
-        </div>
+        </div> -->
       </div>
 
       <!-- SIGNUP FORM (hidden on web — app only) -->
@@ -213,181 +215,263 @@
      APP VIEW
 ════════════════════════════════════════════════════ -->
 <div id="appView" class="hidden">
-  <div class="app-shell">
+  <div class="layout">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-      <div class="sb-logo">
-        <div class="logo-mark sb-logo-mark" aria-hidden="true">
-          <svg viewBox="0 0 52 52" fill="none">
-            <path d="M8 44L8 26Q8 12 26 12Q44 12 44 26L44 44" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <line x1="8" y1="44" x2="20" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            <line x1="32" y1="44" x2="44" y2="44" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="26" cy="11" r="3.5" fill="currentColor"/>
-          </svg>
+      <div class="sidebar-brand">
+        <div class="brand-ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </div>
-        <span class="logo-name">Wellage</span>
+        <span class="brand-name">Wellage</span>
       </div>
 
-      <button class="sb-nav-item active" onclick="navTo('dashboard', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Overview
-      </button>
+      <nav class="sidebar-nav">
+        <div class="nav-section-lbl">Main</div>
+        <div class="nav-item sb-nav-item active" onclick="navTo('dashboard', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Overview</span>
+        </div>
+        <div class="nav-item sb-nav-item" onclick="navTo('payments', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <span>Payments</span>
+          <span class="nav-badge" id="nav-badge-payments">3</span>
+        </div>
+        <div class="nav-item sb-nav-item" onclick="navTo('visitors', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Visitors</span>
+        </div>
+        <div class="nav-item sb-nav-item" onclick="navTo('notices', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Notices</span>
+          <span class="nav-badge" id="nav-badge-notices">4</span>
+        </div>
+        <div class="nav-item sb-nav-item" onclick="navTo('residents', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Residents</span>
+        </div>
+        <div class="nav-item sb-nav-item" onclick="navTo('incidents', this)" id="nav-incidents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Incidents</span>
+          <span class="nav-badge nav-badge-red hidden" id="nav-badge-incidents"></span>
+        </div>
+      </nav>
 
-      <button class="sb-nav-item" onclick="navTo('payments', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        Payments
-        <span class="badge">3</span>
-      </button>
-
-      <button class="sb-nav-item" onclick="navTo('visitors', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Visitors
-      </button>
-
-      <button class="sb-nav-item" onclick="navTo('notices', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Notices
-        <span class="badge">1</span>
-      </button>
-
-      <button class="sb-nav-item" onclick="navTo('residents', this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Residents
-      </button>
-
-      <div class="sb-bottom">
-        <div class="sb-user">
-          <div class="avatar" id="userAvatar">BN</div>
-          <div class="sb-user-info">
-            <div class="sb-user-name" id="userName">Belyse N.</div>
-            <div class="sb-user-role" id="userRole">Resident · A-12</div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="user-av" id="userAvatar">BE</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">belyse_intwaza</div>
+            <div class="user-role" id="userRole">Admin</div>
           </div>
         </div>
-        <button class="sb-nav-item" style="margin-top:6px;" onclick="logout()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sign Out
+        <button type="button" class="signout-btn" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign out
         </button>
       </div>
     </aside>
 
     <!-- MAIN -->
-    <div class="main-content">
-
-      <!-- TOPBAR -->
+    <div class="main">
       <header class="topbar">
-        <div class="topbar-left">
-          <h1 id="pageTitle">Overview</h1>
-          <p id="pageSubtitle">Monday, 2 March 2026</p>
-        </div>
+          <div class="topbar-left">
+            <div class="topbar-page" id="pageTitle">Overview</div>
+            <div class="topbar-date" id="pageSubtitle">Monday, 9 March 2026</div>
+          </div>
         <div class="topbar-right">
-          <div class="icon-btn" title="Notifications">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <div class="notif-dot"></div>
+          <button type="button" class="topbar-btn topbar-btn--icon" title="Notifications">
+            <svg class="topbar-icon topbar-icon--bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot"></span>
+          </button>
+          <button type="button" class="topbar-btn topbar-btn--icon" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
+            <svg class="theme-icon topbar-icon topbar-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
           </div>
-          <div class="icon-btn" title="Settings">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <!-- ─── DASHBOARD PAGE ─────────────────────────── -->
+      <div class="content">
+      <!-- DASHBOARD PAGE -->
       <section class="page active" id="page-dashboard">
-        <div class="approvals-section">
-          <h2 class="approvals-heading">Needs your attention</h2>
-          <div class="approvals-cards">
-            <a class="approval-card approval-card--payments" href="#" onclick="navTo('payments', null); return false;">
-              <span class="approval-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-              </span>
-              <div class="approval-body">
-                <span class="approval-title">Payments to approve</span>
-                <span class="approval-count">3 pending · 3 overdue</span>
+
+        <!-- Emergency Alert -->
+        <div class="web-emergency-wrap" id="webEmergencyWrap">
+          <!-- Idle: send button -->
+          <div class="web-emergency-idle" id="webEmergencyIdle">
+            <div class="web-emergency-idle-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Send an emergency alert to all residents and security guards.</span>
+            </div>
+            <button type="button" class="web-emergency-send-btn" onclick="openWebEmergencyModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Send Emergency Alert
+            </button>
+          </div>
+          <!-- Active: list of live alert cards -->
+          <div class="web-emergency-list hidden" id="webEmergencyList">
+            <!-- Cards injected dynamically by updateWebEmergencyState() -->
+          </div>
+          <!-- Log another alert button (shown alongside active alerts) -->
+          <button type="button" class="web-emergency-add-btn hidden" id="webEmergencyAddBtn" onclick="openWebEmergencyModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Log Another Alert
+          </button>
+        </div>
+
+        <!-- Emergency compose modal -->
+        <div class="web-emergency-modal-bg hidden" id="webEmergencyModalBg" onclick="if(event.target===this)closeWebEmergencyModal()">
+          <div class="web-emergency-modal">
+            <div class="web-emergency-modal-head">
+              <div class="web-emergency-modal-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
-              <span class="approval-arrow">→</span>
-            </a>
-            <a class="approval-card approval-card--residents" href="#" onclick="navTo('residents', null); return false;">
-              <span class="approval-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </span>
-              <div class="approval-body">
-                <span class="approval-title">New resident signups</span>
-                <span class="approval-count" id="dashboard-pending-residents-count">0 requests</span>
+              <div>
+                <div class="web-emergency-modal-title">Send Emergency Alert</div>
+                <div class="web-emergency-modal-sub">This will notify all residents and security immediately.</div>
               </div>
-              <span class="approval-arrow">→</span>
-            </a>
+              <button type="button" class="web-emergency-modal-close" onclick="closeWebEmergencyModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div class="web-emergency-modal-body">
+              <div class="web-emergency-type-label">Alert type</div>
+              <div class="web-emergency-type-grid" id="webEmergencyTypeGrid">
+                <button type="button" class="web-emergency-type-btn active" onclick="selectWebEmergencyType(this)" data-type="Security Threat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Security Threat
+                </button>
+                <button type="button" class="web-emergency-type-btn" onclick="selectWebEmergencyType(this)" data-type="Fire">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                  Fire
+                </button>
+                <button type="button" class="web-emergency-type-btn" onclick="selectWebEmergencyType(this)" data-type="Accident">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  Accident
+                </button>
+                <button type="button" class="web-emergency-type-btn" onclick="selectWebEmergencyType(this)" data-type="Other">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Other
+                </button>
+              </div>
+              <div class="web-emergency-type-label" style="margin-top:16px">Message <span style="font-weight:400;color:var(--text-muted)">(optional)</span></div>
+              <textarea class="web-emergency-textarea" id="webEmergencyMsg" placeholder="Describe the situation…" rows="3"></textarea>
+            </div>
+            <div class="web-emergency-modal-foot">
+              <button type="button" class="web-emergency-cancel-btn" onclick="closeWebEmergencyModal()">Cancel</button>
+              <button type="button" class="web-emergency-confirm-btn" onclick="sendWebEmergencyAlert()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                Send Alert
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="stats-grid stats-grid--compact">
-          <div class="stat-card">
-            <div class="stat-label">Total Residents</div>
-            <div class="stat-value">48</div>
-            <div class="stat-change neutral">All units registered</div>
+        <div class="sec-lbl">Needs your attention</div>
+        <div class="attention-grid">
+          <div class="attention-card" onclick="navTo('payments', null)">
+            <div class="attention-ic pay">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="attention-body">
+              <div class="attention-title">Payments to approve</div>
+              <div class="attention-sub">3 pending · 3 overdue</div>
+            </div>
+            <div class="attention-arr">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Paid This Month</div>
-            <div class="stat-value" style="color: var(--accent)">39</div>
-            <div class="stat-change up">81.2% collection</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Pending</div>
-            <div class="stat-value" style="color: var(--warning)">9</div>
-            <div class="stat-change down">3 overdue</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Visitors Today</div>
-            <div class="stat-value">14</div>
-            <div class="stat-change neutral">3 on-site</div>
+          <div class="attention-card" onclick="navTo('residents', null)">
+            <div class="attention-ic res">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="attention-body">
+              <div class="attention-title">New resident signups</div>
+              <div class="attention-sub" id="dashboard-pending-residents-count">0 requests</div>
+            </div>
+            <div class="attention-arr">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
           </div>
         </div>
 
-        <div class="content-grid content-grid--compact">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-lbl">Total residents</div>
+            <div class="stat-val">48</div>
+            <div class="stat-sub">All units registered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Paid this month</div>
+            <div class="stat-val green">39</div>
+            <div class="stat-sub">81.2% collection</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Pending</div>
+            <div class="stat-val amber">9</div>
+            <div class="stat-sub red">3 overdue</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Visitors today</div>
+            <div class="stat-val">14</div>
+            <div class="stat-sub">3 on-site</div>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
           <div class="card">
             <div class="card-head">
               <span class="card-title">Recent payments</span>
-              <button class="card-action" onclick="navTo('payments', null)">View all</button>
+              <span class="card-link" onclick="navTo('payments', null)">View all</span>
             </div>
-            <div class="card-body">
-              <table class="data-table">
-                <thead><tr><th>Resident</th><th>Unit</th><th>Amount</th><th>Status</th></tr></thead>
-                <tbody>
-                  <tr><td>Kamana Eric</td><td>B-04</td><td>25,000 RWF</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                  <tr><td>Uwase Claire</td><td>A-08</td><td>25,000 RWF</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
-                  <tr><td>Mugisha Patrick</td><td>A-03</td><td>25,000 RWF</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
-                  <tr><td>Cyiza Vestine</td><td>D-07</td><td>25,000 RWF</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                </tbody>
-              </table>
-            </div>
+            <table>
+              <thead>
+                <tr><th>Resident</th><th>Unit</th><th>Amount</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr onclick="navTo('payments', null)"><td class="name">Kamana Eric</td><td class="unit">B-04</td><td class="amount">25,000 RWF</td><td><span class="status-chip paid">Paid</span></td></tr>
+                <tr onclick="navTo('payments', null)"><td class="name">Uwase Claire</td><td class="unit">A-08</td><td class="amount">25,000 RWF</td><td><span class="status-chip pending">Pending</span></td></tr>
+                <tr onclick="navTo('payments', null)"><td class="name">Mugisha Patrick</td><td class="unit">A-03</td><td class="amount">25,000 RWF</td><td><span class="status-chip overdue">Overdue</span></td></tr>
+                <tr onclick="navTo('payments', null)"><td class="name">Cyiza Vestine</td><td class="unit">D-07</td><td class="amount">25,000 RWF</td><td><span class="status-chip paid">Paid</span></td></tr>
+                <tr onclick="navTo('payments', null)"><td class="name">Ndayisaba Théo</td><td class="unit">C-02</td><td class="amount">25,000 RWF</td><td><span class="status-chip paid">Paid</span></td></tr>
+              </tbody>
+            </table>
           </div>
           <div class="card">
             <div class="card-head">
               <span class="card-title">Activity</span>
-              <button class="card-action">See all</button>
+              <span class="card-link">See all</span>
             </div>
-            <div class="card-body">
-              <ul class="activity-list">
-                <li class="activity-item">
-                  <span class="act-dot green"></span>
-                  <span class="act-text"><strong>Kamana Eric</strong> submitted payment for March</span>
-                  <span class="act-time">9:42 AM</span>
-                </li>
-                <li class="activity-item">
-                  <span class="act-dot blue"></span>
-                  <span class="act-text">Visitor <strong>Diane M.</strong> checked in — C-02</span>
-                  <span class="act-time">9:17 AM</span>
-                </li>
-                <li class="activity-item">
-                  <span class="act-dot orange"></span>
-                  <span class="act-text">Notice: Water maintenance Friday</span>
-                  <span class="act-time">8:55 AM</span>
-                </li>
-                <li class="activity-item">
-                  <span class="act-dot red"></span>
-                  <span class="act-text"><strong>Mugisha Patrick</strong> payment overdue</span>
-                  <span class="act-time">8:30 AM</span>
-                </li>
-              </ul>
+            <div class="activity-list">
+              <div class="activity-item">
+                <span class="activity-dot green"></span>
+                <span class="activity-text"><strong>Kamana Eric</strong> submitted payment for March</span>
+                <span class="activity-time">9:42 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot blue"></span>
+                <span class="activity-text">Visitor <strong>Diane M.</strong> checked in — C-02</span>
+                <span class="activity-time">9:17 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot amber"></span>
+                <span class="activity-text">Notice: <strong>Water maintenance Friday</strong> published</span>
+                <span class="activity-time">8:55 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot red"></span>
+                <span class="activity-text"><strong>Mugisha Patrick</strong> payment overdue</span>
+                <span class="activity-time">8:30 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot green"></span>
+                <span class="activity-text"><strong>Cyiza Vestine</strong> submitted payment for March</span>
+                <span class="activity-time">8:12 AM</span>
+              </div>
+              <div class="activity-item">
+                <span class="activity-dot blue"></span>
+                <span class="activity-text">Visitor <strong>Jean Paul K.</strong> checked out — A-12</span>
+                <span class="activity-time">7:58 AM</span>
+              </div>
             </div>
           </div>
         </div>
@@ -395,150 +479,296 @@
 
       <!-- ─── PAYMENTS PAGE ──────────────────────────── -->
       <section class="page" id="page-payments">
-        <div class="page-toolbar">
+        <div class="stat-strip">
+          <div class="stat-card"><div class="stat-lbl">Collected this month</div><div class="stat-val green" id="s-collected">975,000 RWF</div><div class="stat-sub green" id="s-collected-sub">39 residents</div></div>
+          <div class="stat-card"><div class="stat-lbl">Pending</div><div class="stat-val amber" id="s-pending">6</div><div class="stat-sub amber" id="p-pending-amt">—</div></div>
+          <div class="stat-card"><div class="stat-lbl">Overdue</div><div class="stat-val red" id="s-overdue">3</div><div class="stat-sub red" id="p-overdue-amt">—</div></div>
+          <div class="stat-card"><div class="stat-lbl">Collection rate</div><div class="stat-val" id="s-rate">81.2%</div><div class="stat-sub">48 total residents</div></div>
+        </div>
+
+        <div class="toolbar">
           <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Search resident or unit..." oninput="filterPayments(this.value)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-inp" placeholder="Search resident or unit…" oninput="applyPaymentsFilters()"/>
           </div>
-          <select class="filter-select" onchange="filterPayments(document.querySelector('#page-payments .search-wrap input').value, this.value)">
+          <select class="filter-select" id="status-filter" onchange="applyPaymentsFilters()">
             <option value="">All Status</option>
             <option value="paid">Paid</option>
             <option value="pending">Pending</option>
             <option value="overdue">Overdue</option>
           </select>
-          <button class="btn-primary" onclick="openModal('recordPayment')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <select class="month-select" id="month-filter" onchange="applyPaymentsFilters()">
+            <option value="March 2026">March 2026</option>
+            <option value="February 2026">February 2026</option>
+            <option value="January 2026">January 2026</option>
+          </select>
+          <div class="spacer"></div>
+          <button class="record-btn" onclick="openPaymentModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Record Payment
           </button>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <span class="card-title">Payment Records — March 2026</span>
-            <span style="font-size:12px; color: var(--text-muted)">48 residents</span>
+            <span class="card-title" id="table-title">Payment Records — March 2026</span>
+            <span class="card-meta" id="table-meta">48 residents</span>
           </div>
-          <div class="card-body">
-            <table class="data-table" id="paymentsTable">
-              <thead><tr><th>Resident</th><th>Unit</th><th>Service</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
-              <tbody id="paymentsBody">
-                <tr data-status="paid"><td>Kamana Eric</td><td>B-04</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 1, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr data-status="pending"><td>Uwase Claire</td><td>A-08</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
-                <tr data-status="paid"><td>Ndayishimiye J.</td><td>C-11</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Feb 28, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr data-status="overdue"><td>Mugisha Patrick</td><td>A-03</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
-                <tr data-status="paid"><td>Cyiza Vestine</td><td>D-07</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 2, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr data-status="pending"><td>Habimana Joel</td><td>B-09</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
-                <tr data-status="paid"><td>Ingabire Sandra</td><td>C-05</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>Mar 1, 2026</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr data-status="overdue"><td>Nkurunziza T.</td><td>A-14</td><td>Security + Cleaning</td><td>25,000 RWF</td><td>—</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
-              </tbody>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortPaymentsTable('name')">Resident</th>
+                  <th onclick="sortPaymentsTable('unit')">Unit</th>
+                  <th>Service</th>
+                  <th onclick="sortPaymentsTable('amount')">Amount</th>
+                  <th onclick="sortPaymentsTable('date')">Date</th>
+                  <th onclick="sortPaymentsTable('status')">Status</th>
+                  <th style="width:44px"></th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
             </table>
+            <div id="payments-empty-state" class="empty-state" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <p>No results found</p>
+              <span>Try adjusting your search or filters</span>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ─── VISITORS PAGE ──────────────────────────── -->
       <section class="page" id="page-visitors">
-        <div class="visitor-form-card">
-          <div class="card-title" style="margin-bottom:18px;">Register Visitor</div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Visitor Name</label>
-              <div class="input-wrap">
-                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <input type="text" id="visitorName" placeholder="Full name">
-              </div>
-            </div>
-            <div class="field">
-              <label>Vehicle Plate</label>
-              <div class="input-wrap">
-                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                <input type="text" id="visitorPlate" placeholder="e.g. RAC 123A">
-              </div>
-            </div>
-            <div class="field">
-              <label>Host Unit</label>
-              <div class="input-wrap">
-                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <input type="text" id="visitorHost" placeholder="e.g. A-12">
-              </div>
-            </div>
+        <div class="stat-strip">
+          <div class="stat-card">
+            <div class="stat-lbl">On-site now</div>
+            <div class="stat-val green" id="vis-s-onsite">3</div>
+            <div class="stat-sub green">Active visitors</div>
           </div>
-          <button class="btn-primary" style="width: auto;" onclick="registerVisitor()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <div class="stat-card">
+            <div class="stat-lbl">Total today</div>
+            <div class="stat-val" id="vis-s-today">14</div>
+            <div class="stat-sub">All check-ins</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Checked out</div>
+            <div class="stat-val" id="vis-s-left">11</div>
+            <div class="stat-sub">Departed today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Avg. visit duration</div>
+            <div class="stat-val" id="vis-s-avg">1h 42m</div>
+            <div class="stat-sub">Today's average</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="vis-search" placeholder="Search visitor or unit…" oninput="applyVisitorFilters()">
+          </div>
+          <select class="filter-select" id="vis-status-filter" onchange="applyVisitorFilters()">
+            <option value="">All Status</option>
+            <option value="onsite">On-site</option>
+            <option value="left">Left</option>
+          </select>
+          <div class="spacer"></div>
+          <button class="record-btn" onclick="openVisitorModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Check In Visitor
           </button>
         </div>
 
-        <div class="card">
-          <div class="card-head">
-            <span class="card-title">Visitor Logbook — Today</span>
-            <span style="font-size:12px; color: var(--text-muted)" id="visitorCount">14 entries</span>
+        <div class="visitors-grid">
+          <!-- Logbook table -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title" id="vis-table-title">Visitor Logbook — Today</span>
+              <span class="card-meta" id="vis-table-meta">14 entries</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                <tr>
+                  <th>Host</th>
+                  <th>Phone</th>
+                  <th>Vehicle</th>
+                  <th>Unit</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Status</th>
+                  <th style="width:40px"></th>
+                </tr>
+                </thead>
+                <tbody id="vis-table-body"></tbody>
+              </table>
+              <div id="vis-empty-state" class="empty-state" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <p>No visitors found</p>
+                <span>Try adjusting your filters</span>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            <table class="data-table" id="visitorsTable">
-              <thead><tr><th>Visitor</th><th>Vehicle Plate</th><th>Host Unit</th><th>Check In</th><th>Check Out</th><th>Status</th></tr></thead>
-              <tbody id="visitorsBody">
-                <tr><td>Diane Mukamana</td><td>RAC 441B</td><td>C-02</td><td>09:17 AM</td><td>—</td><td><span class="badge-status badge-paid">On-site</span></td></tr>
-                <tr><td>Samuel Nzeyimana</td><td>RAD 209C</td><td>A-07</td><td>08:45 AM</td><td>10:30 AM</td><td><span class="badge-status badge-pending" style="background:rgba(139,146,160,0.1);color:var(--text-muted);">Left</span></td></tr>
-                <tr><td>Aline Uwimana</td><td>—</td><td>B-06</td><td>07:30 AM</td><td>09:00 AM</td><td><span class="badge-status badge-pending" style="background:rgba(139,146,160,0.1);color:var(--text-muted);">Left</span></td></tr>
-              </tbody>
-            </table>
+
+          <!-- Side panel -->
+          <div class="side-panel">
+            <div class="live-card">
+              <div class="live-card-top">
+                <span class="live-label">Live — On-site now</span>
+                <span class="live-dot"></span>
+              </div>
+              <div class="live-count" id="vis-live-count">3</div>
+              <div class="live-sub">visitors currently inside</div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <span class="card-title">Today's summary</span>
+              </div>
+              <div class="summary-card summary-card-inner">
+                <div class="summary-row">
+                  <span class="summary-key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Check-ins
+                  </span>
+                  <span class="summary-val" id="vis-sum-checkins">14</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Check-outs
+                  </span>
+                  <span class="summary-val" id="vis-sum-checkouts">11</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Most visited unit
+                  </span>
+                  <span class="summary-val" id="vis-most-unit">C-02</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-key">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Peak hour
+                  </span>
+                  <span class="summary-val" id="vis-peak-hour">9–10 AM</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- Visitors: Check-in Modal -->
+      <div class="modal-bg visitor-modal-bg" id="visitor-modal-bg" onclick="closeVisitorModal()">
+        <div class="modal visitor-modal" onclick="event.stopPropagation()">
+          <div class="modal-head">
+            <div>
+              <div class="modal-title">Check In Visitor</div>
+              <div class="modal-sub">Log a new visitor to the estate</div>
+            </div>
+            <button type="button" class="modal-cls" onclick="closeVisitorModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-lbl">Visitor name</label>
+                <input class="field-inp" type="text" id="v-name" placeholder="Full name">
+              </div>
+              <div class="field-group">
+                <label class="field-lbl">Host unit</label>
+                <input class="field-inp" type="text" id="v-host" placeholder="e.g. A-12">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-lbl">Vehicle plate</label>
+                <input class="field-inp" type="text" id="v-plate" placeholder="e.g. RAC 123A (optional)">
+              </div>
+              <div class="field-group">
+                <label class="field-lbl">Phone number</label>
+                <input class="field-inp" type="text" id="v-phone" placeholder="+250 7XX XXX XXX">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-cancel" onclick="closeVisitorModal()">Cancel</button>
+            <button type="button" class="modal-submit" onclick="submitVisitorCheckin()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Check In
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- ─── NOTICES PAGE ───────────────────────────── -->
       <section class="page" id="page-notices">
-        <div class="page-toolbar">
-          <div></div>
-          <button class="btn-primary" onclick="openModal('addNotice')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+
+        <!-- Toolbar -->
+        <div class="n-toolbar">
+          <div class="n-search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="notice-search" placeholder="Search notices…" oninput="renderNotices()"/>
+          </div>
+          <div class="n-filter-pills">
+            <button class="n-filter-pill active" data-filter="" onclick="setNoticeFilter(this)">All <span class="n-pill-count" id="pill-all">4</span></button>
+            <button class="n-filter-pill" data-filter="urgent" onclick="setNoticeFilter(this)">Urgent <span class="n-pill-count" id="pill-urgent">1</span></button>
+            <button class="n-filter-pill" data-filter="general" onclick="setNoticeFilter(this)">General <span class="n-pill-count" id="pill-general">1</span></button>
+            <button class="n-filter-pill" data-filter="poll" onclick="setNoticeFilter(this)">Poll <span class="n-pill-count" id="pill-poll">1</span></button>
+            <button class="n-filter-pill" data-filter="info" onclick="setNoticeFilter(this)">Info <span class="n-pill-count" id="pill-info">1</span></button>
+          </div>
+          <div style="flex:1"></div>
+          <button class="n-post-btn" onclick="openNoticeModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Post Notice
           </button>
         </div>
 
-        <div class="notices-grid">
-          <div class="notice-card">
-            <span class="notice-tag tag-urgent">Urgent</span>
-            <div class="notice-title">Water Maintenance — Friday 7 Mar</div>
-            <p class="notice-body">Water supply will be interrupted from 8:00 AM to 2:00 PM on Friday due to scheduled pipe maintenance. Please store water in advance.</p>
-            <div class="notice-meta"><span>Admin</span><span>Mar 2, 2026</span></div>
+        <!-- Two-column layout -->
+        <div class="notices-layout">
+          <!-- Notices list -->
+          <div class="notices-list" id="notices-list"></div>
+
+          <!-- Side panel -->
+          <div class="n-side-panel">
+            <!-- Stats -->
+            <div class="n-side-card">
+              <div class="n-side-head"><span class="n-side-title">Overview</span></div>
+              <div class="n-stats-mini">
+                <div class="n-stat-mini"><div class="n-stat-mini-val" id="sm-total">4</div><div class="n-stat-mini-lbl">Total</div></div>
+                <div class="n-stat-mini"><div class="n-stat-mini-val n-red" id="sm-urgent">1</div><div class="n-stat-mini-lbl">Urgent</div></div>
+                <div class="n-stat-mini"><div class="n-stat-mini-val n-amber" id="sm-polls">1</div><div class="n-stat-mini-lbl">Polls</div></div>
+                <div class="n-stat-mini"><div class="n-stat-mini-val n-green">3</div><div class="n-stat-mini-lbl">This month</div></div>
+              </div>
+            </div>
+            <!-- Recent activity -->
+            <div class="n-side-card">
+              <div class="n-side-head"><span class="n-side-title">Recent activity</span></div>
+              <div class="n-activity-item"><span class="n-activity-dot green"></span><span class="n-activity-text"><strong>General</strong> notice published — March payment deadline</span><span class="n-activity-time">Mar 1</span></div>
+              <div class="n-activity-item"><span class="n-activity-dot red"></span><span class="n-activity-text"><strong>Urgent</strong> notice — water maintenance Friday</span><span class="n-activity-time">Mar 2</span></div>
+              <div class="n-activity-item"><span class="n-activity-dot amber"></span><span class="n-activity-text"><strong>Poll</strong> posted — gate opening hours vote</span><span class="n-activity-time">Feb 28</span></div>
+              <div class="n-activity-item"><span class="n-activity-dot blue"></span><span class="n-activity-text"><strong>Info</strong> notice — community meeting March 15</span><span class="n-activity-time">Feb 26</span></div>
+            </div>
           </div>
-          <div class="notice-card">
-            <span class="notice-tag tag-general">General</span>
-            <div class="notice-title">March Payment Deadline — 10 March</div>
-            <p class="notice-body">Reminder that monthly service fees are due by 10 March 2026. Late payments will incur a 10% penalty. Use Mobile Money or upload your receipt.</p>
-            <div class="notice-meta"><span>Admin</span><span>Mar 1, 2026</span></div>
-          </div>
-          <div class="notice-card">
-            <span class="notice-tag tag-poll">Poll</span>
-            <div class="notice-title">New Gate Opening Hours — Vote Now</div>
-            <p class="notice-body">Should the main gate extend its operating hours to midnight on weekends? Cast your vote before 5 March.</p>
-            <div class="notice-meta"><span>Admin</span><span>Feb 28, 2026</span></div>
-          </div>
-          <div class="notice-card">
-            <span class="notice-tag tag-info">Info</span>
-            <div class="notice-title">Community Meeting — 15 March</div>
-            <p class="notice-body">Quarterly community meeting scheduled for Saturday 15 March at 10:00 AM in the community hall. Agenda: security review and landscaping proposal.</p>
-            <div class="notice-meta"><span>Admin</span><span>Feb 26, 2026</span></div>
-          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="notices-empty" style="display:none;text-align:center;padding:48px 20px;color:#8FA89F">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;color:#B8CCC7;margin-bottom:10px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <p style="font-size:14px;font-weight:500;color:#3D5349;margin-bottom:4px">No notices found</p>
+          <span style="font-size:12px">Try a different filter or post a new notice</span>
         </div>
       </section>
 
       <!-- ─── RESIDENTS PAGE ─────────────────────────── -->
       <section class="page" id="page-residents">
-        <div class="page-toolbar">
-          <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" placeholder="Search residents...">
-          </div>
-          <button class="btn-primary" onclick="openModal('addResident')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Resident
-          </button>
-        </div>
 
-        <!-- Pending signups (from app) — approve to allow resident login -->
-        <div class="card" id="pending-residents-card">
+        <!-- Pending approvals (from app signups) -->
+        <div class="card r-pending-card" id="pending-residents-card">
           <div class="card-head">
             <span class="card-title">Pending approvals</span>
             <span class="card-meta" id="pending-residents-count">0 requests</span>
@@ -552,27 +782,337 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-head">
-            <span class="card-title">All Residents</span>
-            <span style="font-size:12px; color: var(--text-muted)">48 registered</span>
+        <!-- Stats strip -->
+        <div class="r-stat-strip">
+          <div class="r-stat-card"><div class="r-stat-lbl">Total residents</div><div class="r-stat-val" id="s-total">—</div><div class="r-stat-sub">All units registered</div></div>
+          <div class="r-stat-card"><div class="r-stat-lbl">Paid this month</div><div class="r-stat-val r-green" id="s-paid">—</div><div class="r-stat-sub r-green" id="s-paid-rate">—% collection</div></div>
+          <div class="r-stat-card"><div class="r-stat-lbl">Pending</div><div class="r-stat-val r-amber" id="rs-pending">—</div><div class="r-stat-sub r-amber" id="rs-pending-amt">— RWF</div></div>
+          <div class="r-stat-card"><div class="r-stat-lbl">Overdue</div><div class="r-stat-val r-red" id="rs-overdue">—</div><div class="r-stat-sub r-red" id="rs-overdue-amt">— RWF</div></div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="r-toolbar">
+          <div class="n-search-wrap" style="max-width:300px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="res-search" placeholder="Search name, unit or phone…" oninput="applyResidentFilters()"/>
           </div>
-          <div class="card-body">
-            <table class="data-table">
-              <thead><tr><th>Name</th><th>Unit</th><th>Phone</th><th>Joined</th><th>Payment</th></tr></thead>
-              <tbody>
-                <tr><td>Kamana Eric</td><td>B-04</td><td>+250 788 123 456</td><td>Jan 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr><td>Uwase Claire</td><td>A-08</td><td>+250 782 234 567</td><td>Mar 2024</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
-                <tr><td>Ndayishimiye J.</td><td>C-11</td><td>+250 795 345 678</td><td>Jun 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr><td>Mugisha Patrick</td><td>A-03</td><td>+250 788 456 789</td><td>Sep 2023</td><td><span class="badge-status badge-overdue">Overdue</span></td></tr>
-                <tr><td>Cyiza Vestine</td><td>D-07</td><td>+250 780 567 890</td><td>Feb 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-                <tr><td>Habimana Joel</td><td>B-09</td><td>+250 783 678 901</td><td>Nov 2023</td><td><span class="badge-status badge-pending">Pending</span></td></tr>
-                <tr><td>Ingabire Sandra</td><td>C-05</td><td>+250 784 789 012</td><td>Apr 2024</td><td><span class="badge-status badge-paid">Paid</span></td></tr>
-              </tbody>
-            </table>
+          <select class="r-filter-select" id="res-payment-filter" onchange="applyResidentFilters()">
+            <option value="">All payments</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="overdue">Overdue</option>
+          </select>
+          <select class="r-filter-select" id="res-block-filter" onchange="applyResidentFilters()">
+            <option value="">All blocks</option>
+            <option value="A">Block A</option>
+            <option value="B">Block B</option>
+            <option value="C">Block C</option>
+            <option value="D">Block D</option>
+          </select>
+          <div style="flex:1"></div>
+          <button class="n-post-btn" onclick="openAddResidentModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Resident
+          </button>
+        </div>
+
+        <!-- Two-column layout -->
+        <div class="residents-layout">
+          <!-- Table card -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title" id="r-table-title">All Residents</span>
+              <span class="card-meta" id="r-table-meta">— registered</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th onclick="sortResidentTable('name')">Resident</th>
+                    <th onclick="sortResidentTable('unit')">Unit</th>
+                    <th>Phone</th>
+                    <th onclick="sortResidentTable('joined')">Joined</th>
+                    <th onclick="sortResidentTable('payment')">Payment</th>
+                    <th style="width:44px"></th>
+                  </tr>
+                </thead>
+                <tbody id="res-table-body"></tbody>
+              </table>
+              <div id="res-empty" class="empty-state" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <p>No residents found</p>
+                <span>Try adjusting your search or filters</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Side panel -->
+          <div class="r-side-panel">
+            <div class="r-side-card">
+              <div class="r-side-head"><span class="r-side-title">By block</span><span class="r-side-meta" id="r-block-total">— units</span></div>
+              <div class="r-block-list" id="r-block-list"></div>
+            </div>
+            <div class="r-side-card">
+              <div class="r-side-head"><span class="r-side-title">Payment health</span></div>
+              <div class="r-health-wrap" id="r-health-wrap"></div>
+            </div>
           </div>
         </div>
+
       </section>
+
+      <!-- ─── INCIDENTS PAGE ─────────────────────────── -->
+      <section class="page" id="page-incidents">
+        <!-- Toolbar -->
+        <div class="web-incidents-toolbar">
+          <div class="n-search-wrap" style="max-width:280px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="web-incident-search" placeholder="Search incidents…" oninput="filterWebIncidents()"/>
+          </div>
+          <select class="r-filter-select" id="web-incident-status-filter" onchange="filterWebIncidents()">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="resolved">Resolved</option>
+          </select>
+          <select class="r-filter-select" id="web-incident-type-filter" onchange="filterWebIncidents()">
+            <option value="">All types</option>
+            <option value="Security Threat">Security Threat</option>
+            <option value="Fire">Fire</option>
+            <option value="Accident">Accident</option>
+            <option value="Other">Other</option>
+          </select>
+          <div style="flex:1"></div>
+          <button class="n-post-btn" onclick="openWebLogIncidentModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Log Incident
+          </button>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="web-incident-stats" id="webIncidentStats">
+          <div class="web-inc-stat"><div class="web-inc-stat-val" id="webIncStatTotal">0</div><div class="web-inc-stat-lbl">Total</div></div>
+          <div class="web-inc-stat web-inc-stat-active"><div class="web-inc-stat-val" id="webIncStatActive">0</div><div class="web-inc-stat-lbl">Active</div></div>
+          <div class="web-inc-stat web-inc-stat-resolved"><div class="web-inc-stat-val" id="webIncStatResolved">0</div><div class="web-inc-stat-lbl">Resolved</div></div>
+        </div>
+
+        <!-- Incident list -->
+        <div id="webIncidentList"></div>
+        <div class="empty-state hidden" id="webIncidentsEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <p>No incidents logged yet</p>
+          <span>Use the "Log Incident" button to record one</span>
+        </div>
+      </section>
+
+      </div>
+
+      <!-- Web Log Incident modal -->
+      <div class="web-emergency-modal-bg hidden" id="webLogIncidentModalBg" onclick="if(event.target===this)closeWebLogIncidentModal()">
+        <div class="web-emergency-modal">
+          <h2 class="web-emergency-modal-title">Log an Incident</h2>
+          <p class="web-emergency-modal-sub">Record an incident. This does not send an emergency alert to residents.</p>
+          <p class="web-emergency-modal-label">Incident type</p>
+          <div class="web-emergency-type-grid" id="webLogIncidentTypeGrid">
+            <button type="button" class="web-emergency-type-btn active" data-type="Security Threat" onclick="selectWebLogIncidentType(this)">🚨 Security Threat</button>
+            <button type="button" class="web-emergency-type-btn" data-type="Fire" onclick="selectWebLogIncidentType(this)">🔥 Fire</button>
+            <button type="button" class="web-emergency-type-btn" data-type="Accident" onclick="selectWebLogIncidentType(this)">🚑 Accident</button>
+            <button type="button" class="web-emergency-type-btn" data-type="Other" onclick="selectWebLogIncidentType(this)">⚠️ Other</button>
+          </div>
+          <p class="web-emergency-modal-label">Description <span style="font-weight:400;opacity:.6">(optional)</span></p>
+          <textarea class="web-emergency-textarea" id="webLogIncidentDesc" placeholder="Briefly describe what happened…" rows="3"></textarea>
+          <p class="web-emergency-modal-label" style="margin-top:14px">Status</p>
+          <div class="web-incident-status-row">
+            <button type="button" class="web-incident-status-btn active" data-status="resolved" onclick="selectWebLogIncidentStatus(this)">✔ Resolved</button>
+            <button type="button" class="web-incident-status-btn" data-status="active" onclick="selectWebLogIncidentStatus(this)">⚡ Ongoing</button>
+          </div>
+          <p class="web-emergency-modal-label" style="margin-top:14px">Resolution note <span style="font-weight:400;opacity:.6">(optional)</span></p>
+          <textarea class="web-emergency-textarea" id="webLogIncidentNote" placeholder="How was it handled?" rows="2"></textarea>
+          <div class="web-emergency-modal-foot">
+            <button type="button" class="web-emergency-cancel-btn" onclick="closeWebLogIncidentModal()">Cancel</button>
+            <button type="button" class="web-emergency-confirm-btn" style="background:#475569" onclick="submitWebLogIncident()">Save Incident</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments: context menu -->
+      <div class="ctx-menu" id="payment-ctx-menu">
+        <div class="ctx-item" onclick="paymentCtxView()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View details</div>
+        <div class="ctx-item" id="ctx-approve-item" onclick="paymentCtxApprove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Approve payment</div>
+        <div class="ctx-item" onclick="paymentCtxSendReminder()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Send reminder</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item danger" onclick="paymentCtxDelete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>Delete record</div>
+      </div>
+
+      <!-- Payments: detail drawer -->
+      <div class="drawer-bg" id="payment-drawer-bg" onclick="closePaymentDrawer()">
+        <div class="drawer" onclick="event.stopPropagation()">
+          <div class="drawer-head">
+            <div><div class="drawer-title" id="d-name">—</div><div class="drawer-sub">Payment details · <span id="d-month">March 2026</span></div></div>
+            <button type="button" class="drawer-cls" onclick="closePaymentDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="drawer-body">
+            <div class="detail-block">
+              <div class="detail-row"><span class="detail-key">Unit</span><span class="detail-val" id="d-unit">—</span></div>
+              <div class="detail-row"><span class="detail-key">Service</span><span class="detail-val" id="d-service">—</span></div>
+              <div class="detail-row"><span class="detail-key">Amount</span><span class="detail-val" id="d-amount">—</span></div>
+              <div class="detail-row"><span class="detail-key">Period</span><span class="detail-val" id="d-period">—</span></div>
+              <div class="detail-row"><span class="detail-key">Date paid</span><span class="detail-val" id="d-date">—</span></div>
+              <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val" id="d-status">—</span></div>
+              <div class="detail-row"><span class="detail-key">Method</span><span class="detail-val" id="d-method">—</span></div>
+            </div>
+          </div>
+          <div class="drawer-actions" id="d-actions">
+            <button type="button" class="btn-approve" onclick="approveFromPaymentDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Approve payment</button>
+            <button type="button" class="btn-reject" onclick="rejectFromPaymentDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments: record payment modal -->
+      <div class="modal-bg payment-modal-bg" id="payment-modal-bg" onclick="closePaymentModal(event)">
+        <div class="modal payment-modal" onclick="event.stopPropagation()">
+          <div class="modal-head">
+            <div><div class="modal-title">Record Payment</div><div class="modal-sub">Log a new resident payment</div></div>
+            <button type="button" class="modal-cls" onclick="closePaymentModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-lbl">Resident name</label>
+                <input class="field-inp" type="text" id="m-name" placeholder="e.g. Kamana Eric"/>
+              </div>
+              <div class="field-group">
+                <label class="field-lbl">Unit</label>
+                <input class="field-inp" type="text" id="m-unit" placeholder="e.g. B-04"/>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-lbl">Amount (RWF)</label>
+                <input class="field-inp" type="number" id="m-amount" placeholder="25000"/>
+              </div>
+              <div class="field-group">
+                <label class="field-lbl">Payment method</label>
+                <select class="field-select" id="m-method">
+                  <option value="Cash">Cash</option>
+                  <option value="Mobile Money">Mobile Money</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-lbl">Service</label>
+                <select class="field-select" id="m-service">
+                  <option value="Security + Cleaning">Security + Cleaning</option>
+                  <option value="Security only">Security only</option>
+                  <option value="Cleaning only">Cleaning only</option>
+                  <option value="Maintenance">Maintenance</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-lbl">Period</label>
+                <select class="field-select" id="m-period">
+                  <option value="March 2026">March 2026</option>
+                  <option value="February 2026">February 2026</option>
+                  <option value="January 2026">January 2026</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-lbl">Status</label>
+              <select class="field-select" id="m-status">
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-cancel" onclick="closePaymentModal()">Cancel</button>
+            <button type="button" class="modal-submit" onclick="submitPaymentRecord()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Save Payment</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments toast -->
+      <div class="toast payment-toast" id="payment-toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="payment-toast-msg">Done</span>
+      </div>
+
+      <!-- Residents: context menu -->
+      <div class="ctx-menu" id="resident-ctx-menu">
+        <div class="ctx-item" onclick="resCtxView()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View profile</div>
+        <div class="ctx-item" onclick="resCtxSendReminder()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Send reminder</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item danger" onclick="resCtxRemove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Remove resident</div>
+      </div>
+
+      <!-- Residents: detail drawer -->
+      <div class="drawer-bg" id="resident-drawer-bg" onclick="closeResidentDrawer()">
+        <div class="drawer" onclick="event.stopPropagation()">
+          <div class="drawer-head">
+            <div>
+              <div class="drawer-av" id="rd-av">KE</div>
+              <div class="drawer-name" id="rd-name">—</div>
+              <div class="drawer-sub" id="rd-sub">Unit · Joined —</div>
+            </div>
+            <button class="drawer-cls" onclick="closeResidentDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="drawer-body">
+            <div class="detail-block">
+              <div class="detail-row"><span class="detail-key">Unit</span><span class="detail-val" id="rd-unit">—</span></div>
+              <div class="detail-row"><span class="detail-key">Phone</span><span class="detail-val" id="rd-phone">—</span></div>
+              <div class="detail-row"><span class="detail-key">Joined</span><span class="detail-val" id="rd-joined">—</span></div>
+              <div class="detail-row"><span class="detail-key">Block</span><span class="detail-val" id="rd-block">—</span></div>
+              <div class="detail-row"><span class="detail-key">Payment status</span><span class="detail-val" id="rd-payment">—</span></div>
+            </div>
+            <div class="drawer-section-lbl">Payment history</div>
+            <div class="detail-block" id="rd-history"></div>
+          </div>
+          <div class="drawer-actions">
+            <button class="btn-action r-secondary" onclick="resDrawerReminder()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Send reminder</button>
+            <button class="btn-action r-primary" onclick="closeResidentDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Done</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Residents: add modal -->
+      <div class="modal-bg resident-modal-bg" id="resident-modal-bg" onclick="closeAddResidentModal()">
+        <div class="modal resident-modal" onclick="event.stopPropagation()">
+          <div class="modal-head">
+            <div><div class="modal-title">Add Resident</div><div class="modal-sub">Register a new resident to the estate</div></div>
+            <button type="button" class="modal-cls" onclick="closeAddResidentModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="modal-body">
+            <div class="field-row">
+              <div class="field-group"><label class="field-lbl">First name</label><input class="field-inp" type="text" id="rm-first" placeholder="e.g. Kamana"/></div>
+              <div class="field-group"><label class="field-lbl">Last name</label><input class="field-inp" type="text" id="rm-last" placeholder="e.g. Eric"/></div>
+            </div>
+            <div class="field-row">
+              <div class="field-group"><label class="field-lbl">Unit</label><input class="field-inp" type="text" id="rm-unit" placeholder="e.g. B-04"/></div>
+              <div class="field-group"><label class="field-lbl">Phone</label><input class="field-inp" type="text" id="rm-phone" placeholder="+250 7XX XXX XXX"/></div>
+            </div>
+            <div class="field-group">
+              <label class="field-lbl">Payment status</label>
+              <select class="field-select" id="rm-payment">
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
+              </select>
+            </div>
+          </div>
+          <div class="notice-modal-footer">
+            <button type="button" class="modal-cancel" onclick="closeAddResidentModal()">Cancel</button>
+            <button type="button" class="modal-submit" onclick="submitNewResident()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Add Resident
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -580,77 +1120,67 @@
 
 <!-- ─── MODALS ─────────────────────────────────────────── -->
 
-<!-- Record Payment Modal -->
-<div class="modal-backdrop hidden" id="modal-recordPayment" onclick="closeModalOutside(event,'modal-recordPayment')">
-  <div class="modal">
+<!-- Post Notice Modal -->
+<div class="modal-bg notice-modal-bg" id="notice-modal-bg" onclick="closeNoticeModal()">
+  <div class="modal notice-modal" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <span class="modal-title">Record Payment</span>
-      <button class="close-btn" onclick="closeModal('modal-recordPayment')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div><div class="modal-title">Post Notice</div><div class="modal-sub">Publish to all residents</div></div>
+      <button type="button" class="modal-cls" onclick="closeNoticeModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="modal-body">
-      <div class="field">
-        <label>Resident / Unit</label>
-        <div class="input-wrap">
-          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <input type="text" placeholder="e.g. Kamana Eric — B-04">
+      <div class="field-group">
+        <label class="field-lbl">Type</label>
+        <div class="type-grid">
+          <div class="type-opt selected" data-type="general" onclick="selectNoticeType(this)">
+            <div class="type-ic" style="background:#E8F7F1"><svg viewBox="0 0 24 24" fill="none" stroke="#1A9E6B" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="type-lbl">General</div>
+          </div>
+          <div class="type-opt" data-type="urgent" onclick="selectNoticeType(this)">
+            <div class="type-ic" style="background:#FEF2F2"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="type-lbl">Urgent</div>
+          </div>
+          <div class="type-opt" data-type="poll" onclick="selectNoticeType(this)">
+            <div class="type-ic" style="background:#FEF3C7"><svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" width="16" height="16"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="type-lbl">Poll</div>
+          </div>
+          <div class="type-opt" data-type="info" onclick="selectNoticeType(this)">
+            <div class="type-ic" style="background:#EFF6FF"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="type-lbl">Info</div>
+          </div>
         </div>
       </div>
-      <div class="field">
-        <label>Amount (RWF)</label>
-        <div class="input-wrap">
-          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <input type="text" placeholder="25,000">
-        </div>
+      <div class="field-group">
+        <label class="field-lbl">Title</label>
+        <input class="field-inp" type="text" id="notice-m-title" placeholder="e.g. Water maintenance Friday"/>
       </div>
-      <div class="field">
-        <label>Payment Reference</label>
-        <div class="input-wrap">
-          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <input type="text" placeholder="MoMo TxID or receipt number">
-        </div>
+      <div class="field-group">
+        <label class="field-lbl">Message</label>
+        <textarea class="field-inp" id="notice-m-body" rows="3" placeholder="Write your announcement…" style="resize:none"></textarea>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-recordPayment')">Cancel</button>
-      <button class="btn-primary" onclick="submitPayment()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Confirm Payment
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Notice Modal -->
-<div class="modal-backdrop hidden" id="modal-addNotice" onclick="closeModalOutside(event,'modal-addNotice')">
-  <div class="modal">
-    <div class="modal-head">
-      <span class="modal-title">Post Notice</span>
-      <button class="close-btn" onclick="closeModal('modal-addNotice')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label>Title</label>
-        <div class="input-wrap">
-          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-          <input type="text" placeholder="Notice title">
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-lbl">Audience</label>
+          <select class="field-select" id="notice-m-audience">
+            <option value="All residents">All residents</option>
+            <option value="Block A">Block A</option>
+            <option value="Block B">Block B</option>
+            <option value="Block C">Block C</option>
+            <option value="Block D">Block D</option>
+          </select>
         </div>
-      </div>
-      <div class="field">
-        <label>Body</label>
-        <div class="input-wrap">
-          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top:16px;transform:none;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <input type="text" placeholder="Write your announcement...">
+        <div class="field-group">
+          <label class="field-lbl">Pin to top</label>
+          <select class="field-select" id="notice-m-pin">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeModal('modal-addNotice')">Cancel</button>
-      <button class="btn-primary" onclick="submitNotice()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="notice-modal-footer">
+      <button type="button" class="modal-cancel" onclick="closeNoticeModal()">Cancel</button>
+      <button type="button" class="modal-submit" onclick="submitNewNotice()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
         Publish
       </button>
     </div>
