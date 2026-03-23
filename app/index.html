@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f1115">
   <title>Wellage — Smart District App</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/app.css?v=7">
 </head>
 <body>
   <!-- Outer device mockup (black phone frame you see on the page) -->
@@ -148,26 +148,12 @@
           <!-- Overview -->
           <div class="admin-screen active" id="admin-screen-overview">
             <div class="admin-overview-scroll">
-              <!-- Emergency Alert Section -->
-              <div class="admin-emergency-wrap" id="adminEmergencyWrap">
-                <!-- Idle: big send button -->
-                <div class="admin-emergency-idle" id="adminEmergencyIdle">
-                  <button type="button" class="admin-emergency-btn" onclick="openEmergencyModal()">
-                    <span class="admin-emergency-btn-ic">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    </span>
-                    Send Emergency Alert
-                  </button>
-                </div>
-                <!-- Active: list of live alerts -->
-                <div class="admin-emergency-list hidden" id="adminEmergencyList">
+              <!-- Emergency Alert Section — shows only when alerts are active -->
+              <div class="admin-emergency-wrap hidden" id="adminEmergencyWrap">
+                <!-- Active: list of live alerts (notifications only, no send button) -->
+                <div class="admin-emergency-list" id="adminEmergencyList">
                   <!-- Cards injected dynamically by updateAdminEmergencyState() -->
                 </div>
-                <!-- Add another alert button (shown alongside active alerts) -->
-                <button type="button" class="admin-emergency-add-btn hidden" id="adminEmergencyAddBtn" onclick="openEmergencyModal()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Log Another Alert
-                </button>
               </div>
 
               <div class="admin-sec-head" id="adminAttnSectionHead">
@@ -257,19 +243,19 @@
             <!-- Summary strip -->
             <div class="admin-pay-summary-strip">
               <div class="admin-pay-sum-card">
-                <div class="admin-pay-sum-val admin-pay-sum-val-green">39</div>
+                <div class="admin-pay-sum-val admin-pay-sum-val-green" id="adminPayStatPaid">39</div>
                 <div class="admin-pay-sum-lbl">Paid</div>
               </div>
               <div class="admin-pay-sum-card">
-                <div class="admin-pay-sum-val">6</div>
+                <div class="admin-pay-sum-val" id="adminPayStatPending">6</div>
                 <div class="admin-pay-sum-lbl">Pending</div>
               </div>
               <div class="admin-pay-sum-card">
-                <div class="admin-pay-sum-val admin-pay-sum-val-red">3</div>
+                <div class="admin-pay-sum-val admin-pay-sum-val-red" id="adminPayStatOverdue">3</div>
                 <div class="admin-pay-sum-lbl">Overdue</div>
               </div>
               <div class="admin-pay-sum-card">
-                <div class="admin-pay-sum-val">2</div>
+                <div class="admin-pay-sum-val" id="adminPayStatApprove">2</div>
                 <div class="admin-pay-sum-lbl">To approve</div>
               </div>
             </div>
@@ -286,10 +272,10 @@
             <div class="admin-pay-tabs-wrap">
               <div class="admin-pay-tabs" id="adminPayTabs">
                 <button type="button" class="admin-pay-tab admin-pay-tab-active" data-filter="all" onclick="adminPaymentsSetTab(this)">All</button>
-                <button type="button" class="admin-pay-tab" data-filter="to-approve" onclick="adminPaymentsSetTab(this)">To approve <span class="admin-pay-tab-badge">2</span></button>
-                <button type="button" class="admin-pay-tab" data-filter="overdue" onclick="adminPaymentsSetTab(this)">Overdue <span class="admin-pay-tab-badge">3</span></button>
-                <button type="button" class="admin-pay-tab" data-filter="pending" onclick="adminPaymentsSetTab(this)">Pending</button>
-                <button type="button" class="admin-pay-tab" data-filter="paid" onclick="adminPaymentsSetTab(this)">Paid</button>
+                <button type="button" class="admin-pay-tab" data-filter="to-approve" onclick="adminPaymentsSetTab(this)">To approve <span class="admin-pay-tab-badge" id="adminPayFbToApprove">2</span></button>
+                <button type="button" class="admin-pay-tab" data-filter="overdue" onclick="adminPaymentsSetTab(this)">Overdue <span class="admin-pay-tab-badge" id="adminPayFbOverdue">3</span></button>
+                <button type="button" class="admin-pay-tab" data-filter="pending" onclick="adminPaymentsSetTab(this)">Pending <span class="admin-pay-tab-badge" id="adminPayFbPending">6</span></button>
+                <button type="button" class="admin-pay-tab" data-filter="paid" onclick="adminPaymentsSetTab(this)">Paid <span class="admin-pay-tab-badge" id="adminPayFbPaid">39</span></button>
               </div>
             </div>
 
@@ -299,10 +285,10 @@
               <div class="admin-pay-approval-section" id="adminPayApprovalSection">
                 <div class="admin-pay-sec-head">
                   <span class="admin-pay-sec-title">AWAITING YOUR APPROVAL</span>
-                  <span class="admin-pay-sec-count">2 pending</span>
+                  <span class="admin-pay-sec-count" id="adminPayApprovalCount">2 pending</span>
                 </div>
 
-                <div class="admin-approval-list">
+                <div class="admin-approval-list" id="adminPayApprovalList">
                 <!-- approval 1 -->
                 <div class="admin-approval-card">
                   <div class="admin-approval-card-top">
@@ -457,6 +443,82 @@
               </div>
 
               <div class="admin-pay-scroll-end"></div>
+
+              <!-- Payment detail sheet (admin) -->
+              <div class="adminpay-sheet-overlay" id="adminPaySheetOverlay" onclick="adminCloseApprovePaymentSheet()"></div>
+              <div class="adminpay-bottom-sheet" id="adminPayBottomSheet">
+                <div class="adminpay-sheet-handle"></div>
+                <div class="adminpay-sheet-head">
+                  <div class="adminpay-sheet-title" id="adminPaySheetName">—</div>
+                  <div class="adminpay-sheet-sub" id="adminPaySheetSub">—</div>
+                </div>
+                <div class="adminpay-sheet-body">
+                  <div class="detail-block" id="adminPaySheetDetails"></div>
+                </div>
+                <div class="adminpay-sheet-footer" id="adminPaySheetFooter"></div>
+              </div>
+
+              <!-- Record payment modal (admin) -->
+              <div class="adminpay-modal-overlay" id="adminPayModalOverlay" onclick="adminCloseAddPaymentSheet()"></div>
+              <div class="adminpay-modal" id="adminPayModal">
+                <div class="adminpay-modal-handle"></div>
+                <div class="adminpay-modal-head">
+                  <div class="adminpay-modal-title">Record Payment</div>
+                  <div class="adminpay-modal-sub">Log a new resident payment</div>
+                </div>
+                <div class="adminpay-modal-body">
+                  <div class="adminpay-field-row">
+                    <div>
+                      <label class="adminpay-field-lbl">Resident name</label>
+                      <input class="adminpay-field-inp" id="adminPayMName" type="text" placeholder="e.g. Kamana Eric"/>
+                    </div>
+                    <div>
+                      <label class="adminpay-field-lbl">Unit</label>
+                      <input class="adminpay-field-inp" id="adminPayMUnit" type="text" placeholder="e.g. B-04"/>
+                    </div>
+                  </div>
+                  <div class="adminpay-field-row">
+                    <div>
+                      <label class="adminpay-field-lbl">Amount (RWF)</label>
+                      <input class="adminpay-field-inp" id="adminPayMAmount" type="number" placeholder="25000"/>
+                    </div>
+                    <div>
+                      <label class="adminpay-field-lbl">Method</label>
+                      <select class="adminpay-field-select adminpay-field-inp" id="adminPayMMethod">
+                        <option>Mobile Money</option>
+                        <option>Cash</option>
+                        <option>Bank Transfer</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="adminpay-field-lbl">Service</label>
+                    <select class="adminpay-field-select adminpay-field-inp" id="adminPayMService">
+                      <option>Security fee</option>
+                      <option>Cleaning fee</option>
+                      <option>Security + Cleaning</option>
+                      <option>Maintenance</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="adminpay-field-lbl">Status</label>
+                    <select class="adminpay-field-select adminpay-field-inp" id="adminPayMStatus">
+                      <option value="approve">Awaiting approval</option>
+                      <option value="paid">Paid</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="adminpay-modal-footer">
+                  <button class="adminpay-modal-cancel" type="button" onclick="adminCloseAddPaymentSheet()">Cancel</button>
+                  <button class="adminpay-modal-submit" type="button" onclick="adminSubmitAddPayment()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Save Payment
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <!-- Visitors -->
@@ -635,6 +697,10 @@
                   New Group
                 </button>
               </div>
+              <div class="ch-search-wrap">
+                <svg class="ch-search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input class="ch-search-input" id="adminChatSearch" type="text" placeholder="Search people or groups…" oninput="renderChatSearch(this.value,true)" autocomplete="off">
+              </div>
               <div class="ch-list" id="adminChatList"></div>
             </div>
           </div>
@@ -645,58 +711,78 @@
           </div>
           <!-- Incidents -->
           <div class="admin-screen" id="admin-screen-incidents">
-            <div class="admin-incidents-scroll">
-              <div class="admin-incidents-topbar">
-                <span class="admin-incidents-heading">Incidents</span>
-                <button type="button" class="admin-incidents-new-btn" onclick="openLogIncidentModal()">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <!-- Stats strip -->
+            <div class="inc2-stats">
+              <div class="inc2-stat"><div class="inc2-stat-val" id="incStatActive">—</div><div class="inc2-stat-lbl">Active</div></div>
+              <div class="inc2-stat"><div class="inc2-stat-val" id="incStatInvestigating">—</div><div class="inc2-stat-lbl">Investigating</div></div>
+              <div class="inc2-stat"><div class="inc2-stat-val" id="incStatResolved">—</div><div class="inc2-stat-lbl">Resolved</div></div>
+            </div>
+            <!-- Scrollable area -->
+            <div class="inc2-scroll">
+              <div class="inc2-toolbar">
+                <span class="inc2-hd-title">All Incidents</span>
+                <button class="inc2-log-btn" onclick="openLogIncidentModal()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Log Incident
                 </button>
               </div>
-              <div id="adminIncidentList"></div>
-              <div class="admin-incidents-empty hidden" id="adminIncidentsEmpty">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <p>No incidents logged yet</p>
-                <span>Use the button above to log an incident</span>
+              <div class="inc2-filter-row" id="adminIncFilterRow">
+                <button class="inc2-chip active" data-filter="" onclick="setAdminIncidentFilter(this)">All</button>
+                <button class="inc2-chip" data-filter="active" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-active"></span>Active</button>
+                <button class="inc2-chip" data-filter="investigating" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-investigating"></span>Investigating</button>
+                <button class="inc2-chip" data-filter="resolved" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-resolved"></span>Resolved</button>
               </div>
+              <div id="adminIncidentList"></div>
             </div>
           </div>
         </main>
-        <!-- Log Incident modal (non-emergency) -->
+        <!-- Log Incident modal -->
         <div class="modal-backdrop hidden" id="logIncidentModalBg" onclick="if(event.target===this)closeLogIncidentModal()">
-          <div class="modal">
+          <div class="modal inc2-modal">
+            <div class="inc2-modal-handle"></div>
             <div class="modal-head">
-              <span class="modal-title">Log an Incident</span>
-              <button class="modal-close" onclick="closeLogIncidentModal()">&times;</button>
+              <div>
+                <span class="modal-title">Log Incident</span>
+                <div style="font-size:11.5px;color:var(--text-muted,#9CA3AF);margin-top:1px">This records an incident for residents to see</div>
+              </div>
             </div>
             <div class="modal-body">
-              <p class="modal-hint">This records an incident for residents to see. It does not send an emergency alert.</p>
               <div class="field">
-                <label>Incident type</label>
-                <div class="log-incident-type-grid" id="logIncidentTypeGrid">
-                  <button type="button" class="log-incident-type-btn active" data-type="Security Threat" onclick="selectLogIncidentType(this)">🚨 Security</button>
-                  <button type="button" class="log-incident-type-btn" data-type="Fire" onclick="selectLogIncidentType(this)">🔥 Fire</button>
-                  <button type="button" class="log-incident-type-btn" data-type="Accident" onclick="selectLogIncidentType(this)">🚑 Accident</button>
-                  <button type="button" class="log-incident-type-btn" data-type="Other" onclick="selectLogIncidentType(this)">⚠️ Other</button>
+                <label class="field-label">Type</label>
+                <div class="inc2-type-grid" id="logIncidentTypeGrid">
+                  <div class="inc2-type-opt sel" data-type="Security Threat" onclick="selectLogIncidentType(this)">
+                    <div class="inc2-type-ic" style="background:#EFF6FF"><svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="inc2-type-lbl">Security</div>
+                  </div>
+                  <div class="inc2-type-opt" data-type="Fire" onclick="selectLogIncidentType(this)">
+                    <div class="inc2-type-ic" style="background:#FFF7ED"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+                    <div class="inc2-type-lbl">Fire</div>
+                  </div>
+                  <div class="inc2-type-opt" data-type="Accident" onclick="selectLogIncidentType(this)">
+                    <div class="inc2-type-ic" style="background:#E8F7F1"><svg viewBox="0 0 24 24" fill="none" stroke="#1A9E6B" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                    <div class="inc2-type-lbl">Medical</div>
+                  </div>
+                  <div class="inc2-type-opt" data-type="Other" onclick="selectLogIncidentType(this)">
+                    <div class="inc2-type-ic" style="background:#FEF3C7"><svg viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+                    <div class="inc2-type-lbl">Other</div>
+                  </div>
                 </div>
               </div>
               <div class="field">
-                <label>Description <span class="field-opt">(optional)</span></label>
-                <textarea class="field-textarea" id="logIncidentDesc" placeholder="Briefly describe what happened…" rows="3"></textarea>
+                <label class="field-label">Location</label>
+                <input class="field-input" type="text" id="logIncidentLoc" placeholder="e.g. Gate B, Block A entrance…"/>
               </div>
               <div class="field">
-                <label>Status</label>
-                <div class="log-incident-status-row">
-                  <button type="button" class="log-incident-status-btn active" data-status="resolved" id="logIncidentStatusResolved" onclick="selectLogIncidentStatus(this)">✔ Resolved</button>
-                  <button type="button" class="log-incident-status-btn" data-status="active" id="logIncidentStatusActive" onclick="selectLogIncidentStatus(this)">⚡ Ongoing</button>
-                </div>
+                <label class="field-label">Description</label>
+                <textarea class="field-textarea" id="logIncidentDesc" placeholder="Describe what happened…" rows="3"></textarea>
               </div>
-              <div class="field">
-                <label>Resolution note <span class="field-opt">(optional)</span></label>
-                <textarea class="field-textarea" id="logIncidentNote" placeholder="How was it handled?" rows="2"></textarea>
-              </div>
-              <button class="btn-full" type="button" onclick="submitLogIncident()">Save Incident</button>
-              <button class="btn-full btn-ghost-full" type="button" onclick="closeLogIncidentModal()">Cancel</button>
+            </div>
+            <div class="inc2-modal-footer">
+              <button class="inc2-modal-cancel" onclick="closeLogIncidentModal()">Cancel</button>
+              <button class="inc2-modal-submit" onclick="submitLogIncident()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Submit
+              </button>
             </div>
           </div>
         </div>
@@ -1338,7 +1424,7 @@
         <!-- Resident Incidents -->
         <div class="screen ri-screen" id="resident-incidents">
           <!-- Header -->
-          <div class="ri-header">
+          <div class="ri-header" style="padding-bottom:12px">
             <div class="ri-header-top">
               <div>
                 <h1 class="ri-title">Incidents</h1>
@@ -1348,38 +1434,30 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               </button>
             </div>
-            <div class="ri-filter-row" id="riFilterRow">
-              <button class="ri-chip active" data-filter="" onclick="setResidentIncidentFilter(this)">All</button>
-              <button class="ri-chip" data-filter="active" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-active"></span>Active</button>
-              <button class="ri-chip" data-filter="Fire" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-fire"></span>Fire</button>
-              <button class="ri-chip" data-filter="Security Threat" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-security"></span>Security</button>
-              <button class="ri-chip" data-filter="Accident" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-medical"></span>Medical</button>
-              <button class="ri-chip" data-filter="resolved" onclick="setResidentIncidentFilter(this)"><span class="ri-chip-dot ri-dot-resolved"></span>Resolved</button>
+            <!-- Stats strip inside header -->
+            <div class="inc2-stats inc2-stats-sm">
+              <div class="inc2-stat"><div class="inc2-stat-val" id="riStatActive">—</div><div class="inc2-stat-lbl">Active</div></div>
+              <div class="inc2-stat"><div class="inc2-stat-val" id="riStatInvestigating">—</div><div class="inc2-stat-lbl">Investigating</div></div>
+              <div class="inc2-stat"><div class="inc2-stat-val" id="riStatResolved">—</div><div class="inc2-stat-lbl">Resolved</div></div>
             </div>
+          </div>
+          <!-- Toolbar (not scrollable) -->
+          <div class="inc2-toolbar inc2-toolbar-ri">
+            <span class="inc2-hd-title">All Incidents</span>
+            <button class="inc2-log-btn" onclick="openResidentReportSheet()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Report
+            </button>
+          </div>
+          <!-- Filter chips (not scrollable) -->
+          <div class="inc2-filter-row inc2-filter-ri" id="riFilterRow">
+            <button class="inc2-chip active" data-filter="" onclick="setResidentIncidentFilter(this)">All</button>
+            <button class="inc2-chip" data-filter="active" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-active"></span>Active</button>
+            <button class="inc2-chip" data-filter="investigating" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-investigating"></span>Investigating</button>
+            <button class="inc2-chip" data-filter="resolved" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-resolved"></span>Resolved</button>
           </div>
           <!-- Scrollable list -->
           <div class="ri-scroll" id="residentIncidentList"></div>
-        </div>
-
-        <!-- Resident Incident Detail Sheet -->
-        <div class="ri-overlay hidden" id="riDetailOverlay" onclick="closeResidentIncidentSheet()"></div>
-        <div class="ri-sheet hidden" id="riDetailSheet">
-          <div class="ri-sheet-handle-wrap"><div class="ri-sheet-handle"></div></div>
-          <div class="ri-sheet-head">
-            <div class="ri-sheet-status-row">
-              <span class="ri-status-tag" id="riSheetTag">ACTIVE</span>
-              <span class="ri-sheet-sub" id="riSheetSub"></span>
-            </div>
-            <h2 class="ri-sheet-title" id="riSheetTitle"></h2>
-            <div class="ri-sheet-meta" id="riSheetMeta"></div>
-          </div>
-          <div class="ri-sheet-body">
-            <p class="ri-sheet-text" id="riSheetText"></p>
-            <div class="ri-detail-block" id="riSheetDetails"></div>
-            <p class="ri-tl-lbl">Timeline</p>
-            <div class="ri-timeline" id="riSheetTimeline"></div>
-          </div>
-          <div class="ri-sheet-footer" id="riSheetFooter"></div>
         </div>
 
         <!-- Resident Report Sheet -->
@@ -1858,6 +1936,9 @@
             <p class="ch-thread-sub" id="chatThreadSub"></p>
           </div>
         </div>
+        <button class="ch-more-btn hidden" id="chatThreadMoreBtn" onclick="openGroupInfo()">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
       </div>
       <div class="ch-messages" id="chatMessages"></div>
       <div class="ch-input-bar">
@@ -1869,27 +1950,81 @@
     </div>
   </div>
 
-  <!-- ═══ SHARED: NEW GROUP MODAL (admin only) ═══ -->
-  <div class="modal-backdrop hidden" id="newGroupModalBg" onclick="if(event.target===this)closeNewGroupModal()">
-    <div class="modal">
-      <div class="modal-head">
-        <span class="modal-title">New Group</span>
-        <button class="modal-close" onclick="closeNewGroupModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p class="modal-hint">Create a group chat visible to all residents.</p>
-        <div class="field">
-          <label class="field-label">Group name</label>
-          <input class="field-input" type="text" id="newGroupName" placeholder="e.g. Block A Residents, Committee…"/>
-        </div>
-        <div class="field">
-          <label class="field-label">Description <span style="font-weight:400;opacity:.5;font-size:11px">(optional)</span></label>
-          <input class="field-input" type="text" id="newGroupDesc" placeholder="What's this group for?"/>
-        </div>
-        <button class="btn-full" onclick="submitNewGroup()">Create Group</button>
-        <button class="btn-full btn-ghost-full" onclick="closeNewGroupModal()">Cancel</button>
-      </div>
+  <!-- ═══ SHARED: GROUP INFO SHEET ═══ -->
+  <div class="gi-overlay hidden" id="giOverlay" onclick="closeGroupInfo()"></div>
+  <div class="gi-sheet hidden" id="giSheet">
+    <div class="gi-handle-wrap"><div class="gi-handle"></div></div>
+    <div class="gi-head">
+      <div class="gi-avatar" id="giAvatar"></div>
+      <div class="gi-name" id="giName"></div>
+      <div class="gi-sub" id="giSub"></div>
     </div>
+    <div class="gi-members-wrap" id="giMembersWrap">
+      <div class="gi-section-lbl">Members</div>
+      <div class="gi-members" id="giMembers"></div>
+    </div>
+    <div class="gi-actions">
+      <button class="gi-action-row" id="giAddBtn" onclick="openAddMembers()">
+        <div class="gi-action-ic gi-ic-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <span>Add Members</span>
+        <svg class="gi-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="gi-divider"></div>
+      <button class="gi-action-row gi-leave-row" onclick="leaveGroup()">
+        <div class="gi-action-ic gi-ic-leave">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+        <span>Leave Group</span>
+      </button>
+    </div>
+    <button class="gi-close-btn" onclick="closeGroupInfo()">Close</button>
+  </div>
+
+  <!-- ═══ SHARED: NEW GROUP SHEET (WhatsApp-style, 2-step) ═══ -->
+  <div class="ngc-overlay hidden" id="ngcOverlay" onclick="if(event.target===this)closeNewGroupModal()"></div>
+  <div class="ngc-sheet hidden" id="ngcSheet">
+
+    <!-- ── Step 1: Select Members ── -->
+    <div id="ngcStep1">
+      <div class="ngc-handle-wrap"><div class="ngc-handle"></div></div>
+      <div class="ngc-head">
+        <button class="ngc-cancel-btn" onclick="closeNewGroupModal()">Cancel</button>
+        <span class="ngc-head-title">Add Members</span>
+        <button class="ngc-next-btn" id="ngcNextBtn" onclick="ngcGoStep2()">Next</button>
+      </div>
+      <div class="ngc-selected-row hidden" id="ngcSelectedRow">
+        <div class="ngc-chips" id="ngcChips"></div>
+      </div>
+      <div class="ngc-search-wrap">
+        <svg class="ngc-search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="ngc-search-input" id="ngcSearchInput" placeholder="Search residents…" oninput="ngcFilterResidents(this.value)"/>
+      </div>
+      <div class="ngc-list" id="ngcResidentList"></div>
+    </div>
+
+    <!-- ── Step 2: Name the Group ── -->
+    <div id="ngcStep2" class="hidden">
+      <div class="ngc-handle-wrap"><div class="ngc-handle"></div></div>
+      <div class="ngc-head">
+        <button class="ngc-cancel-btn" onclick="ngcGoStep1()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+        <span class="ngc-head-title">New Group</span>
+        <div style="width:60px"></div>
+      </div>
+      <div class="ngc-av-row" id="ngcAvatarRow"></div>
+      <div class="ngc-name-section">
+        <div class="ngc-name-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <input class="ngc-name-input" id="ngcGroupNameInput" placeholder="Group name (required)" maxlength="40"/>
+      </div>
+      <button class="ngc-create-btn" onclick="submitNewGroup()">Create Group</button>
+    </div>
+
   </div>
 
   <!-- ═══ SHARED: NOTICE DETAIL BOTTOM SHEET (accessible from any view) ═══ -->
@@ -1907,11 +2042,11 @@
         <h2 class="rn-sheet-title" id="rnSheetTitle"></h2>
         <div class="rn-sheet-meta">
           <span class="rn-sheet-date">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span id="rnSheetDate"></span>
           </span>
           <span class="rn-sheet-aud">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span id="rnSheetAud"></span>
           </span>
         </div>
@@ -1923,6 +2058,34 @@
       <div class="rn-sheet-footer">
         <button type="button" class="rn-sheet-close" onclick="closeNoticeDetail()">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══ SHARED: INCIDENT DETAIL SHEET ═══ -->
+  <div class="inc2-sheet-overlay hidden" id="incDetailOverlay" onclick="closeIncidentSheet()"></div>
+  <div class="inc2-sheet hidden" id="incDetailSheet">
+    <div class="inc2-sheet-handle-wrap"><div class="inc2-sheet-handle"></div></div>
+    <div class="inc2-sheet-head">
+      <div class="inc2-sheet-top-row">
+        <div style="flex:1;min-width:0">
+          <div class="inc2-sheet-title" id="incSheetTitle">—</div>
+          <div class="inc2-sheet-chips">
+            <span class="inc2-status-chip" id="incSheetStatus"></span>
+            <span class="inc2-sheet-time" id="incSheetTime"></span>
+          </div>
+        </div>
+        <div class="inc2-sheet-type-ic" id="incSheetIc"></div>
+      </div>
+    </div>
+    <div class="inc2-sheet-body">
+      <div class="inc2-detail-block" id="incSheetDetails"></div>
+      <p class="inc2-sheet-desc" id="incSheetDesc"></p>
+      <div id="incSheetResolution"></div>
+      <div class="inc2-tl-lbl">Timeline</div>
+      <div class="inc2-timeline" id="incSheetTimeline"></div>
+    </div>
+    <div class="inc2-sheet-footer">
+      <button class="inc2-sheet-close-btn" onclick="closeIncidentSheet()">Close</button>
     </div>
   </div>
 
@@ -1972,7 +2135,7 @@
   </div>
 
   </div>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=6"></script>
 </body>
 </html>
 

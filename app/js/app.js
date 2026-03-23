@@ -315,6 +315,7 @@ function adminNav(tab) {
   if (titleEl) titleEl.textContent = info.title;
   if (subEl) subEl.textContent = info.sub;
   if (tab === 'residents') renderAdminPendingResidents();
+  else if (tab === 'payments') renderAdminPayments();
   else if (tab === 'overview') updateAttentionCards();
 }
 
@@ -413,51 +414,341 @@ function approveAdminPending(index) {
   toast('Resident approved. They can now sign in.', 'success');
 }
 
-// Admin payments screen (new layout) — stubs so onclick never throws
-function adminOpenAddPaymentSheet() {
-  // TODO: open add-payment bottom sheet when implemented
-}
-function adminPaymentsSetTab(el) {
-  if (!el || !el.classList) return;
-  const wrap = el.closest('.admin-pay-tabs') || document.getElementById('adminPayTabs');
-  if (wrap) wrap.querySelectorAll('.admin-pay-tab').forEach(t => t.classList.remove('admin-pay-tab-active'));
-  el.classList.add('admin-pay-tab-active');
+// Admin payments screen — redesigned UI renderer
+let adminPaymentsActiveFilter = 'all';
+let adminPaymentsSheetPaymentId = null;
 
-  const filter = el.getAttribute('data-filter') || 'all';
+let adminPayments = [
+  { id: 1, name: 'Kamana Eric', initials: 'KE', unit: 'B-04', service: 'Security fee', amount: 25000, method: 'MTN MoMo', status: 'approve', receipt: true, time: '2 hrs ago' },
+  { id: 2, name: 'Uwase Claire', initials: 'UC', unit: 'A-08', service: 'Cleaning fee', amount: 15000, method: 'Cash', status: 'approve', receipt: false, time: '5 hrs ago' },
+  { id: 3, name: 'Mugisha Patrick', initials: 'MP', unit: 'A-03', service: 'Security fee', amount: 25000, method: 'Cash', status: 'overdue', receipt: false, time: 'Mar 1' },
+  { id: 4, name: 'Nkurunziza T.', initials: 'NT', unit: 'A-14', service: 'Security fee', amount: 25000, method: 'Cash', status: 'overdue', receipt: false, time: 'Mar 1' },
+  { id: 5, name: 'Habimana Joel', initials: 'HJ', unit: 'B-09', service: 'Security + Cleaning', amount: 25000, method: 'Cash', status: 'pending', receipt: false, time: 'Mar 3' },
+  { id: 6, name: 'Cyiza Vestine', initials: 'CV', unit: 'D-07', service: 'Security fee', amount: 25000, method: 'Bank Transfer', status: 'paid', receipt: true, time: 'Mar 2' },
+  { id: 7, name: 'Ndayishimiye J.', initials: 'NJ', unit: 'C-11', service: 'Security fee', amount: 25000, method: 'MTN MoMo', status: 'paid', receipt: true, time: 'Feb 28' },
+  { id: 8, name: 'Ingabire Sandra', initials: 'IS', unit: 'C-05', service: 'Cleaning fee', amount: 15000, method: 'Cash', status: 'paid', receipt: true, time: 'Mar 1' },
+];
+
+function adminPaymentsStatusLabel(s) {
+  if (s === 'approve') return 'Awaiting approval';
+  if (s === 'paid') return 'Paid';
+  if (s === 'pending') return 'Pending';
+  if (s === 'overdue') return 'Overdue';
+  return s || '—';
+}
+
+function adminPaymentsReceiptLabel(receipt) {
+  return receipt ? 'Receipt attached' : 'No receipt';
+}
+
+function adminPaymentsCardApproval(p) {
+  const amt = Number(p.amount || 0).toLocaleString();
+  return `
+    <div class="payment-card approval" data-pay-id="${p.id}">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-av approval">${escapeHtml(p.initials || '')}</div>
+          <div class="card-name-col">
+            <div class="card-name">${escapeHtml(p.name || '')}</div>
+            <div class="card-sub">${escapeHtml(p.unit || '')} · Submitted ${escapeHtml(p.time || '')}</div>
+          </div>
+        </div>
+        <div class="card-amount-col">
+          <div class="card-amount">${amt}</div>
+          <div class="card-amount-sub">RWF · March</div>
+        </div>
+      </div>
+
+      <div class="card-tags">
+        <span class="tag">${escapeHtml(p.unit || '')}</span>
+        <span class="tag">${escapeHtml(p.service || '')}</span>
+        <span class="tag method">${escapeHtml(p.method || '')}</span>
+      </div>
+
+      <div class="card-receipt">
+        <span class="receipt-left ${p.receipt ? 'attached' : ''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          ${escapeHtml(adminPaymentsReceiptLabel(p.receipt))}
+        </span>
+        <span class="receipt-time">Submitted ${escapeHtml(p.time || '')}</span>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="action-btn review" onclick="adminOpenApprovePaymentSheet(${p.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Review
+        </button>
+        <button type="button" class="action-btn approve" onclick="adminQuickApprovePayment(${p.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Approve
+        </button>
+        <button type="button" class="action-btn reject" onclick="adminQuickRejectPayment(${p.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Reject
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function adminPaymentsCardRegular(p) {
+  const amt = Number(p.amount || 0).toLocaleString();
+  const statusColors = {
+    paid: 'color:var(--accent);',
+    pending: 'color:var(--warning);',
+    overdue: 'color:var(--danger);',
+  };
+
+  const status = p.status || 'paid';
+  const statusStyle = statusColors[status] || '';
+  return `
+    <div class="payment-card" data-pay-id="${p.id}" onclick="adminOpenApprovePaymentSheet(${p.id})" role="button" tabindex="0">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-av">${escapeHtml(p.initials || '')}</div>
+          <div class="card-name-col">
+            <div class="card-name">${escapeHtml(p.name || '')}</div>
+            <div class="card-sub">${escapeHtml(p.unit || '')} · ${escapeHtml(p.time || '')}</div>
+          </div>
+        </div>
+        <div class="card-amount-col">
+          <div class="card-amount">${amt}</div>
+          <div class="card-amount-sub" style="${statusStyle}">${escapeHtml(adminPaymentsStatusLabel(status))}</div>
+        </div>
+      </div>
+
+      <div class="card-tags">
+        <span class="tag">${escapeHtml(p.service || '')}</span>
+        <span class="tag method">${escapeHtml(p.method || '')}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderAdminPayments() {
   const approvalSection = document.getElementById('adminPayApprovalSection');
   const tableSection = document.getElementById('adminPayTableSection');
-  const table = tableSection && tableSection.querySelector('.admin-pay-table');
+  if (!approvalSection || !tableSection) return;
 
+  // Toggle sections based on active filter
+  const filter = adminPaymentsActiveFilter;
+  const approveCount = adminPayments.filter((p) => p.status === 'approve').length;
   if (approvalSection) {
-    approvalSection.classList.toggle('admin-pay-filter-hidden', filter !== 'all' && filter !== 'to-approve');
+    // Hide when filter doesn't include approvals OR when there are no approvals to show.
+    approvalSection.classList.toggle('admin-pay-filter-hidden', (filter !== 'all' && filter !== 'to-approve') || approveCount === 0);
   }
   if (tableSection) {
     tableSection.classList.toggle('admin-pay-filter-hidden', filter === 'to-approve');
   }
-  if (table) {
-    table.querySelectorAll('.admin-pay-row').forEach(row => {
-      const isPaid = row.classList.contains('admin-pay-row-paid');
-      const isOverdue = row.classList.contains('admin-pay-row-overdue');
-      const isPending = row.classList.contains('admin-pay-row-pending');
-      let show = true;
-      if (filter === 'paid') show = isPaid;
-      else if (filter === 'overdue') show = isOverdue;
-      else if (filter === 'pending') show = isPending;
-      else if (filter === 'all' || filter === 'to-approve') show = true;
-      row.classList.toggle('admin-pay-filter-hidden', !show);
-    });
+
+  const paidCount = adminPayments.filter((p) => p.status === 'paid').length;
+  const pendingCount = adminPayments.filter((p) => p.status === 'pending').length;
+  const overdueCount = adminPayments.filter((p) => p.status === 'overdue').length;
+
+  const statPaid = document.getElementById('adminPayStatPaid');
+  const statPending = document.getElementById('adminPayStatPending');
+  const statOverdue = document.getElementById('adminPayStatOverdue');
+  const statApprove = document.getElementById('adminPayStatApprove');
+  if (statPaid) statPaid.textContent = String(paidCount);
+  if (statPending) statPending.textContent = String(pendingCount);
+  if (statOverdue) statOverdue.textContent = String(overdueCount);
+  if (statApprove) statApprove.textContent = String(approveCount);
+
+  const fbToApprove = document.getElementById('adminPayFbToApprove');
+  const fbOverdue = document.getElementById('adminPayFbOverdue');
+  const fbPending = document.getElementById('adminPayFbPending');
+  const fbPaid = document.getElementById('adminPayFbPaid');
+  if (fbToApprove) fbToApprove.textContent = String(approveCount);
+  if (fbOverdue) fbOverdue.textContent = String(overdueCount);
+  if (fbPending) fbPending.textContent = String(pendingCount);
+  if (fbPaid) fbPaid.textContent = String(paidCount);
+
+  const approvalCountEl = document.getElementById('adminPayApprovalCount');
+  if (approvalCountEl) {
+    approvalCountEl.textContent = approveCount + (approveCount === 1 ? ' pending' : ' pending');
+  }
+
+  const approvalList = document.getElementById('adminPayApprovalList');
+  if (approvalList) {
+    const approvals = adminPayments.filter((p) => p.status === 'approve');
+    approvalList.innerHTML = approvals.map(adminPaymentsCardApproval).join('');
+  }
+
+  const allList = document.querySelector('#adminPayTableSection .admin-pay-table');
+  if (allList) {
+    allList.classList.add('adminpay-cards');
+    let rows = adminPayments.filter((p) => p.status !== 'approve');
+    if (filter === 'paid') rows = rows.filter((p) => p.status === 'paid');
+    else if (filter === 'overdue') rows = rows.filter((p) => p.status === 'overdue');
+    else if (filter === 'pending') rows = rows.filter((p) => p.status === 'pending');
+
+    if (!rows.length) {
+      allList.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:13px;padding:24px">No payments for this filter.</p>';
+    } else {
+      allList.innerHTML = rows.map(adminPaymentsCardRegular).join('');
+    }
   }
 }
-function adminOpenApprovePaymentSheet() {
-  // TODO: open approve/review sheet when implemented
+
+function adminOpenAddPaymentSheet() {
+  const overlay = document.getElementById('adminPayModalOverlay');
+  const modal = document.getElementById('adminPayModal');
+  if (!overlay || !modal) return;
+
+  // Reset defaults
+  const nameEl = document.getElementById('adminPayMName');
+  const unitEl = document.getElementById('adminPayMUnit');
+  const amountEl = document.getElementById('adminPayMAmount');
+  const methodEl = document.getElementById('adminPayMMethod');
+  const serviceEl = document.getElementById('adminPayMService');
+  const statusEl = document.getElementById('adminPayMStatus');
+
+  if (nameEl) nameEl.value = '';
+  if (unitEl) unitEl.value = '';
+  if (amountEl) amountEl.value = '';
+  if (methodEl) methodEl.value = 'Mobile Money';
+  if (serviceEl) serviceEl.value = 'Security fee';
+  if (statusEl) statusEl.value = 'approve';
+
+  overlay.classList.add('open');
+  modal.classList.add('open');
 }
-function adminQuickApprovePayment(btn) {
-  const card = btn && btn.closest && btn.closest('.admin-approval-card');
-  if (card) card.remove();
+
+function adminCloseAddPaymentSheet() {
+  const overlay = document.getElementById('adminPayModalOverlay');
+  const modal = document.getElementById('adminPayModal');
+  if (overlay) overlay.classList.remove('open');
+  if (modal) modal.classList.remove('open');
 }
-function adminQuickRejectPayment(btn) {
-  const card = btn && btn.closest && btn.closest('.admin-approval-card');
-  if (card) card.remove();
+
+function adminSubmitAddPayment() {
+  const nameEl = document.getElementById('adminPayMName');
+  const unitEl = document.getElementById('adminPayMUnit');
+  const amountEl = document.getElementById('adminPayMAmount');
+  const methodEl = document.getElementById('adminPayMMethod');
+  const serviceEl = document.getElementById('adminPayMService');
+  const statusEl = document.getElementById('adminPayMStatus');
+  if (!nameEl || !unitEl || !amountEl || !methodEl || !serviceEl || !statusEl) return;
+
+  const name = (nameEl.value || '').trim();
+  const unit = (unitEl.value || '').trim();
+  const amountNum = Number(amountEl.value || 0);
+  const method = String(methodEl.value || '');
+  const service = String(serviceEl.value || '');
+  const status = String(statusEl.value || 'approve');
+
+  if (!name || !unit || !amountNum || amountNum <= 0) {
+    toast('Please fill in resident name, unit, and a valid amount.', 'error');
+    return;
+  }
+
+  const initials = (name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0] || '').join('')).toUpperCase().slice(0, 2) || '—';
+
+  adminPayments.unshift({
+    id: Date.now(),
+    name,
+    initials,
+    unit,
+    service,
+    amount: Math.round(amountNum),
+    method,
+    status,
+    receipt: false,
+    time: 'Just now',
+  });
+
+  adminCloseAddPaymentSheet();
+  renderAdminPayments();
+  toast('Payment recorded for ' + name, 'success');
+}
+
+function adminPaymentsSetTab(el) {
+  if (!el || !el.classList) return;
+  const wrap = el.closest('.admin-pay-tabs') || document.getElementById('adminPayTabs');
+  if (wrap) wrap.querySelectorAll('.admin-pay-tab').forEach((t) => t.classList.remove('admin-pay-tab-active'));
+  el.classList.add('admin-pay-tab-active');
+
+  adminPaymentsActiveFilter = el.getAttribute('data-filter') || 'all';
+  renderAdminPayments();
+}
+
+function adminOpenApprovePaymentSheet(paymentId) {
+  const p = adminPayments.find((x) => x.id === paymentId);
+  if (!p) return;
+  adminPaymentsSheetPaymentId = p.id;
+
+  const overlay = document.getElementById('adminPaySheetOverlay');
+  const sheet = document.getElementById('adminPayBottomSheet');
+  if (!overlay || !sheet) return;
+
+  const nameEl = document.getElementById('adminPaySheetName');
+  const subEl = document.getElementById('adminPaySheetSub');
+  const detailsEl = document.getElementById('adminPaySheetDetails');
+  const footerEl = document.getElementById('adminPaySheetFooter');
+
+  if (nameEl) nameEl.textContent = p.name || '—';
+  if (subEl) subEl.textContent = 'Payment details · March 2026';
+
+  const amt = Number(p.amount || 0).toLocaleString();
+  if (detailsEl) {
+    detailsEl.innerHTML = `
+      <div class="detail-row"><span class="detail-key">Unit</span><span class="detail-val">${escapeHtml(p.unit || '—')}</span></div>
+      <div class="detail-row"><span class="detail-key">Service</span><span class="detail-val">${escapeHtml(p.service || '—')}</span></div>
+      <div class="detail-row"><span class="detail-key">Amount</span><span class="detail-val">${escapeHtml(amt)} RWF</span></div>
+      <div class="detail-row"><span class="detail-key">Method</span><span class="detail-val">${escapeHtml(p.method || '—')}</span></div>
+      <div class="detail-row"><span class="detail-key">Receipt</span><span class="detail-val">${p.receipt ? 'Attached' : 'None'}</span></div>
+      <div class="detail-row"><span class="detail-key">Status</span><span class="detail-val">${escapeHtml(adminPaymentsStatusLabel(p.status))}</span></div>
+      <div class="detail-row"><span class="detail-key">Submitted</span><span class="detail-val">${escapeHtml(p.time || '—')}</span></div>
+    `;
+  }
+
+  if (footerEl) {
+    if (p.status === 'approve') {
+      footerEl.innerHTML = `
+        <button class="sheet-btn reject" type="button" onclick="adminQuickRejectPayment(${p.id});adminCloseApprovePaymentSheet()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Reject
+        </button>
+        <button class="sheet-btn approve" type="button" onclick="adminQuickApprovePayment(${p.id});adminCloseApprovePaymentSheet()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Approve
+        </button>
+      `;
+    } else {
+      footerEl.innerHTML = `
+        <button class="sheet-btn close" type="button" onclick="adminCloseApprovePaymentSheet()" style="flex:1">
+          Close
+        </button>
+      `;
+    }
+  }
+
+  overlay.classList.add('open');
+  sheet.classList.add('open');
+}
+
+function adminCloseApprovePaymentSheet() {
+  const overlay = document.getElementById('adminPaySheetOverlay');
+  const sheet = document.getElementById('adminPayBottomSheet');
+  if (overlay) overlay.classList.remove('open');
+  if (sheet) sheet.classList.remove('open');
+  adminPaymentsSheetPaymentId = null;
+}
+
+function adminQuickApprovePayment(paymentId) {
+  const p = adminPayments.find((x) => x.id === paymentId);
+  if (!p) return;
+  p.status = 'paid';
+  renderAdminPayments();
+  toast('Payment approved — ' + (p.name || 'resident'), 'success');
+}
+
+function adminQuickRejectPayment(paymentId) {
+  const p = adminPayments.find((x) => x.id === paymentId);
+  if (!p) return;
+  p.status = 'overdue';
+  renderAdminPayments();
+  toast('Payment rejected — ' + (p.name || 'resident'), 'error');
 }
 
 // ─── Admin Visitors ───────────────────────────────────
@@ -1453,7 +1744,7 @@ function rnCardHTML(n) {
       }).join('')}<div class="rn-poll-votes">${total} votes · tap to vote</div></div>`
     : '';
   return `<div class="rn-card" onclick="openNoticeDetail('${n.id}')">
-    <div class="rn-card-bar" style="background:${color}"></div>
+    <div class="rn-card-bar"></div>
     <div class="rn-card-inner">
       <div class="rn-card-top">
         <span class="rn-ntag rn-ntag-${n.type}">${n.type.toUpperCase()}</span>
@@ -1518,7 +1809,7 @@ function anCardHTML(n) {
       }).join('')}<div class="rn-poll-votes">${total} votes total</div></div>`
     : '';
   return `<div class="rn-card an-card" onclick="openNoticeDetail('${n.id}')">
-    <div class="rn-card-bar" style="background:${color}"></div>
+    <div class="rn-card-bar"></div>
     <div class="rn-card-inner">
       <div class="rn-card-top">
         <span class="rn-ntag rn-ntag-${n.type}">${n.type.toUpperCase()}</span>
@@ -1564,6 +1855,8 @@ function openNoticeDetail(id) {
   if (pinEl) pinEl.classList.toggle('hidden', !n.pinned);
   if (titleEl) titleEl.textContent = n.title;
   if (dateEl) dateEl.textContent = n.date;
+  const isAdmin = document.getElementById('view-admin-app')?.classList.contains('active');
+  if (audEl) audEl.parentElement.classList.toggle('hidden', !isAdmin);
   if (audEl) audEl.textContent = n.audience;
   if (textEl) textEl.textContent = n.fullText;
 
@@ -1576,8 +1869,8 @@ function openNoticeDetail(id) {
           const pct = total ? Math.round(o.votes / total * 100) : 0;
           const voted = n.poll.voted === i;
           return `<div class="rn-sheet-poll-opt${voted ? ' voted' : ''}" onclick="rnVote('${id}',${i},this)">
-            <div class="rn-sheet-poll-top"><span class="rn-sheet-poll-lbl">${o.label}</span><span class="rn-sheet-poll-pct" style="color:${color}">${pct}%</span></div>
-            <div class="rn-sheet-poll-track"><div class="rn-sheet-poll-fill" style="width:${pct}%;background:${color}"></div></div>
+            <div class="rn-sheet-poll-top"><span class="rn-sheet-poll-lbl">${o.label}</span><span class="rn-sheet-poll-pct">${pct}%</span></div>
+            <div class="rn-sheet-poll-track"><div class="rn-sheet-poll-fill" style="width:${pct}%"></div></div>
           </div>`;
         }).join('')}
         <p class="rn-sheet-poll-footer">${total} votes total</p>
@@ -1695,12 +1988,15 @@ const SEED_CHATS = [
   },
   {
     id: 'dm-management',
-    type: 'dm',
+    type: 'group',
     name: 'Management',
     emoji: '🏢',
-    desc: 'Direct line to estate management',
-    messages: [],
-    unread: 0
+    adminOnly: true,
+    desc: 'Estate management group',
+    messages: [
+      { id: 1, sender: 'Management', role: 'admin', text: 'Please check the latest notices for important estate updates.', time: fmtChatTime(new Date(Date.now() - 86400000)), date: 'Yesterday' }
+    ],
+    unread: 1
   }
 ];
 
@@ -1719,6 +2015,23 @@ function loadChats() {
   try {
     const raw = localStorage.getItem(CHAT_KEY);
     const stored = raw ? JSON.parse(raw) : [];
+    let needsSave = false;
+
+    // Migrate: ensure Management chat is type 'group' + adminOnly
+    stored.forEach(c => {
+      if (c.id === 'dm-management') {
+        if (c.type !== 'group') { c.type = 'group'; needsSave = true; }
+        if (!c.adminOnly)       { c.adminOnly = true; needsSave = true; }
+        // seed a welcome message if empty
+        if (!c.messages || !c.messages.length) {
+          c.messages = [{ id: 1, sender: 'Management', role: 'admin',
+            text: 'Please check the latest notices for important estate updates.',
+            time: fmtChatTime(new Date(Date.now() - 86400000)), date: 'Yesterday' }];
+          c.unread = 1; needsSave = true;
+        }
+      }
+    });
+
     // Merge any missing seed chats
     const storedIds = new Set(stored.map(c => c.id));
     const missing = SEED_CHATS.filter(s => !storedIds.has(s.id));
@@ -1727,6 +2040,7 @@ function loadChats() {
       localStorage.setItem(CHAT_KEY, JSON.stringify(merged));
       return merged;
     }
+    if (needsSave) localStorage.setItem(CHAT_KEY, JSON.stringify(stored));
     return stored;
   } catch (_) { return [...SEED_CHATS]; }
 }
@@ -1782,13 +2096,13 @@ function renderChatList(isAdmin) {
 
   let html = '';
 
-  // Resident-only: quick People strip for starting DMs
-  if (!isAdmin && APP_USERS.length) {
+  // People strip for starting DMs
+  if (APP_USERS.length) {
     html += `<div class="ch-section-lbl">People</div>
     <div class="ch-people-strip">
       ${APP_USERS.map(u => `
-        <div class="ch-people-pill" onclick="startDM('${u.id}',false)">
-          <div class="ch-user-av" style="background:${u.color}22;color:${u.color}">${u.initials}</div>
+        <div class="ch-people-pill" onclick="startDM('${u.id}',${isAdmin})">
+          <div class="ch-user-av">${u.initials}</div>
           <span class="ch-people-fname">${u.name.split(' ')[0]}</span>
           <span class="ch-people-unit">${u.unit}</span>
         </div>`).join('')}
@@ -1796,36 +2110,44 @@ function renderChatList(isAdmin) {
     <div class="ch-section-lbl" style="margin-top:4px">Conversations</div>`;
   }
 
-  if (!chats.length) {
+  // Filter: residents can't see adminOnly; left groups hidden for everyone
+  const visibleChats = chats.filter(c => {
+    if (c.leftByUser) return false;
+    if (!isAdmin && c.adminOnly) return false;
+    return true;
+  });
+
+  if (!visibleChats.length) {
     html += `<div class="ch-list-empty"><p>No conversations yet</p></div>`;
     listEl.innerHTML = html;
     return;
   }
 
-  html += chats.map(chat => {
+  html += visibleChats.map(chat => {
     const lastMsg = chat.messages.length ? chat.messages[chat.messages.length - 1] : null;
     const preview = lastMsg ? lastMsg.text.slice(0, 55) + (lastMsg.text.length > 55 ? '…' : '') : 'No messages yet';
     const time    = lastMsg ? lastMsg.time : '';
     const unread  = chat.unread || 0;
-    const typeTag = chat.type === 'group'
-      ? `<span class="ch-type-tag">Group</span>`
-      : (chat.type === 'dm' ? `<span class="ch-type-tag ch-tag-dm">DM</span>` : '');
-    const avatarHtml = chat.initials
-      ? `<div class="ch-conv-avatar ch-initials-av" style="background:${chat.color}22;color:${chat.color}">${chat.initials}</div>`
-      : `<div class="ch-conv-avatar">${chat.emoji || '💬'}</div>`;
+    const isGroup = chat.type === 'group';
+    const typeTag = isGroup
+      ? `<span class="ch-type-tag ch-tag-group">Group</span>`
+      : `<span class="ch-type-tag">DM</span>`;
+    const avatarHtml = isGroup
+      ? `<div class="ch-conv-avatar ch-av-group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>`
+      : `<div class="ch-conv-avatar">${chat.initials || '?'}</div>`;
     return `<div class="ch-conv-card" onclick="openChatThread('${chat.id}',${isAdmin})">
       ${avatarHtml}
       <div class="ch-conv-body">
         <div class="ch-conv-top">
           <span class="ch-conv-name">${chat.name}</span>
-          <div style="display:flex;align-items:center;gap:6px">
-            ${typeTag}
-            <span class="ch-conv-time">${time}</span>
-          </div>
+          <span class="ch-conv-time">${time}</span>
         </div>
         <div class="ch-conv-bottom">
-          <span class="ch-conv-preview">${preview}</span>
-          ${unread ? `<span class="ch-unread-badge">${unread}</span>` : ''}
+          <span class="ch-conv-preview${unread ? ' ch-unread' : ''}">${preview}</span>
+          <div class="ch-conv-badge-row">
+            ${typeTag}
+            ${unread ? `<span class="ch-unread-badge">${unread}</span>` : ''}
+          </div>
         </div>
       </div>
     </div>`;
@@ -1850,6 +2172,7 @@ function openChatThread(chatId, isAdmin) {
   const avatarEl = document.getElementById('chatThreadAvatar');
   const nameEl   = document.getElementById('chatThreadName');
   const subEl    = document.getElementById('chatThreadSub');
+  const moreBtn  = document.getElementById('chatThreadMoreBtn');
   if (avatarEl) {
     if (chat.initials) {
       avatarEl.textContent = chat.initials;
@@ -1860,7 +2183,12 @@ function openChatThread(chatId, isAdmin) {
     }
   }
   if (nameEl) nameEl.textContent = chat.name;
-  if (subEl) subEl.textContent = chat.type === 'group' ? (chat.desc || 'Group chat') : (chat.desc || 'Direct message');
+  if (subEl) subEl.textContent = chat.type === 'group'
+    ? (_memberLabel(chat))
+    : (chat.desc || 'Direct message');
+
+  // Show ⋮ button only for group chats
+  if (moreBtn) moreBtn.classList.toggle('hidden', chat.type !== 'group');
 
   renderChatMessages(chat);
 
@@ -1869,11 +2197,189 @@ function openChatThread(chatId, isAdmin) {
     overlay.classList.remove('hidden');
     requestAnimationFrame(() => overlay.classList.add('open'));
   }
-  // Scroll to bottom
   setTimeout(() => {
     const msgs = document.getElementById('chatMessages');
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
   }, 80);
+}
+
+function _memberLabel(chat) {
+  const count = (chat.members || []).length;
+  return count ? `${count} member${count !== 1 ? 's' : ''}` : (chat.desc || 'Group chat');
+}
+
+// ── Group Info sheet ─────────────────────────────────────────────
+function openGroupInfo() {
+  const chat = getChat(_currentChatId);
+  if (!chat || chat.type !== 'group') return;
+
+  // Avatar
+  const avEl = document.getElementById('giAvatar');
+  if (avEl) { avEl.textContent = chat.emoji || '👥'; avEl.style.cssText = ''; }
+
+  // Name + sub
+  const nameEl = document.getElementById('giName');
+  const subEl  = document.getElementById('giSub');
+  if (nameEl) nameEl.textContent = chat.name;
+  if (subEl)  subEl.textContent  = _memberLabel(chat);
+
+  // Members list
+  const membersEl = document.getElementById('giMembers');
+  const wrapEl    = document.getElementById('giMembersWrap');
+  const members   = chat.members || [];
+  if (membersEl) {
+    if (members.length) {
+      membersEl.innerHTML = members.map(id => {
+        const u = APP_USERS.find(x => x.id === id);
+        if (!u) return '';
+        return `<div class="gi-member-row">
+          <div class="gi-member-av">${u.initials}</div>
+          <div class="gi-member-info">
+            <div class="gi-member-name">${u.name}</div>
+            <div class="gi-member-unit">Unit ${u.unit}</div>
+          </div>
+        </div>`;
+      }).join('');
+      if (wrapEl) wrapEl.classList.remove('hidden');
+    } else {
+      if (wrapEl) wrapEl.classList.add('hidden');
+    }
+  }
+
+  // Hide "Add Members" for non-admin on adminOnly groups
+  const addBtn = document.getElementById('giAddBtn');
+  if (addBtn) addBtn.classList.toggle('hidden', !!(chat.adminOnly && !_currentChatIsAdmin));
+
+  const overlay = document.getElementById('giOverlay');
+  const sheet   = document.getElementById('giSheet');
+  if (!overlay || !sheet) return;
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => { overlay.classList.add('open'); sheet.classList.add('open'); });
+}
+
+function closeGroupInfo() {
+  const overlay = document.getElementById('giOverlay');
+  const sheet   = document.getElementById('giSheet');
+  if (!overlay || !sheet) return;
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+  setTimeout(() => { overlay.classList.add('hidden'); sheet.classList.add('hidden'); }, 300);
+}
+
+// ── Add Members to existing group ───────────────────────────────
+let _ngcMode = 'create'; // 'create' | 'add'
+let _ngcAddTargetId = null;
+
+function openAddMembers() {
+  const chat = getChat(_currentChatId);
+  if (!chat) return;
+  _ngcMode        = 'add';
+  _ngcAddTargetId = _currentChatId;
+  _ngcSelected    = [...(chat.members || [])]; // pre-select existing members
+
+  closeGroupInfo();
+
+  const si = document.getElementById('ngcSearchInput');
+  if (si) si.value = '';
+
+  // Skip step 2 (no renaming), show only step 1 with "Add" button instead of "Next"
+  document.getElementById('ngcStep1').classList.remove('hidden');
+  document.getElementById('ngcStep2').classList.add('hidden');
+
+  // Change Next → "Add"
+  const nb = document.getElementById('ngcNextBtn');
+  if (nb) {
+    nb.textContent = 'Add';
+    nb.classList.toggle('ready', _ngcSelected.length > 0);
+    nb.onclick = ngcConfirmAdd;
+  }
+  // Change title
+  const title = document.querySelector('#ngcStep1 .ngc-head-title');
+  if (title) title.textContent = 'Add Members';
+
+  ngcRenderChips();
+  ngcRenderList('');
+
+  const overlay = document.getElementById('ngcOverlay');
+  const sheet   = document.getElementById('ngcSheet');
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => { overlay.classList.add('open'); sheet.classList.add('open'); });
+}
+
+function ngcConfirmAdd() {
+  const chat = getChat(_ngcAddTargetId);
+  if (!chat) return;
+  const newMembers = _ngcSelected.filter(id => !(chat.members || []).includes(id));
+  if (!newMembers.length) { closeNewGroupModal(); return; }
+
+  const chats = loadChats();
+  const idx   = chats.findIndex(c => c.id === _ngcAddTargetId);
+  if (idx === -1) return;
+  chats[idx].members = [...(chats[idx].members || []), ...newMembers];
+  const count = newMembers.length;
+  chats[idx].desc = `${chats[idx].members.length} member${chats[idx].members.length !== 1 ? 's' : ''}`;
+
+  // System message
+  const names = newMembers.map(id => {
+    const u = APP_USERS.find(x => x.id === id);
+    return u ? u.name.split(' ')[0] : id;
+  }).join(', ');
+  chats[idx].messages.push({
+    id: Date.now(), sender: 'system', role: 'system',
+    text: `${names} ${count === 1 ? 'was' : 'were'} added to the group`,
+    time: fmtChatTime(new Date()), date: fmtChatDate(new Date())
+  });
+
+  saveChats(chats);
+  closeNewGroupModal();
+  // Reset mode
+  _ngcMode = 'create';
+  const nb = document.getElementById('ngcNextBtn');
+  if (nb) { nb.textContent = 'Next'; nb.onclick = ngcGoStep2; }
+  const title = document.querySelector('#ngcStep1 .ngc-head-title');
+  if (title) title.textContent = 'Add Members';
+
+  renderChatList(_currentChatIsAdmin);
+  // Refresh open thread
+  const updated = getChat(_ngcAddTargetId);
+  if (updated) renderChatMessages(updated);
+  const subEl = document.getElementById('chatThreadSub');
+  if (subEl) subEl.textContent = _memberLabel(chats[idx]);
+
+  toast(`${count} member${count !== 1 ? 's' : ''} added! 🎉`, 'success');
+  setTimeout(() => {
+    const msgs = document.getElementById('chatMessages');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  }, 80);
+}
+
+// ── Leave Group ──────────────────────────────────────────────────
+function leaveGroup() {
+  const chat = getChat(_currentChatId);
+  if (!chat) return;
+
+  closeGroupInfo();
+  setTimeout(() => {
+    const chats = loadChats();
+    const idx   = chats.findIndex(c => c.id === _currentChatId);
+    if (idx === -1) return;
+
+    // Add system message then remove from list
+    chats[idx].messages.push({
+      id: Date.now(), sender: 'system', role: 'system',
+      text: 'You left the group',
+      time: fmtChatTime(new Date()), date: fmtChatDate(new Date())
+    });
+    chats[idx].leftByUser = true;
+    saveChats(chats);
+
+    // Close thread and refresh list
+    closeChatThread();
+    setTimeout(() => renderChatList(_currentChatIsAdmin), 320);
+    toast(`You left "${chat.name}"`, 'info');
+  }, 320);
 }
 
 function renderChatMessages(chat) {
@@ -1890,6 +2396,11 @@ function renderChatMessages(chat) {
     if (msg.date && msg.date !== lastDate) {
       html += `<div class="ch-date-divider">${msg.date}</div>`;
       lastDate = msg.date;
+    }
+    // System messages (joined/left/added)
+    if (msg.role === 'system') {
+      html += `<div class="ch-system-msg">${msg.text}</div>`;
+      return;
     }
     const isMine = _currentChatIsAdmin ? msg.role === 'admin' : msg.role === 'resident';
     const bubbleClass = isMine ? 'ch-bubble ch-bubble-mine' : 'ch-bubble ch-bubble-theirs';
@@ -2004,7 +2515,7 @@ function renderChatSearch(query, isAdmin) {
     html += `<div class="ch-section-lbl">People</div>`;
     html += users.map(u => `
       <div class="ch-search-user-row" onclick="startDM('${u.id}',${isAdmin})">
-        <div class="ch-user-av" style="background:${u.color}22;color:${u.color}">${u.initials}</div>
+        <div class="ch-user-av">${u.initials}</div>
         <div class="ch-search-user-info">
           <span class="ch-search-user-name">${u.name}</span>
           <span class="ch-search-user-unit">Unit ${u.unit}</span>
@@ -2049,38 +2560,146 @@ function renderChatSearch(query, isAdmin) {
   listEl.innerHTML = html;
 }
 
-// ── New Group (admin + resident) ────────────────────────────────
+// ── New Group — WhatsApp-style 2-step sheet ──────────────────────
+let _ngcSelected = [];   // selected user IDs
+let _ngcIsAdmin  = true;
+
 function openNewGroupModal(isAdmin = true) {
-  _chatOpenedByAdmin = isAdmin;
-  const bg = document.getElementById('newGroupModalBg');
-  if (!bg) return;
-  document.getElementById('newGroupName').value = '';
-  document.getElementById('newGroupDesc').value = '';
-  bg.classList.remove('hidden');
-  requestAnimationFrame(() => bg.classList.add('open'));
+  _ngcIsAdmin          = isAdmin;
+  _chatOpenedByAdmin   = isAdmin;
+  _ngcSelected         = [];
+
+  const overlay = document.getElementById('ngcOverlay');
+  const sheet   = document.getElementById('ngcSheet');
+  if (!overlay || !sheet) return;
+
+  // Reset search + name
+  const si = document.getElementById('ngcSearchInput');
+  const ni = document.getElementById('ngcGroupNameInput');
+  if (si) si.value = '';
+  if (ni) ni.value = '';
+
+  // Show step 1
+  document.getElementById('ngcStep1').classList.remove('hidden');
+  document.getElementById('ngcStep2').classList.add('hidden');
+
+  // Reset chips + next btn
+  ngcRenderChips();
+  ngcRenderList('');
+  const nb = document.getElementById('ngcNextBtn');
+  if (nb) nb.classList.remove('ready');
+
+  overlay.classList.remove('hidden');
+  sheet.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    overlay.classList.add('open');
+    sheet.classList.add('open');
+  });
 }
 
 function closeNewGroupModal() {
-  const bg = document.getElementById('newGroupModalBg');
-  if (!bg) return;
-  bg.classList.remove('open');
-  setTimeout(() => bg.classList.add('hidden'), 280);
+  const overlay = document.getElementById('ngcOverlay');
+  const sheet   = document.getElementById('ngcSheet');
+  if (!overlay || !sheet) return;
+  overlay.classList.remove('open');
+  sheet.classList.remove('open');
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    sheet.classList.add('hidden');
+  }, 300);
+}
+
+function ngcGoStep2() {
+  if (_ngcSelected.length === 0) return;
+  // Render member avatars on step 2
+  const row = document.getElementById('ngcAvatarRow');
+  if (row) {
+    row.innerHTML = _ngcSelected.map(id => {
+      const u = APP_USERS.find(x => x.id === id);
+      return u ? `<div class="ngc-s2-av">${u.initials}</div>` : '';
+    }).join('');
+  }
+  document.getElementById('ngcStep1').classList.add('hidden');
+  document.getElementById('ngcStep2').classList.remove('hidden');
+  setTimeout(() => { const ni = document.getElementById('ngcGroupNameInput'); if (ni) ni.focus(); }, 150);
+}
+
+function ngcGoStep1() {
+  document.getElementById('ngcStep2').classList.add('hidden');
+  document.getElementById('ngcStep1').classList.remove('hidden');
+}
+
+function ngcFilterResidents(q) { ngcRenderList(q || ''); }
+
+function ngcToggleResident(id) {
+  const idx = _ngcSelected.indexOf(id);
+  if (idx === -1) _ngcSelected.push(id);
+  else            _ngcSelected.splice(idx, 1);
+  ngcRenderChips();
+  ngcRenderList((document.getElementById('ngcSearchInput') || {}).value || '');
+  const nb = document.getElementById('ngcNextBtn');
+  if (nb) nb.classList.toggle('ready', _ngcSelected.length > 0);
+}
+
+function ngcRenderChips() {
+  const row   = document.getElementById('ngcSelectedRow');
+  const chips = document.getElementById('ngcChips');
+  if (!row || !chips) return;
+  if (_ngcSelected.length === 0) { row.classList.add('hidden'); return; }
+  row.classList.remove('hidden');
+  chips.innerHTML = _ngcSelected.map(id => {
+    const u = APP_USERS.find(x => x.id === id);
+    if (!u) return '';
+    return `<div class="ngc-chip">
+      <div class="ngc-chip-av">${u.initials}
+        <span class="ngc-chip-x" onclick="ngcToggleResident('${u.id}')">×</span>
+      </div>
+      <span class="ngc-chip-name">${u.name.split(' ')[0]}</span>
+    </div>`;
+  }).join('');
+}
+
+function ngcRenderList(q) {
+  const list = document.getElementById('ngcResidentList');
+  if (!list) return;
+  const query    = (q || '').toLowerCase();
+  const filtered = APP_USERS.filter(u =>
+    u.name.toLowerCase().includes(query) || u.unit.toLowerCase().includes(query)
+  );
+  if (!filtered.length) {
+    list.innerHTML = `<div class="ngc-empty-msg">No residents found</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(u => {
+    const sel = _ngcSelected.includes(u.id);
+    return `<div class="ngc-res-row${sel ? ' selected' : ''}" onclick="ngcToggleResident('${u.id}')">
+      <div class="ngc-res-av">${u.initials}</div>
+      <div class="ngc-res-info">
+        <div class="ngc-res-name">${u.name}</div>
+        <div class="ngc-res-unit">Unit ${u.unit}</div>
+      </div>
+      <div class="ngc-res-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function submitNewGroup() {
-  const name = (document.getElementById('newGroupName')?.value || '').trim();
-  const desc = (document.getElementById('newGroupDesc')?.value || '').trim();
+  const name = (document.getElementById('ngcGroupNameInput')?.value || '').trim();
   if (!name) { toast('Please enter a group name.', 'error'); return; }
+  if (_ngcSelected.length === 0) { toast('Please select at least one member.', 'error'); return; }
 
-  const isAdmin    = _chatOpenedByAdmin;
+  const isAdmin    = _ngcIsAdmin;
   const senderName = isAdmin ? 'Management' : ('Unit ' + (RESIDENT_UNIT || 'A-12'));
   const chats = loadChats();
   const newGroup = {
-    id:       'group-' + Date.now(),
-    type:     'group',
+    id:      'group-' + Date.now(),
+    type:    'group',
     name,
-    emoji:    '👥',
-    desc:     desc || (isAdmin ? 'Group created by management' : 'Resident group'),
+    emoji:   '👥',
+    desc:    `${_ngcSelected.length} member${_ngcSelected.length !== 1 ? 's' : ''}`,
+    members: [..._ngcSelected],
     messages: [
       { id: Date.now(), sender: senderName, role: isAdmin ? 'admin' : 'resident',
         text: `Welcome to "${name}"! 👋`, time: fmtChatTime(new Date()), date: fmtChatDate(new Date()) }
@@ -2283,17 +2902,33 @@ const INCIDENTS_KEY = 'wellage_incidents';
 // ─── Seed / demo incidents (merged in if not already present) ─────────────────
 const SEED_INCIDENTS = [
   {
-    id: 'seed-001',
-    type: 'Security Threat',
-    msg: 'Suspicious person spotted near Gate B. Security was alerted immediately.',
+    id: 'seed-001a',
+    type: 'Security Threat', title: 'Security Threat', location: 'Gate B',
+    msg: 'Suspicious person spotted near Gate B. Security was alerted immediately and the area was cordoned off. Residents advised to stay indoors until further notice.',
     reportedAt: '17 Mar 2026 03:39 PM',
+    status: 'active', note: null, resolvedAt: null
+  },
+  {
+    id: 'seed-002a',
+    type: 'Security Threat', title: 'Unregistered Vehicle', location: 'Visitor Parking',
+    msg: 'Unregistered vehicle parked at visitor parking for over 3 hours with no visitor check-in on record.',
+    reportedAt: '17 Mar 2026 09:15 AM',
+    status: 'investigating',
+    note: 'Vehicle plate logged. Owner being traced via visitor records.',
+    resolvedAt: null
+  },
+  {
+    id: 'seed-001',
+    type: 'Security Threat', title: 'Security Threat', location: 'Gate B',
+    msg: 'Suspicious person spotted near Gate B. Security was alerted immediately.',
+    reportedAt: '15 Mar 2026 03:39 PM',
     status: 'resolved',
     note: 'Person identified as delivery worker. No threat. Gate secured.',
-    resolvedAt: '03:39 PM'
+    resolvedAt: '03:55 PM'
   },
   {
     id: 'seed-002',
-    type: 'Fire',
+    type: 'Fire', title: 'Fire', location: 'Block A — Waste Disposal Area',
     msg: 'Small fire reported in the waste disposal area near Block A. Estate security responded promptly and extinguished the fire. No injuries were reported.',
     reportedAt: '14 Mar 2026 02:10 PM',
     status: 'resolved',
@@ -2303,11 +2938,16 @@ const SEED_INCIDENTS = [
 ];
 
 // ─── Unified Incident Log (active + resolved, manually logged + from alerts) ──
+const INCIDENTS_VER = 'v2';
 function loadIncidents() {
   try {
+    // Version guard: if schema changed, seed new demo data
+    if (localStorage.getItem(INCIDENTS_KEY + '_ver') !== INCIDENTS_VER) {
+      localStorage.removeItem(INCIDENTS_KEY);
+      localStorage.setItem(INCIDENTS_KEY + '_ver', INCIDENTS_VER);
+    }
     const raw = localStorage.getItem(INCIDENTS_KEY);
     const stored = raw ? JSON.parse(raw) : [];
-    // Merge seed incidents that aren't already saved
     const storedIds = new Set(stored.map(i => String(i.id)));
     const missing = SEED_INCIDENTS.filter(s => !storedIds.has(s.id));
     if (missing.length) {
@@ -2338,32 +2978,55 @@ function updateIncidentEntry(id, updates) {
   saveIncidents(list);
 }
 
+let _adminIncFilter = '';
+
+function setAdminIncidentFilter(btn) {
+  document.querySelectorAll('#adminIncFilterRow .inc2-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  _adminIncFilter = btn.dataset.filter || '';
+  renderAdminIncidents();
+}
+
+function _updateIncStats(all) {
+  const active = all.filter(i => i.status === 'active').length;
+  const investigating = all.filter(i => i.status === 'investigating').length;
+  const resolved = all.filter(i => i.status === 'resolved').length;
+  ['incStatActive','riStatActive'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = active; });
+  ['incStatInvestigating','riStatInvestigating'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = investigating; });
+  ['incStatResolved','riStatResolved'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = resolved; });
+}
+
 function renderAdminIncidents() {
   const listEl = document.getElementById('adminIncidentList');
-  const emptyEl = document.getElementById('adminIncidentsEmpty');
-  const dotEl = document.getElementById('adminIncidentDot');
+  const dotEl  = document.getElementById('adminIncidentDot');
   if (!listEl) return;
 
-  // Merge: active emergencies (as active incidents) + all stored incidents
   const stored = loadIncidents();
-  // Active emergencies that haven't been stored yet appear first
   const storedIds = new Set(stored.map(i => i.id));
   const activeEntries = activeEmergencies
     .filter(a => !storedIds.has(a.id))
-    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+    .map(a => ({ id: a.id, type: a.type, title: a.type, location: '—', msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
   const all = [...activeEntries, ...stored];
 
-  const hasActive = all.some(i => i.status === 'active');
-  if (dotEl) dotEl.classList.toggle('hidden', !hasActive);
+  _updateIncStats(all);
+  if (dotEl) dotEl.classList.toggle('hidden', !all.some(i => i.status === 'active'));
 
-  if (all.length === 0) {
-    listEl.innerHTML = '';
-    if (emptyEl) emptyEl.classList.remove('hidden');
+  let rows = all;
+  if (_adminIncFilter) rows = all.filter(i => i.status === _adminIncFilter);
+
+  if (!rows.length) {
+    listEl.innerHTML = `<div class="inc2-empty"><div class="inc2-empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="26" height="26"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="inc2-empty-title">All clear</div><div class="inc2-empty-sub">No incidents match this filter.</div></div>`;
     return;
   }
-  if (emptyEl) emptyEl.classList.add('hidden');
 
-  listEl.innerHTML = all.map(i => incidentCardHTML(i, true)).join('');
+  const active = rows.filter(i => i.status === 'active');
+  const investigating = rows.filter(i => i.status === 'investigating');
+  const resolved = rows.filter(i => i.status === 'resolved');
+  let html = '';
+  if (active.length)       html += `<div class="inc2-section-lbl">Active</div>` + active.map(i => inc2CardHTML(i)).join('');
+  if (investigating.length) html += `<div class="inc2-section-lbl"${active.length?' style="margin-top:6px"':''}>Investigating</div>` + investigating.map(i => inc2CardHTML(i)).join('');
+  if (resolved.length)     html += `<div class="inc2-section-lbl"${(active.length||investigating.length)?' style="margin-top:6px"':''}>Resolved</div>` + resolved.map(i => inc2CardHTML(i)).join('');
+  listEl.innerHTML = html;
 }
 
 // ── Resident Incidents — type config ──────────────────────────
@@ -2378,7 +3041,7 @@ function _riCfg(type) { return RI_CFG[type] || RI_CFG['Other']; }
 let _riActiveFilter = '';
 
 function setResidentIncidentFilter(btn) {
-  document.querySelectorAll('#riFilterRow .ri-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('#riFilterRow .inc2-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   _riActiveFilter = btn.dataset.filter || '';
   renderResidentIncidents();
@@ -2389,214 +3052,173 @@ function renderResidentIncidents() {
   const dotEl  = document.getElementById('residentIncidentDot');
   if (!listEl) return;
 
-  // Merge active emergencies + stored incidents
   const stored = loadIncidents();
   const storedIds = new Set(stored.map(i => i.id));
   const activeEntries = activeEmergencies
     .filter(a => !storedIds.has(a.id))
-    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+    .map(a => ({ id: a.id, type: a.type, title: a.type, location: '—', msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
   let all = [...activeEntries, ...stored];
 
-  // Update nav dot
-  const hasActive = all.some(i => i.status === 'active');
-  if (dotEl) dotEl.classList.toggle('hidden', !hasActive);
+  _updateIncStats(all);
+  if (dotEl) dotEl.classList.toggle('hidden', !all.some(i => i.status === 'active'));
 
-  // Apply filter
-  if (_riActiveFilter === 'active') {
-    all = all.filter(i => i.status === 'active');
-  } else if (_riActiveFilter === 'resolved') {
-    all = all.filter(i => i.status !== 'active');
-  } else if (_riActiveFilter) {
-    all = all.filter(i => i.type === _riActiveFilter);
-  }
+  if (_riActiveFilter) all = all.filter(i => i.status === _riActiveFilter);
 
   if (!all.length) {
-    listEl.innerHTML = `<div class="ri-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <p>No incidents found</p><span>All clear in this category</span></div>`;
+    listEl.innerHTML = `<div class="inc2-empty"><div class="inc2-empty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="26" height="26"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="inc2-empty-title">All clear</div><div class="inc2-empty-sub">No incidents in this category.</div></div>`;
     return;
   }
 
   const active = all.filter(i => i.status === 'active');
-  const past   = all.filter(i => i.status !== 'active');
+  const investigating = all.filter(i => i.status === 'investigating');
+  const resolved = all.filter(i => i.status === 'resolved');
   let html = '';
-
-  // Active alert cards
-  active.forEach(inc => {
-    const cfg = _riCfg(inc.type);
-    html += `<div class="ri-alert-card" onclick="openResidentIncidentSheet('${inc.id}')">
-      <div class="ri-alert-top">
-        <span class="ri-alert-badge"><span class="ri-badge-pulse"></span>ACTIVE</span>
-        <span class="ri-alert-time">${inc.reportedAt || '—'}</span>
-      </div>
-      <div class="ri-alert-type-row">
-        <div class="ri-alert-type-ic">${cfg.icon}</div>
-        <span class="ri-alert-type-name">${inc.type}</span>
-      </div>
-      <p class="ri-alert-desc">${(inc.msg || '').slice(0, 90)}${inc.msg && inc.msg.length > 90 ? '…' : ''}</p>
-      <div class="ri-alert-meta">
-        <span class="ri-alert-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Reported ${inc.reportedAt || '—'}</span>
-      </div>
-      <div class="ri-alert-actions">
-        <button class="ri-alert-btn ri-btn-secondary" onclick="event.stopPropagation()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          Call Security
-        </button>
-        <button class="ri-alert-btn ri-btn-primary" onclick="event.stopPropagation();openResidentIncidentSheet('${inc.id}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          View Details
-        </button>
-      </div>
-    </div>`;
-  });
-
-  // Report strip (always shown unless filtering for resolved/type with no active)
-  if (!_riActiveFilter || _riActiveFilter === 'active') {
-    html += `<div class="ri-report-strip" onclick="openResidentReportSheet()">
-      <div class="ri-report-strip-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-      <div class="ri-report-strip-text">
-        <div class="ri-report-strip-title">Report an incident</div>
-        <div class="ri-report-strip-sub">Fire, security, medical or other</div>
-      </div>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`;
-  }
-
-  // Past incidents
-  if (past.length) {
-    html += `<p class="ri-section-lbl">Past incidents</p>`;
-    past.forEach(inc => {
-      const cfg = _riCfg(inc.type);
-      const statusCls = inc.status === 'resolved' ? 'ri-status-resolved' : 'ri-status-monitoring';
-      const statusLbl = inc.status === 'resolved' ? 'RESOLVED' : inc.status.toUpperCase();
-      html += `<div class="ri-inc-card" onclick="openResidentIncidentSheet('${inc.id}')">
-        <div class="ri-inc-bar ${cfg.bar}"></div>
-        <div class="ri-inc-inner">
-          <div class="ri-inc-top">
-            <div class="ri-inc-title-row">
-              <div class="ri-inc-ic" style="background:${cfg.bg};color:${cfg.color}">${cfg.icon}</div>
-              <span class="ri-inc-name">${inc.type}</span>
-            </div>
-            <span class="ri-inc-status ${statusCls}">${statusLbl}</span>
-          </div>
-          <p class="ri-inc-body">${inc.msg || '—'}</p>
-          <div class="ri-inc-foot">
-            <span class="ri-inc-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${inc.reportedAt || '—'}</span>
-            ${inc.note ? `<span class="ri-inc-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${inc.note.slice(0, 40)}${inc.note.length > 40 ? '…' : ''}</span>` : ''}
-          </div>
-        </div>
-      </div>`;
-    });
-  }
-
+  if (active.length)       html += `<div class="inc2-section-lbl">Active</div>` + active.map(i => inc2CardHTML(i)).join('');
+  if (investigating.length) html += `<div class="inc2-section-lbl"${active.length?' style="margin-top:6px"':''}>Investigating</div>` + investigating.map(i => inc2CardHTML(i)).join('');
+  if (resolved.length)     html += `<div class="inc2-section-lbl"${(active.length||investigating.length)?' style="margin-top:6px"':''}>Resolved</div>` + resolved.map(i => inc2CardHTML(i)).join('');
   listEl.innerHTML = html;
 }
 
-function incidentCardHTML(i, isAdmin) {
-  // Used only by admin incidents tab — kept for compatibility
-  const typeColors = { 'Fire': '#F97316', 'Security Threat': '#DC2626', 'Accident': '#7C3AED', 'Other': '#64748b' };
-  const color = typeColors[i.type] || '#64748b';
-  const isActive = i.status === 'active';
-  const statusBadge = isActive
-    ? `<span class="incident-badge incident-badge-active">Active</span>`
-    : `<span class="incident-badge incident-badge-resolved">Resolved</span>`;
-  const meta = isActive
-    ? `<span class="incident-meta">Reported at ${i.reportedAt || '—'}</span>`
-    : `<span class="incident-meta">Reported ${i.reportedAt || '—'}${i.resolvedAt ? ' · Resolved ' + i.resolvedAt : ''}</span>`;
-  const note = !isActive && i.note
-    ? `<p class="incident-note">${i.note}</p>`
-    : (!isActive ? `<p class="incident-note incident-note-muted">No resolution note.</p>` : '');
-  const pulseHtml = isActive ? `<span class="incident-card-pulse"></span>` : '';
-  return `
-    <div class="incident-card ${isActive ? 'incident-card-active' : 'incident-card-resolved'}">
-      ${pulseHtml}
-      <div class="incident-card-left">
-        <span class="incident-type-dot" style="background:${color}"></span>
-        <div class="incident-card-body">
-          <div class="incident-card-top">
-            <span class="incident-type-label">${i.type}</span>
-            ${statusBadge}
+// SVG icons per incident type
+const INC2_ICONS = {
+  'Security Threat': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  'Fire':            `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+  'Accident':        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+  'Other':           `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+};
+function _inc2Icon(type) { return INC2_ICONS[type] || INC2_ICONS['Other']; }
+function _inc2Cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function inc2CardHTML(inc) {
+  const isActive = inc.status === 'active';
+  const isInvestigating = inc.status === 'investigating';
+  const title = inc.title || inc.type;
+  const location = inc.location || '';
+  const liveHtml = isActive
+    ? `<div class="inc2-live-wrap"><div class="inc2-live-dot"></div><span class="inc2-live-lbl">LIVE</span></div>` : '';
+  const resolutionHtml = inc.note
+    ? `<div class="inc2-resolution ${inc.status}">${inc.note}</div>` : '';
+  const resolvedMeta = inc.resolvedAt
+    ? `<span class="inc2-meta-sep">·</span><span class="inc2-meta-item">Resolved ${inc.resolvedAt}</span>` : '';
+  return `<div class="inc2-card${isActive?' inc2-is-active':''}" onclick="openIncidentSheet('${inc.id}')">
+    <div class="inc2-bar${isActive?' inc2-bar-active':''}"></div>
+    <div class="inc2-inner">
+      <div class="inc2-top">
+        <div class="inc2-title-col">
+          <div class="inc2-title-row">
+            <span class="inc2-title">${title}</span>${liveHtml}
           </div>
-          ${i.msg ? `<p class="incident-msg">${i.msg}</p>` : ''}
-          ${note}
-          ${meta}
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="inc2-status-chip ${inc.status}">${_inc2Cap(inc.status)}</span>
+            ${location ? `<span class="inc2-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="10" height="10"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${location}</span>` : ''}
+          </div>
         </div>
+        <div class="inc2-type-ic">${_inc2Icon(inc.type)}</div>
       </div>
-    </div>`;
+      <div class="inc2-desc">${inc.msg || '—'}</div>
+      ${resolutionHtml}
+      <div class="inc2-meta">
+        <span class="inc2-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="10" height="10"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${inc.reportedAt || '—'}</span>
+        ${resolvedMeta}
+      </div>
+    </div>
+  </div>`;
 }
 
-// Resident incident detail sheet
+// legacy alias — kept for backward compat with emergency alert system
+function incidentCardHTML(i, isAdmin) { return inc2CardHTML(i); }
+
+// ─── Shared Incident Detail Sheet ─────────────────────────────────────────────
+
 function _riGetAll() {
   const stored = loadIncidents();
   const storedIds = new Set(stored.map(i => i.id));
   const activeEntries = activeEmergencies
     .filter(a => !storedIds.has(a.id))
-    .map(a => ({ id: a.id, type: a.type, msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
+    .map(a => ({ id: a.id, type: a.type, title: a.type, location: '—', msg: a.msg, reportedAt: a.time, status: 'active', note: null, resolvedAt: null }));
   return [...activeEntries, ...stored];
 }
 
-function openResidentIncidentSheet(id) {
+function openIncidentSheet(id) {
   const all = _riGetAll();
   const inc = all.find(x => String(x.id) === String(id));
   if (!inc) return;
-  const cfg = _riCfg(inc.type);
 
-  const tagEl    = document.getElementById('riSheetTag');
-  const subEl    = document.getElementById('riSheetSub');
-  const titleEl  = document.getElementById('riSheetTitle');
-  const metaEl   = document.getElementById('riSheetMeta');
-  const textEl   = document.getElementById('riSheetText');
-  const detailEl = document.getElementById('riSheetDetails');
-  const tlEl     = document.getElementById('riSheetTimeline');
-  const footEl   = document.getElementById('riSheetFooter');
+  const title    = inc.title || inc.type;
+  const location = inc.location || '—';
+  const cfg      = _riCfg(inc.type);
 
-  if (tagEl) {
-    tagEl.textContent = inc.status === 'active' ? 'ACTIVE' : inc.status.toUpperCase();
-    tagEl.className = 'ri-status-tag ' + (inc.status === 'active' ? 'ri-tag-active' : inc.status === 'resolved' ? 'ri-tag-resolved' : 'ri-tag-monitoring');
-  }
-  if (subEl) subEl.textContent = cfg.label;
-  if (titleEl) titleEl.textContent = inc.type;
-  if (metaEl) metaEl.innerHTML = `
-    <span class="ri-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${inc.reportedAt || '—'}</span>
-    ${inc.resolvedAt ? `<span class="ri-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Resolved ${inc.resolvedAt}</span>` : ''}`;
-  if (textEl) textEl.textContent = inc.msg || 'No description provided.';
+  const titleEl  = document.getElementById('incSheetTitle');
+  const statusEl = document.getElementById('incSheetStatus');
+  const timeEl   = document.getElementById('incSheetTime');
+  const icEl     = document.getElementById('incSheetIc');
+  const detailEl = document.getElementById('incSheetDetails');
+  const descEl   = document.getElementById('incSheetDesc');
+  const resEl    = document.getElementById('incSheetResolution');
+  const tlEl     = document.getElementById('incSheetTimeline');
+
+  if (titleEl)  titleEl.textContent = title;
+  if (statusEl) { statusEl.textContent = _inc2Cap(inc.status); statusEl.className = 'inc2-status-chip ' + inc.status; }
+  if (timeEl)   timeEl.textContent = inc.reportedAt || '—';
+  if (icEl)     { icEl.className = 'inc2-sheet-type-ic'; icEl.innerHTML = _inc2Icon(inc.type); }
+
   if (detailEl) detailEl.innerHTML = `
-    <div class="ri-detail-row"><span class="ri-detail-key">Type</span><span class="ri-detail-val">${cfg.label}</span></div>
-    <div class="ri-detail-row"><span class="ri-detail-key">Status</span><span class="ri-detail-val">${inc.status.charAt(0).toUpperCase() + inc.status.slice(1)}</span></div>
-    ${inc.note ? `<div class="ri-detail-row"><span class="ri-detail-key">Resolution note</span><span class="ri-detail-val" style="max-width:60%;text-align:right">${inc.note}</span></div>` : ''}
-    <div class="ri-detail-row"><span class="ri-detail-key">Reported at</span><span class="ri-detail-val">${inc.reportedAt || '—'}</span></div>`;
+    <div class="inc2-detail-row"><span class="inc2-detail-key">Type</span><span class="inc2-detail-val">${cfg.label}</span></div>
+    <div class="inc2-detail-row"><span class="inc2-detail-key">Location</span><span class="inc2-detail-val">${location}</span></div>
+    <div class="inc2-detail-row"><span class="inc2-detail-key">Reported</span><span class="inc2-detail-val">${inc.reportedAt || '—'}</span></div>
+    ${inc.resolvedAt ? `<div class="inc2-detail-row"><span class="inc2-detail-key">Resolved</span><span class="inc2-detail-val">Resolved ${inc.resolvedAt}</span></div>` : ''}
+    <div class="inc2-detail-row"><span class="inc2-detail-key">Status</span><span class="inc2-detail-val"><span class="inc2-status-chip ${inc.status}">${_inc2Cap(inc.status)}</span></span></div>`;
 
-  // Build simple timeline from available data
-  const tl = [{ dot: 'ri-tl-red', time: inc.reportedAt || '—', text: 'Incident reported' }];
+  if (descEl) descEl.textContent = inc.msg || 'No description provided.';
+
+  if (resEl) resEl.innerHTML = inc.note
+    ? `<div class="inc2-res-block ${inc.status === 'resolved' ? 'resolved' : 'investigating'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg>
+        <span class="inc2-res-text">${inc.note}</span>
+      </div>` : '';
+
+  // Timeline
+  const tl = [{ dot: 'red', title: 'Incident reported', time: inc.reportedAt || '—', body: inc.msg || '' }];
   if (inc.status === 'active') {
-    tl.push({ dot: 'ri-tl-amber', time: 'Now', text: 'Security team notified and monitoring' });
+    tl.push({ dot: 'amber', title: 'Security notified', time: 'Now', body: 'All security personnel alerted and monitoring the situation.' });
+  } else if (inc.status === 'investigating') {
+    tl.push({ dot: 'amber', title: 'Under investigation', time: '—', body: inc.note || 'Security team is investigating.' });
   } else {
-    tl.push({ dot: 'ri-tl-amber', time: '—', text: 'Security team responded' });
-    tl.push({ dot: 'ri-tl-green', time: inc.resolvedAt || '—', text: inc.note ? `Resolved — ${inc.note}` : 'Situation resolved' });
+    tl.push({ dot: 'amber', title: 'Security responded', time: '—', body: 'Security team dispatched to the scene.' });
+    tl.push({ dot: 'green', title: 'Resolved', time: inc.resolvedAt || '—', body: inc.note || 'Situation resolved.' });
   }
-  if (tlEl) tlEl.innerHTML = tl.map(t => `
-    <div class="ri-tl-item"><div class="ri-tl-dot ${t.dot}"></div><div class="ri-tl-time">${t.time}</div><div class="ri-tl-text">${t.text}</div></div>`).join('');
+  if (tlEl) tlEl.innerHTML = tl.map((t, idx) => `
+    <div class="inc2-tl-item">
+      <div class="inc2-tl-left">
+        <div class="inc2-tl-dot inc2-tl-${t.dot}"></div>
+        ${idx < tl.length - 1 ? '<div class="inc2-tl-line"></div>' : ''}
+      </div>
+      <div class="inc2-tl-right">
+        <div class="inc2-tl-title">${t.title}</div>
+        <div class="inc2-tl-time">${t.time}</div>
+        <div class="inc2-tl-body">${t.body}</div>
+      </div>
+    </div>`).join('');
 
-  if (footEl) footEl.innerHTML = inc.status === 'active'
-    ? `<button class="ri-sheet-btn ri-btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call Security</button>
-       <button class="ri-sheet-btn ri-btn-primary" onclick="closeResidentIncidentSheet()">Understood</button>`
-    : `<button class="ri-sheet-btn ri-btn-primary" onclick="closeResidentIncidentSheet()" style="flex:1">Close</button>`;
-
-  const overlay = document.getElementById('riDetailOverlay');
-  const sheet   = document.getElementById('riDetailSheet');
+  const overlay = document.getElementById('incDetailOverlay');
+  const sheet   = document.getElementById('incDetailSheet');
   if (!sheet) return;
   overlay?.classList.remove('hidden');
   sheet.classList.remove('hidden');
   requestAnimationFrame(() => { overlay?.classList.add('open'); sheet.classList.add('open'); });
 }
 
-function closeResidentIncidentSheet() {
-  const overlay = document.getElementById('riDetailOverlay');
-  const sheet   = document.getElementById('riDetailSheet');
+function closeIncidentSheet() {
+  const overlay = document.getElementById('incDetailOverlay');
+  const sheet   = document.getElementById('incDetailSheet');
   overlay?.classList.remove('open');
   sheet?.classList.remove('open');
   setTimeout(() => { overlay?.classList.add('hidden'); sheet?.classList.add('hidden'); }, 320);
 }
+
+// backward compat aliases
+function openResidentIncidentSheet(id) { openIncidentSheet(id); }
+function closeResidentIncidentSheet() { closeIncidentSheet(); }
 
 // Resident Report Sheet
 function openResidentReportSheet() {
@@ -2640,7 +3262,9 @@ function submitResidentReport() {
   const entry = {
     id: Date.now(),
     type,
-    msg: loc ? `[${loc}] ${desc}` : desc,
+    title: type,
+    location: loc || '—',
+    msg: desc,
     reportedAt: dateStr + ' ' + timeStr,
     status: 'active',
     note: null,
@@ -2660,14 +3284,11 @@ function openLogIncidentModal() {
   const bg = document.getElementById('logIncidentModalBg');
   if (!bg) return;
   // Reset form
-  document.querySelectorAll('#logIncidentTypeGrid .emergency-type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  document.querySelectorAll('#logIncidentTypeGrid .inc2-type-opt').forEach((b, i) => b.classList.toggle('sel', i === 0));
+  const loc  = document.getElementById('logIncidentLoc');
   const desc = document.getElementById('logIncidentDesc');
-  const note = document.getElementById('logIncidentNote');
+  if (loc)  loc.value  = '';
   if (desc) desc.value = '';
-  if (note) note.value = '';
-  _logIncidentStatus = 'resolved';
-  document.getElementById('logIncidentStatusResolved')?.classList.add('active');
-  document.getElementById('logIncidentStatusActive')?.classList.remove('active');
   bg.classList.remove('hidden');
   requestAnimationFrame(() => bg.classList.add('open'));
 }
@@ -2679,9 +3300,9 @@ function closeLogIncidentModal() {
   setTimeout(() => bg.classList.add('hidden'), 280);
 }
 
-function selectLogIncidentType(btn) {
-  document.querySelectorAll('#logIncidentTypeGrid .emergency-type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function selectLogIncidentType(el) {
+  document.querySelectorAll('#logIncidentTypeGrid .inc2-type-opt').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
 }
 
 function selectLogIncidentStatus(btn) {
@@ -2691,10 +3312,12 @@ function selectLogIncidentStatus(btn) {
 }
 
 function submitLogIncident() {
-  const typeBtn = document.querySelector('#logIncidentTypeGrid .emergency-type-btn.active');
-  const type = typeBtn ? typeBtn.getAttribute('data-type') : 'Other';
-  const msg = (document.getElementById('logIncidentDesc')?.value || '').trim();
-  const note = (document.getElementById('logIncidentNote')?.value || '').trim();
+  const typeEl = document.querySelector('#logIncidentTypeGrid .inc2-type-opt.sel');
+  const type   = typeEl ? typeEl.dataset.type : 'Other';
+  const loc    = (document.getElementById('logIncidentLoc')?.value || '').trim();
+  const msg    = (document.getElementById('logIncidentDesc')?.value || '').trim();
+  if (!msg)  { toast('Please describe the incident.', 'error'); return; }
+
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -2702,11 +3325,13 @@ function submitLogIncident() {
   const entry = {
     id: Date.now(),
     type,
+    title: type,
+    location: loc || '—',
     msg,
     reportedAt: dateStr + ' ' + timeStr,
-    status: _logIncidentStatus,
-    note: note || null,
-    resolvedAt: _logIncidentStatus === 'resolved' ? timeStr : null
+    status: 'active',
+    note: null,
+    resolvedAt: null
   };
   addIncidentEntry(entry);
   closeLogIncidentModal();
@@ -2919,36 +3544,29 @@ function renderIncidentLog() {
 }
 
 function updateAdminEmergencyState() {
-  const idle = document.getElementById('adminEmergencyIdle');
+  const wrap   = document.getElementById('adminEmergencyWrap');
   const listEl = document.getElementById('adminEmergencyList');
-  const addBtn = document.getElementById('adminEmergencyAddBtn');
-  if (!idle) return;
 
   if (activeEmergencies.length > 0) {
-    idle.classList.add('hidden');
-    if (listEl) {
-      listEl.classList.remove('hidden');
-      listEl.innerHTML = activeEmergencies.map(a => `
-        <div class="admin-emergency-active-card">
-          <div class="admin-emergency-active-header">
-            <span class="admin-emergency-pulse"></span>
-            <span class="admin-emergency-active-label">LIVE ALERT</span>
-            <span class="admin-emergency-active-type">${a.type}</span>
-          </div>
-          <p class="admin-emergency-active-msg">${a.msg || ''}</p>
-          <p class="admin-emergency-active-meta">Sent at ${a.time} · All residents and security notified</p>
-          <button type="button" class="admin-emergency-resolve-btn" onclick="resolveEmergencyAlert(${a.id})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Mark as Resolved
-          </button>
+    if (wrap)   wrap.classList.remove('hidden');
+    if (listEl) listEl.innerHTML = activeEmergencies.map(a => `
+      <div class="admin-emergency-active-card">
+        <div class="admin-emergency-active-header">
+          <span class="admin-emergency-pulse"></span>
+          <span class="admin-emergency-active-label">LIVE ALERT</span>
+          <span class="admin-emergency-active-type">${a.type}</span>
         </div>
-      `).join('');
-    }
-    if (addBtn) addBtn.classList.remove('hidden');
+        <p class="admin-emergency-active-msg">${a.msg || ''}</p>
+        <p class="admin-emergency-active-meta">Sent at ${a.time} · All residents and security notified</p>
+        <button type="button" class="admin-emergency-resolve-btn" onclick="resolveEmergencyAlert(${a.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark as Resolved
+        </button>
+      </div>
+    `).join('');
   } else {
-    idle.classList.remove('hidden');
-    if (listEl) listEl.classList.add('hidden');
-    if (addBtn) addBtn.classList.add('hidden');
+    if (wrap)   wrap.classList.add('hidden');
+    if (listEl) listEl.innerHTML = '';
   }
 }
 
