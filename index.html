@@ -908,28 +908,86 @@
 
       <!-- Web Log Incident modal -->
       <div class="web-emergency-modal-bg hidden" id="webLogIncidentModalBg" onclick="if(event.target===this)closeWebLogIncidentModal()">
-        <div class="web-emergency-modal">
-          <h2 class="web-emergency-modal-title">Log an Incident</h2>
-          <p class="web-emergency-modal-sub">Record an incident. This does not send an emergency alert to residents.</p>
-          <p class="web-emergency-modal-label">Incident type</p>
-          <div class="web-emergency-type-grid" id="webLogIncidentTypeGrid">
-            <button type="button" class="web-emergency-type-btn active" data-type="Security Threat" onclick="selectWebLogIncidentType(this)">🚨 Security Threat</button>
-            <button type="button" class="web-emergency-type-btn" data-type="Fire" onclick="selectWebLogIncidentType(this)">🔥 Fire</button>
-            <button type="button" class="web-emergency-type-btn" data-type="Accident" onclick="selectWebLogIncidentType(this)">🚑 Accident</button>
-            <button type="button" class="web-emergency-type-btn" data-type="Other" onclick="selectWebLogIncidentType(this)">⚠️ Other</button>
+        <div class="wli-modal" onclick="event.stopPropagation()">
+          <!-- Head -->
+          <div class="wli-head">
+            <div class="wli-head-left">
+              <div class="wli-title">Log an Incident</div>
+              <div class="wli-sub">Record an incident. This does not send an emergency alert to residents.</div>
+            </div>
+            <button class="wli-cls" onclick="closeWebLogIncidentModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
-          <p class="web-emergency-modal-label">Description <span style="font-weight:400;opacity:.6">(optional)</span></p>
-          <textarea class="web-emergency-textarea" id="webLogIncidentDesc" placeholder="Briefly describe what happened…" rows="3"></textarea>
-          <p class="web-emergency-modal-label" style="margin-top:14px">Status</p>
-          <div class="web-incident-status-row">
-            <button type="button" class="web-incident-status-btn active" data-status="resolved" onclick="selectWebLogIncidentStatus(this)">✔ Resolved</button>
-            <button type="button" class="web-incident-status-btn" data-status="active" onclick="selectWebLogIncidentStatus(this)">⚡ Ongoing</button>
+          <!-- Body -->
+          <div class="wli-body">
+            <!-- Type -->
+            <div class="wli-field">
+              <div class="wli-lbl">Incident type</div>
+              <div class="wli-type-grid" id="webLogIncidentTypeGrid">
+                <div class="wli-type-opt sel" data-type="Security Threat" onclick="selectWebLogIncidentType(this)">
+                  <div class="wli-topt-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  </div>
+                  <div class="wli-topt-lbl">Security</div>
+                </div>
+                <div class="wli-type-opt" data-type="Fire" onclick="selectWebLogIncidentType(this)">
+                  <div class="wli-topt-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                  </div>
+                  <div class="wli-topt-lbl">Fire</div>
+                </div>
+                <div class="wli-type-opt" data-type="Accident" onclick="selectWebLogIncidentType(this)">
+                  <div class="wli-topt-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  </div>
+                  <div class="wli-topt-lbl">Medical</div>
+                </div>
+                <div class="wli-type-opt" data-type="Other" onclick="selectWebLogIncidentType(this)">
+                  <div class="wli-topt-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </div>
+                  <div class="wli-topt-lbl">Other</div>
+                </div>
+              </div>
+            </div>
+            <!-- Location -->
+            <div class="wli-field">
+              <div class="wli-lbl">Location</div>
+              <input class="wli-inp" type="text" id="webLogIncidentLoc" placeholder="e.g. Gate B, Block A entrance…"/>
+            </div>
+            <!-- Description -->
+            <div class="wli-field">
+              <div class="wli-lbl">Description <span class="wli-optional">Optional</span></div>
+              <textarea class="wli-inp wli-textarea" id="webLogIncidentDesc" placeholder="Briefly describe what happened…" rows="3"></textarea>
+            </div>
+            <!-- Status -->
+            <div class="wli-field">
+              <div class="wli-lbl">Status</div>
+              <div class="wli-status-row">
+                <div class="wli-status-opt sel active" data-status="active" onclick="selectWebLogIncidentStatus(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Active
+                </div>
+                <div class="wli-status-opt resolved" data-status="resolved" onclick="selectWebLogIncidentStatus(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+                  Resolved
+                </div>
+              </div>
+            </div>
+            <!-- Resolution note (shown only when Resolved) -->
+            <div class="wli-field" id="webLogIncidentNoteField" style="display:none">
+              <div class="wli-lbl">Resolution note <span class="wli-optional">Optional</span></div>
+              <textarea class="wli-inp wli-textarea" id="webLogIncidentNote" placeholder="How was it handled?" rows="2"></textarea>
+            </div>
           </div>
-          <p class="web-emergency-modal-label" style="margin-top:14px">Resolution note <span style="font-weight:400;opacity:.6">(optional)</span></p>
-          <textarea class="web-emergency-textarea" id="webLogIncidentNote" placeholder="How was it handled?" rows="2"></textarea>
-          <div class="web-emergency-modal-foot">
-            <button type="button" class="web-emergency-cancel-btn" onclick="closeWebLogIncidentModal()">Cancel</button>
-            <button type="button" class="web-emergency-confirm-btn" style="background:#475569" onclick="submitWebLogIncident()">Save Incident</button>
+          <!-- Footer -->
+          <div class="wli-footer">
+            <button class="wli-cancel" onclick="closeWebLogIncidentModal()">Cancel</button>
+            <button class="wli-submit" onclick="submitWebLogIncident()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+              Save Incident
+            </button>
           </div>
         </div>
       </div>

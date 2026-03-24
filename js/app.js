@@ -1315,21 +1315,22 @@ function filterWebIncidents() {
 }
 
 // Log incident modal (website, non-emergency)
-var _webLogIncidentStatus = 'resolved';
-
 function openWebLogIncidentModal() {
   var bg = document.getElementById('webLogIncidentModalBg');
   if (!bg) return;
-  document.querySelectorAll('#webLogIncidentTypeGrid .web-emergency-type-btn').forEach(function(b, i) {
-    b.classList.toggle('active', i === 0);
+  // Reset type
+  document.querySelectorAll('#webLogIncidentTypeGrid .wli-type-opt').forEach(function(b, i) {
+    b.classList.toggle('sel', i === 0);
   });
-  var desc = document.getElementById('webLogIncidentDesc');
-  var note = document.getElementById('webLogIncidentNote');
-  if (desc) desc.value = '';
-  if (note) note.value = '';
-  _webLogIncidentStatus = 'resolved';
-  document.querySelectorAll('.web-incident-status-btn').forEach(function(b) {
-    b.classList.toggle('active', b.getAttribute('data-status') === 'resolved');
+  // Reset status to active
+  document.querySelectorAll('.wli-status-opt').forEach(function(b) {
+    b.classList.toggle('sel', b.getAttribute('data-status') === 'active');
+  });
+  var noteField = document.getElementById('webLogIncidentNoteField');
+  if (noteField) noteField.style.display = 'none';
+  // Clear inputs
+  ['webLogIncidentLoc','webLogIncidentDesc','webLogIncidentNote'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
   });
   bg.classList.remove('hidden');
 }
@@ -1339,22 +1340,29 @@ function closeWebLogIncidentModal() {
   if (bg) bg.classList.add('hidden');
 }
 
-function selectWebLogIncidentType(btn) {
-  document.querySelectorAll('#webLogIncidentTypeGrid .web-emergency-type-btn').forEach(function(b) { b.classList.remove('active'); });
-  btn.classList.add('active');
+function selectWebLogIncidentType(el) {
+  document.querySelectorAll('#webLogIncidentTypeGrid .wli-type-opt').forEach(function(b) { b.classList.remove('sel'); });
+  el.classList.add('sel');
 }
 
-function selectWebLogIncidentStatus(btn) {
-  document.querySelectorAll('.web-incident-status-btn').forEach(function(b) { b.classList.remove('active'); });
-  btn.classList.add('active');
-  _webLogIncidentStatus = btn.getAttribute('data-status');
+function selectWebLogIncidentStatus(el) {
+  document.querySelectorAll('.wli-status-opt').forEach(function(b) { b.classList.remove('sel'); });
+  el.classList.add('sel');
+  var noteField = document.getElementById('webLogIncidentNoteField');
+  if (noteField) noteField.style.display = el.getAttribute('data-status') === 'resolved' ? '' : 'none';
 }
 
 function submitWebLogIncident() {
-  var typeBtn = document.querySelector('#webLogIncidentTypeGrid .web-emergency-type-btn.active');
-  var type = typeBtn ? typeBtn.getAttribute('data-type') : 'Other';
-  var msg = (document.getElementById('webLogIncidentDesc')?.value || '').trim();
+  var typeEl = document.querySelector('#webLogIncidentTypeGrid .wli-type-opt.sel');
+  var type = typeEl ? typeEl.getAttribute('data-type') : 'Other';
+  var loc  = (document.getElementById('webLogIncidentLoc')?.value || '').trim();
+  var msg  = (document.getElementById('webLogIncidentDesc')?.value || '').trim();
+  var statusEl = document.querySelector('.wli-status-opt.sel');
+  var status = statusEl ? statusEl.getAttribute('data-status') : 'active';
   var note = (document.getElementById('webLogIncidentNote')?.value || '').trim();
+
+  if (!loc) { toast('Please enter a location.', 'error'); return; }
+
   var now = new Date();
   var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   var dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -1363,11 +1371,12 @@ function submitWebLogIncident() {
   list.unshift({
     id: Date.now(),
     type: type,
+    location: loc,
     msg: msg,
     reportedAt: dateStr + ' ' + timeStr,
-    status: _webLogIncidentStatus,
-    note: note || null,
-    resolvedAt: _webLogIncidentStatus === 'resolved' ? timeStr : null
+    status: status,
+    note: (status === 'resolved' && note) ? note : null,
+    resolvedAt: status === 'resolved' ? timeStr : null
   });
   saveWebIncidents(list);
   closeWebLogIncidentModal();

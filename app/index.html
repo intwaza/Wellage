@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f1115">
   <title>Wellage — Smart District App</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/app.css?v=7">
+  <link rel="stylesheet" href="css/app.css?v=8">
 </head>
 <body>
   <!-- Outer device mockup (black phone frame you see on the page) -->
@@ -675,10 +675,10 @@
               <div class="an-toolbar">
                 <div class="an-filter-row" id="anFilterRow">
                   <button class="an-chip active" data-filter="" onclick="setAdminNoticeFilter(this)">All</button>
-                  <button class="an-chip" data-filter="urgent" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#DC2626"></span>Urgent</button>
-                  <button class="an-chip" data-filter="general" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#1A9E6B"></span>General</button>
-                  <button class="an-chip" data-filter="poll" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#D97706"></span>Poll</button>
-                  <button class="an-chip" data-filter="info" onclick="setAdminNoticeFilter(this)"><span class="an-dot" style="background:#2563EB"></span>Info</button>
+                  <button class="an-chip" data-filter="urgent" onclick="setAdminNoticeFilter(this)"></span>Urgent</button>
+                  <button class="an-chip" data-filter="general" onclick="setAdminNoticeFilter(this)"></span>General</button>
+                  <button class="an-chip" data-filter="poll" onclick="setAdminNoticeFilter(this)"></span>Poll</button>
+                  <button class="an-chip" data-filter="info" onclick="setAdminNoticeFilter(this)"></span>Info</button>
                 </div>
                 <button class="an-compose-btn" onclick="openNoticeComposer()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -728,9 +728,9 @@
               </div>
               <div class="inc2-filter-row" id="adminIncFilterRow">
                 <button class="inc2-chip active" data-filter="" onclick="setAdminIncidentFilter(this)">All</button>
-                <button class="inc2-chip" data-filter="active" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-active"></span>Active</button>
-                <button class="inc2-chip" data-filter="investigating" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-investigating"></span>Investigating</button>
-                <button class="inc2-chip" data-filter="resolved" onclick="setAdminIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-resolved"></span>Resolved</button>
+                <button class="inc2-chip" data-filter="active" onclick="setAdminIncidentFilter(this)">Active</button>
+                <button class="inc2-chip" data-filter="investigating" onclick="setAdminIncidentFilter(this)">Investigating</button>
+                <button class="inc2-chip" data-filter="resolved" onclick="setAdminIncidentFilter(this)">Resolved</button>
               </div>
               <div id="adminIncidentList"></div>
             </div>
@@ -1204,10 +1204,10 @@
             <div class="rn-filter-bar">
               <div class="rn-filter-row" id="rnFilterRow">
                 <button type="button" class="rn-chip active" data-filter="" onclick="switchNoticeFilter(this)">All</button>
-                <button type="button" class="rn-chip" data-filter="urgent" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-urgent"></span>Urgent</button>
-                <button type="button" class="rn-chip" data-filter="general" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-general"></span>General</button>
-                <button type="button" class="rn-chip" data-filter="poll" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-poll"></span>Poll</button>
-                <button type="button" class="rn-chip" data-filter="info" onclick="switchNoticeFilter(this)"><span class="rn-chip-dot rn-dot-info"></span>Info</button>
+                <button type="button" class="rn-chip" data-filter="urgent" onclick="switchNoticeFilter(this)"></span>Urgent</button>
+                <button type="button" class="rn-chip" data-filter="general" onclick="switchNoticeFilter(this)"></span>General</button>
+                <button type="button" class="rn-chip" data-filter="poll" onclick="switchNoticeFilter(this)"></span>Poll</button>
+                <button type="button" class="rn-chip" data-filter="info" onclick="switchNoticeFilter(this)"></span>Info</button>
               </div>
             </div>
             <div class="rn-scroll" id="residentNoticeList"></div>
@@ -1452,9 +1452,9 @@
           <!-- Filter chips (not scrollable) -->
           <div class="inc2-filter-row inc2-filter-ri" id="riFilterRow">
             <button class="inc2-chip active" data-filter="" onclick="setResidentIncidentFilter(this)">All</button>
-            <button class="inc2-chip" data-filter="active" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-active"></span>Active</button>
-            <button class="inc2-chip" data-filter="investigating" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-investigating"></span>Investigating</button>
-            <button class="inc2-chip" data-filter="resolved" onclick="setResidentIncidentFilter(this)"><span class="inc2-chip-dot inc2-dot-resolved"></span>Resolved</button>
+            <button class="inc2-chip" data-filter="active" onclick="setResidentIncidentFilter(this)">Active</button>
+            <button class="inc2-chip" data-filter="investigating" onclick="setResidentIncidentFilter(this)">Investigating</button>
+            <button class="inc2-chip" data-filter="resolved" onclick="setResidentIncidentFilter(this)">Resolved</button>
           </div>
           <!-- Scrollable list -->
           <div class="ri-scroll" id="residentIncidentList"></div>
@@ -2135,7 +2135,7 @@
   </div>
 
   </div>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>
 
