@@ -40,7 +40,7 @@
 
         <div class="side-body">
         <h1 class="side-headline">Admin Portal</h1>
-        <p class="side-desc">Manage payments, visitors, notices, and residents from one place. Residents and guards use the Wellage app.</p>
+        <p class="side-desc">Manage payments, visitors, notices, and residents from one place.</p>
 
         <div class="feature-list">
           <div class="feature-item">
@@ -295,27 +295,9 @@
       <section class="page active" id="page-dashboard">
 
         <!-- Emergency Alert -->
-        <div class="web-emergency-wrap" id="webEmergencyWrap">
-          <!-- Idle: send button -->
-          <div class="web-emergency-idle" id="webEmergencyIdle">
-            <div class="web-emergency-idle-info">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span>Send an emergency alert to all residents and security guards.</span>
-            </div>
-            <button type="button" class="web-emergency-send-btn" onclick="openWebEmergencyModal()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              Send Emergency Alert
-            </button>
-          </div>
-          <!-- Active: list of live alert cards -->
-          <div class="web-emergency-list hidden" id="webEmergencyList">
-            <!-- Cards injected dynamically by updateWebEmergencyState() -->
-          </div>
-          <!-- Log another alert button (shown alongside active alerts) -->
-          <button type="button" class="web-emergency-add-btn hidden" id="webEmergencyAddBtn" onclick="openWebEmergencyModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Log Another Alert
-          </button>
+        <!-- Active emergency alerts — hidden when none active -->
+        <div class="web-emergency-wrap hidden" id="webEmergencyWrap">
+          <div class="web-emergency-list" id="webEmergencyList"></div>
         </div>
 
         <!-- Emergency compose modal -->

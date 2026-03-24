@@ -1184,32 +1184,25 @@ function resolveWebEmergencyAlert(id) {
 
 function updateWebEmergencyState() {
   const alerts = loadWebEmergency();
-  const idle = document.getElementById('webEmergencyIdle');
+  const wrap  = document.getElementById('webEmergencyWrap');
   const listEl = document.getElementById('webEmergencyList');
-  const addBtn = document.getElementById('webEmergencyAddBtn');
-  if (!idle) return;
   if (alerts.length > 0) {
-    idle.classList.add('hidden');
-    if (listEl) {
-      listEl.classList.remove('hidden');
-      listEl.innerHTML = alerts.map(a => `
-        <div class="web-emergency-active">
-          <div class="web-emergency-active-left">
-            <span class="web-emergency-pulse"></span>
-            <span class="web-emergency-active-label">LIVE ALERT</span>
-            <span class="web-emergency-active-type">${a.type}</span>
-            <span class="web-emergency-active-msg">${a.message || ''}</span>
-            <span class="web-emergency-active-meta">Sent at ${a.time} · Visible to all residents &amp; guards</span>
-          </div>
-          <button type="button" class="web-emergency-resolve-btn" onclick="resolveWebEmergencyAlert(${a.id})">Mark as Resolved</button>
+    if (wrap) wrap.classList.remove('hidden');
+    if (listEl) listEl.innerHTML = alerts.map(a => `
+      <div class="web-emergency-active">
+        <div class="web-emergency-active-left">
+          <span class="web-emergency-pulse"></span>
+          <span class="web-emergency-active-label">LIVE ALERT</span>
+          <span class="web-emergency-active-type">${a.type}</span>
+          <span class="web-emergency-active-msg">${a.message || ''}</span>
+          <span class="web-emergency-active-meta">Sent at ${a.time} · Visible to all residents &amp; guards</span>
         </div>
-      `).join('');
-    }
-    if (addBtn) addBtn.classList.remove('hidden');
+        <button type="button" class="web-emergency-resolve-btn" onclick="resolveWebEmergencyAlert(${a.id})">Mark as Resolved</button>
+      </div>
+    `).join('');
   } else {
-    idle.classList.remove('hidden');
-    if (listEl) listEl.classList.add('hidden');
-    if (addBtn) addBtn.classList.add('hidden');
+    if (wrap) wrap.classList.add('hidden');
+    if (listEl) listEl.innerHTML = '';
   }
 }
 
