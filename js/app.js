@@ -452,12 +452,12 @@ function submitVisitorCheckin() {
   var time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
   var maxId = VISITORS_DATA.reduce(function (m, v) { return v.id > m ? v.id : m; }, 0);
   var newId = maxId + 1;
-  var initials = getInitials(name);
+  var hostInitials = name.split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0, 2);
   VISITORS_DATA.unshift({
     id: newId,
-    name: name,
-    initials: initials,
-    phone: phone || null,
+    hostName: name,
+    hostInitials: hostInitials,
+    hostPhone: phone || null,
     plate: plate || null,
     host: host,
     checkIn: time,
@@ -480,10 +480,11 @@ function applyVisitorFilters() {
   var q = (searchEl.value || '').toLowerCase();
   var sf = statusEl.value;
   var rows = VISITORS_DATA.filter(function (v) {
+    var displayName = v.hostName || v.name || '';
     var matchQ = !q ||
-      (v.hostName && v.hostName.toLowerCase().includes(q)) ||
+      displayName.toLowerCase().includes(q) ||
       (v.host && v.host.toLowerCase().includes(q)) ||
-      ((v.hostPhone || '').toLowerCase().includes(q)) ||
+      ((v.hostPhone || v.phone || '').toLowerCase().includes(q)) ||
       ((v.plate || '').toLowerCase().includes(q));
     var matchS = !sf || v.status === sf;
     return matchQ && matchS;
@@ -1291,6 +1292,9 @@ function renderWebIncidents(filter) {
       ? '<span class="web-inc-meta">Reported ' + (i.reportedAt || '—') + '</span>'
       : '<span class="web-inc-meta">Reported ' + (i.reportedAt || '—') + (i.resolvedAt ? ' · Resolved ' + i.resolvedAt : '') + '</span>';
     var pulse = isActive ? '<span class="web-inc-pulse"></span>' : '';
+    var resolveBtn = isActive
+      ? '<button class="web-inc-resolve-btn" onclick="openWebResolveModal(\'' + i.id + '\')">Mark as Resolved</button>'
+      : '';
     return '<div class="web-inc-card ' + (isActive ? 'web-inc-card-active' : '') + '">' +
       pulse +
       '<div class="web-inc-dot" style="background:' + color + '"></div>' +
@@ -1298,13 +1302,43 @@ function renderWebIncidents(filter) {
         '<div class="web-inc-top"><span class="web-inc-type">' + i.type + '</span>' + statusBadge + '</div>' +
         (i.msg ? '<p class="web-inc-msg">' + i.msg + '</p>' : '') +
         note + meta +
+        resolveBtn +
       '</div>' +
     '</div>';
   }).join('');
 }
 
-function filterWebIncidents() {
+function filterWebIncidents() { renderWebIncidents(); }
+
+var _webResolveId = null;
+function openWebResolveModal(id) {
+  _webResolveId = id;
+  var bg = document.getElementById('webResolveModalBg');
+  var note = document.getElementById('webResolveNote');
+  if (note) note.value = '';
+  if (bg) bg.classList.remove('hidden');
+}
+function closeWebResolveModal() {
+  var bg = document.getElementById('webResolveModalBg');
+  if (bg) bg.classList.add('hidden');
+  _webResolveId = null;
+}
+function submitWebResolve() {
+  if (!_webResolveId) return;
+  var note = (document.getElementById('webResolveNote')?.value || '').trim();
+  var now = new Date();
+  var timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  var list = loadWebIncidents();
+  var idx = list.findIndex(function(i) { return String(i.id) === String(_webResolveId); });
+  if (idx !== -1) {
+    list[idx].status = 'resolved';
+    list[idx].note = note || 'Marked as resolved.';
+    list[idx].resolvedAt = timeStr;
+    saveWebIncidents(list);
+  }
+  closeWebResolveModal();
   renderWebIncidents();
+  toast('Incident marked as resolved.', 'success');
 }
 
 // Log incident modal (website, non-emergency)
@@ -1326,6 +1360,68 @@ function openWebLogIncidentModal() {
     var el = document.getElementById(id); if (el) el.value = '';
   });
   bg.classList.remove('hidden');
+}
+
+// ── Web QR Code ─────────────────────────────────────────────────
+function openWebQRModal() {
+  var bg = document.getElementById('webQRModalBg');
+  if (!bg) return;
+  var unitEl = document.getElementById('webQrUnit');
+  if (unitEl) unitEl.value = '';
+  refreshWebQR();
+  bg.classList.remove('hidden');
+}
+
+function closeWebQRModal() {
+  var bg = document.getElementById('webQRModalBg');
+  if (bg) bg.classList.add('hidden');
+}
+
+function refreshWebQR(regenerate) {
+  var unit  = (document.getElementById('webQrUnit')?.value || '').trim();
+  var label = document.getElementById('webQrLabel');
+  var expEl = document.getElementById('webQrExpiry');
+  var el    = document.getElementById('webQRCode');
+  if (!el) return;
+  if (label) label.textContent = unit ? ('Unit ' + unit + ' · Gate Access') : 'Urugo Estate · Gate Access';
+  if (expEl) {
+    var d = new Date(); d.setDate(d.getDate() + 7);
+    expEl.textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+  var size = 180, cell = 7;
+  var canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#000';
+  var seed = unit ? unit.charCodeAt(0) * 13 : 42;
+  var cols = Math.floor(size / cell);
+  for (var i = 0; i < cols; i++) {
+    for (var j = 0; j < cols; j++) {
+      if ((i + j + seed) % 3 === 0 || (i * 7 + j + seed) % 11 === 0) ctx.fillRect(i * cell, j * cell, cell, cell);
+    }
+  }
+  [[0,0],[cols-7,0],[0,cols-7]].forEach(function(pair) {
+    var ox = pair[0], oy = pair[1];
+    ctx.fillStyle = '#000'; ctx.fillRect(ox*cell, oy*cell, 7*cell, 7*cell);
+    ctx.fillStyle = '#fff'; ctx.fillRect((ox+1)*cell, (oy+1)*cell, 5*cell, 5*cell);
+    ctx.fillStyle = '#000'; ctx.fillRect((ox+2)*cell, (oy+2)*cell, 3*cell, 3*cell);
+  });
+  el.innerHTML = ''; el.appendChild(canvas);
+  if (regenerate) toast('New QR generated.', 'success');
+}
+
+function shareWebQR() {
+  var unit = (document.getElementById('webQrUnit')?.value || '').trim();
+  var shareUrl = window.location.href.split('#')[0] + '#gate-' + (unit ? encodeURIComponent(unit) : 'estate');
+  var shareText = unit ? ('Wellage gate QR for Unit ' + unit + '. Show this at the gate.') : 'Wellage estate gate QR. Show this at the gate for entry.';
+  if (navigator.share) {
+    navigator.share({ title: 'Wellage Gate QR', text: shareText, url: shareUrl }).catch(function(){});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareUrl).then(function() { toast('QR link copied!', 'success'); });
+  } else {
+    toast('Visitor can scan this QR at the gate.', 'info');
+  }
 }
 
 function closeWebLogIncidentModal() {

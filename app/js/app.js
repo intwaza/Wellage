@@ -780,6 +780,170 @@ function adminVisitSetTab(el) {
   }
 }
 
+// ── Admin QR Code ───────────────────────────────────────────────
+function openAdminQRModal() {
+  const bg = document.getElementById('adminQRModalBg');
+  if (!bg) return;
+  const unitEl = document.getElementById('adminQrUnit');
+  if (unitEl) unitEl.value = '';
+  refreshAdminQR();
+  bg.classList.remove('hidden');
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+
+function closeAdminQRModal() {
+  const bg = document.getElementById('adminQRModalBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+}
+
+function refreshAdminQR(regenerate) {
+  const unit  = (document.getElementById('adminQrUnit')?.value || '').trim();
+  const label = document.getElementById('adminQrLabel');
+  const expEl = document.getElementById('adminQrExpiry');
+  const el    = document.getElementById('adminQRCode');
+  if (!el) return;
+
+  // Update label
+  if (label) label.textContent = unit ? `Unit ${unit} · Gate Access` : 'Urugo Estate · Gate Access';
+
+  // Update expiry
+  if (expEl) {
+    const d = new Date(); d.setDate(d.getDate() + 7);
+    expEl.textContent = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+
+  // Draw QR (reuse same draw logic, target adminQRCode element)
+  const size = 180, cell = 7;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#000';
+  const seed = unit ? unit.charCodeAt(0) * 13 : 42;
+  const cols = Math.floor(size / cell);
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < cols; j++) {
+      if ((i + j + seed) % 3 === 0 || (i * 7 + j + seed) % 11 === 0) ctx.fillRect(i * cell, j * cell, cell, cell);
+    }
+  }
+  [[0,0],[cols-7,0],[0,cols-7]].forEach(([ox, oy]) => {
+    ctx.fillRect(ox*cell, oy*cell, 7*cell, 7*cell);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect((ox+1)*cell, (oy+1)*cell, 5*cell, 5*cell);
+    ctx.fillStyle = '#000';
+    ctx.fillRect((ox+2)*cell, (oy+2)*cell, 3*cell, 3*cell);
+  });
+  el.innerHTML = '';
+  el.appendChild(canvas);
+  if (regenerate) toast('New QR generated.', 'success');
+}
+
+function shareAdminQR() {
+  const unit = (document.getElementById('adminQrUnit')?.value || '').trim();
+  const shareUrl = window.location.href.split('#')[0] + '#gate-' + (unit ? encodeURIComponent(unit) : 'estate');
+  const shareText = unit
+    ? `Wellage gate QR for Unit ${unit}. Show this at the gate.`
+    : 'Wellage estate gate QR. Show this at the gate for entry.';
+  if (navigator.share) {
+    navigator.share({ title: 'Wellage Gate QR', text: shareText, url: shareUrl }).catch(() => {});
+  } else if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(shareUrl).then(() => toast('QR link copied!', 'success'));
+  } else {
+    toast('Visitor can scan this QR at the gate.', 'info');
+  }
+}
+
+// ── Admin Check-In Visitor ──────────────────────────────────────
+function openAdminCheckInModal() {
+  const bg = document.getElementById('adminCheckInModalBg');
+  if (!bg) return;
+  ['aciName','aciHost','aciPhone','aciPlate'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  bg.classList.remove('hidden');
+  requestAnimationFrame(() => bg.classList.add('open'));
+}
+
+function closeAdminCheckInModal() {
+  const bg = document.getElementById('adminCheckInModalBg');
+  if (!bg) return;
+  bg.classList.remove('open');
+  setTimeout(() => bg.classList.add('hidden'), 280);
+}
+
+function submitAdminCheckIn() {
+  const name  = (document.getElementById('aciName')?.value  || '').trim();
+  const host  = (document.getElementById('aciHost')?.value  || '').trim();
+  const phone = (document.getElementById('aciPhone')?.value || '').trim();
+  const plate = (document.getElementById('aciPlate')?.value || '').trim();
+
+  if (!name)  { toast('Visitor name is required.', 'error');  return; }
+  if (!host)  { toast('Host unit is required.', 'error');     return; }
+
+  const now      = new Date();
+  const timeStr  = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  // Prepend card to On Site section
+  const onsiteList = document.querySelector('.admin-visit-onsite-list');
+  if (onsiteList) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'admin-visit-card';
+    card.onclick = () => adminOpenVisitorSheet(name, initials, host, phone || '—', timeStr, 'Still on site', plate || '—', true);
+    card.innerHTML = `
+      <div class="admin-visit-avatar">${initials}</div>
+      <div class="admin-visit-info">
+        <p class="admin-visit-name">${name}</p>
+        <div class="admin-visit-meta">
+          <span class="admin-visit-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${host}</span>
+          ${plate ? `<span class="admin-visit-chip">${plate}</span>` : ''}
+        </div>
+      </div>
+      <div class="admin-visit-right">
+        <span class="admin-visit-time">${timeStr}</span>
+        <span class="admin-visit-status admin-visit-status-onsite"><span class="admin-visit-dot"></span>On site</span>
+      </div>`;
+    onsiteList.prepend(card);
+  }
+
+  // Prepend row to the full log table
+  const table = document.querySelector('.admin-visit-log-table');
+  if (table) {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'admin-visit-log-grid admin-visit-log-row admin-visit-log-onsite';
+    row.onclick = () => adminOpenVisitorSheet(name, initials, host, phone || '—', timeStr, 'Still on site', plate || '—', true);
+    row.innerHTML = `<span class="admin-visit-log-name">${name}</span><span class="admin-visit-log-host">${host}</span><span class="admin-visit-log-time">${timeStr}</span><span class="admin-visit-log-badge admin-visit-log-badge-onsite">On site</span>`;
+    // Insert after the header row
+    const thead = table.querySelector('.admin-visit-log-thead');
+    if (thead && thead.nextSibling) {
+      table.insertBefore(row, thead.nextSibling);
+    } else {
+      table.appendChild(row);
+    }
+  }
+
+  // Update On site count in stats strip
+  const onSiteVal = document.querySelector('.admin-visit-live-highlight .admin-visit-live-val');
+  if (onSiteVal) {
+    const match = onSiteVal.innerHTML.match(/(\d+)/);
+    const count = match ? parseInt(match[1]) + 1 : 1;
+    onSiteVal.innerHTML = `<span class="admin-visit-live-dot"></span>${count}`;
+  }
+  const onSiteTitle = document.querySelector('.admin-visit-sec-title');
+  if (onSiteTitle) {
+    const m = onSiteTitle.textContent.match(/\d+/);
+    if (m) onSiteTitle.textContent = `ON SITE NOW · ${parseInt(m[0]) + 1}`;
+  }
+
+  closeAdminCheckInModal();
+  toast(`${name} checked in — ${host}.`, 'success');
+}
+
 function adminOpenVisitorSheet(hostName, hostInitials, unit, phone, checkin, checkout, plate, onsite) {
   const titleEl = document.getElementById('adminVisitorSheetTitle');
   const avatarEl = document.getElementById('adminVisitorSheetAvatar');
@@ -1649,24 +1813,25 @@ function clearResidentNotificationDot() {
 }
 
 function toggleResidentNotifications() {
-  const dropdown = document.getElementById('residentNotifPanel');
-  const backdrop = document.getElementById('residentNotifBackdrop');
-  if (!dropdown) return;
-  const isOpen = dropdown.classList.contains('open');
+  const panel   = document.getElementById('residentNotifPanel');
+  const overlay = document.getElementById('residentNotifOverlay');
+  if (!panel) return;
+  const isOpen = panel.classList.contains('open');
   if (isOpen) {
     closeResidentNotifications();
   } else {
-    dropdown.classList.add('open');
-    if (backdrop) backdrop.classList.add('open');
+    panel.classList.remove('hidden');
+    if (overlay) overlay.classList.remove('hidden');
+    requestAnimationFrame(() => panel.classList.add('open'));
     clearResidentNotificationDot();
   }
 }
 
 function closeResidentNotifications() {
-  const dropdown = document.getElementById('residentNotifPanel');
-  const backdrop = document.getElementById('residentNotifBackdrop');
-  if (dropdown) dropdown.classList.remove('open');
-  if (backdrop) backdrop.classList.remove('open');
+  const panel   = document.getElementById('residentNotifPanel');
+  const overlay = document.getElementById('residentNotifOverlay');
+  if (panel) panel.classList.remove('open');
+  if (overlay) overlay.classList.add('hidden');
 }
 
 // Notices tab: filter tabs and poll vote
@@ -3143,6 +3308,7 @@ function openIncidentSheet(id) {
   const all = _riGetAll();
   const inc = all.find(x => String(x.id) === String(id));
   if (!inc) return;
+  _resolveIncidentId = id;
 
   const title    = inc.title || inc.type;
   const location = inc.location || '—';
@@ -3200,6 +3366,21 @@ function openIncidentSheet(id) {
       </div>
     </div>`).join('');
 
+  // Mark sheet with status + viewer so CSS can show/hide resolve btn
+  const sheet2      = document.getElementById('incDetailSheet');
+  const isAdmin     = document.getElementById('view-admin-app')?.classList.contains('active') === true;
+  if (sheet2) {
+    sheet2.dataset.status = (inc.status || '').toLowerCase();
+    sheet2.dataset.viewer = isAdmin ? 'admin' : 'resident';
+  }
+  // Reset resolve form
+  const confirmBtn  = document.getElementById('incSheetConfirmBtn');
+  const resolveForm = document.getElementById('incResolveForm');
+  const noteEl      = document.getElementById('incResolveNote');
+  if (confirmBtn)  confirmBtn.style.display  = 'none';
+  if (resolveForm) { resolveForm.style.display = 'none'; resolveForm.classList.add('hidden'); }
+  if (noteEl) noteEl.value = '';
+
   const overlay = document.getElementById('incDetailOverlay');
   const sheet   = document.getElementById('incDetailSheet');
   if (!sheet) return;
@@ -3208,12 +3389,54 @@ function openIncidentSheet(id) {
   requestAnimationFrame(() => { overlay?.classList.add('open'); sheet.classList.add('open'); });
 }
 
+let _resolveIncidentId = null;
+
+function toggleIncResolveForm() {
+  const form       = document.getElementById('incResolveForm');
+  const resolveBtn = document.getElementById('incSheetResolveBtn');
+  const confirmBtn = document.getElementById('incSheetConfirmBtn');
+  if (!form) return;
+  const isHidden = form.style.display === 'none' || form.classList.contains('hidden');
+  form.style.display       = isHidden ? ''     : 'none';
+  form.classList.toggle('hidden', !isHidden);
+  if (resolveBtn) resolveBtn.style.display = isHidden ? 'none' : '';
+  if (confirmBtn) confirmBtn.style.display = isHidden ? ''     : 'none';
+}
+
+function confirmIncidentResolved() {
+  if (!_resolveIncidentId) return;
+  const note = (document.getElementById('incResolveNote')?.value || '').trim();
+  const now  = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  // Update in stored incidents
+  const stored = loadIncidents();
+  const idx    = stored.findIndex(i => String(i.id) === String(_resolveIncidentId));
+  if (idx !== -1) {
+    stored[idx].status     = 'resolved';
+    stored[idx].note       = note || 'Marked as resolved.';
+    stored[idx].resolvedAt = timeStr;
+    saveIncidents(stored);
+  }
+  // Update in activeEmergencies if it's an emergency
+  const aeIdx = activeEmergencies.findIndex(a => String(a.id) === String(_resolveIncidentId));
+  if (aeIdx !== -1) activeEmergencies.splice(aeIdx, 1);
+  updateAdminEmergencyState();
+  updateEmergencyBanners();
+
+  closeIncidentSheet();
+  renderAdminIncidents();
+  renderResidentIncidents();
+  toast('Incident marked as resolved.', 'success');
+}
+
 function closeIncidentSheet() {
   const overlay = document.getElementById('incDetailOverlay');
   const sheet   = document.getElementById('incDetailSheet');
   overlay?.classList.remove('open');
   sheet?.classList.remove('open');
   setTimeout(() => { overlay?.classList.add('hidden'); sheet?.classList.add('hidden'); }, 320);
+  _resolveIncidentId = null;
 }
 
 // backward compat aliases

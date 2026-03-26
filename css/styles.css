@@ -3098,3 +3098,68 @@ body:has(#appView:not(.hidden)) > .theme-btn {
   border: none; cursor: pointer; font-family: var(--font); transition: background .15s;
 }
 .wli-submit:hover { background: #158a5c; }
+
+/* ── Web QR modal ─────────────────────────────────────────────── */
+.record-btn.outline {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.record-btn.outline:hover { background: var(--bg-hover); }
+.web-qr-card {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  width: 100%;
+}
+.web-qr-lbl {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+.web-qr-frame {
+  background: #fff; border-radius: 12px;
+  padding: 12px; border: 1px solid var(--border);
+}
+.web-qr-expiry {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-muted);
+}
+.web-qr-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green, #1A9E6B); display: inline-block;
+}
+.web-qr-actions { display: flex; gap: 8px; width: 100%; }
+.web-qr-share {
+  flex: 2; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 10px;
+  background: var(--green, #1A9E6B); color: #fff;
+  font-size: 13px; font-weight: 600; border: none;
+  cursor: pointer; font-family: var(--font); transition: background .15s;
+}
+.web-qr-share:hover { background: #158a5c; }
+.web-qr-regen {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 10px;
+  background: var(--bg-card); color: var(--text-sub);
+  font-size: 13px; font-weight: 600;
+  border: 1.5px solid var(--border);
+  cursor: pointer; font-family: var(--font); transition: background .15s;
+}
+.web-qr-regen:hover { background: var(--bg-hover); }
+
+/* ── Web incident resolve button ─────────────────────────────── */
+.web-inc-resolve-btn {
+  margin-top: 10px;
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 8px;
+  background: transparent; color: var(--green, #1A9E6B);
+  border: 1.5px solid var(--green, #1A9E6B);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: background .15s, color .15s;
+}
+.web-inc-resolve-btn:hover { background: var(--green, #1A9E6B); color: #fff; }

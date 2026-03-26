@@ -538,6 +538,19 @@
                   <div class="admin-visit-live-lbl">Checked out</div>
                 </div>
               </div>
+              <!-- Action buttons below stats -->
+              <div class="admin-visit-toolbar">
+                <div class="admin-visit-toolbar-btns">
+                  <button type="button" class="admin-visit-qr-btn" onclick="openAdminQRModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="14" y="19" width="3" height="2"/><rect x="19" y="14" width="2" height="3"/><rect x="19" y="19" width="2" height="2"/></svg>
+                    Share QR
+                  </button>
+                  <button type="button" class="admin-visit-checkin-btn" onclick="openAdminCheckInModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    Check In
+                  </button>
+                </div>
+              </div>
               <div class="admin-visit-tabs-wrap">
                 <div class="admin-visit-tabs" id="adminVisitTabs">
                   <button type="button" class="admin-visit-tab active" data-filter="all" onclick="adminVisitSetTab(this)">All today</button>
@@ -619,6 +632,92 @@
               </div>
               <div class="admin-visit-scroll-end"></div>
             </div>
+            <!-- Share QR modal -->
+            <div class="modal-backdrop hidden" id="adminQRModalBg" onclick="if(event.target===this)closeAdminQRModal()">
+              <div class="modal inc2-modal" onclick="event.stopPropagation()">
+                <div class="inc2-modal-handle"></div>
+                <div class="modal-head">
+                  <div>
+                    <span class="modal-title">Gate QR Code</span>
+                    <div style="font-size:11.5px;color:var(--text-muted,#9CA3AF);margin-top:2px">Share with a visitor to allow gate entry</div>
+                  </div>
+                </div>
+                <div class="modal-body" style="align-items:center;gap:14px">
+                  <!-- QR card -->
+                  <div class="admin-qr-card">
+                    <div class="admin-qr-label">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                      <span id="adminQrLabel">Urugo Estate · Gate Access</span>
+                    </div>
+                    <div class="admin-qr-frame">
+                      <div id="adminQRCode" class="resident-qr-svg-wrap"></div>
+                    </div>
+                    <div class="admin-qr-expiry">
+                      <span class="resident-qr-expiry-dot"></span>
+                      Active · expires <span id="adminQrExpiry">—</span>
+                    </div>
+                  </div>
+                  <!-- Optional unit field -->
+                  <div class="field" style="width:100%">
+                    <label class="field-label">For unit <span style="font-size:10px;color:var(--text-muted)">Optional</span></label>
+                    <input class="field-input" type="text" id="adminQrUnit" placeholder="e.g. A-12 (leave blank for general)" oninput="refreshAdminQR()"/>
+                  </div>
+                  <!-- Actions -->
+                  <div class="admin-qr-actions">
+                    <button type="button" class="admin-qr-share-btn" onclick="shareAdminQR()">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                      Share QR
+                    </button>
+                    <button type="button" class="admin-qr-regen-btn" onclick="refreshAdminQR(true)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      New QR
+                    </button>
+                  </div>
+                </div>
+                <div class="inc2-modal-footer">
+                  <button class="inc2-modal-cancel" onclick="closeAdminQRModal()">Close</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Check In Visitor modal -->
+            <div class="modal-backdrop hidden" id="adminCheckInModalBg" onclick="if(event.target===this)closeAdminCheckInModal()">
+              <div class="modal inc2-modal" onclick="event.stopPropagation()">
+                <div class="inc2-modal-handle"></div>
+                <div class="modal-head">
+                  <div>
+                    <span class="modal-title">Check In Visitor</span>
+                    <div style="font-size:11.5px;color:var(--text-muted,#9CA3AF);margin-top:2px">Log a visitor arriving at the gate</div>
+                  </div>
+                </div>
+                <div class="modal-body">
+                  <div class="field">
+                    <label class="field-label">Visitor name <span style="color:var(--danger,#DC2626)">*</span></label>
+                    <input class="field-input" type="text" id="aciName" placeholder="Full name"/>
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Host unit <span style="color:var(--danger,#DC2626)">*</span></label>
+                    <input class="field-input" type="text" id="aciHost" placeholder="e.g. A-12, C-04"/>
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Phone <span style="font-size:10px;color:var(--text-muted)">Optional</span></label>
+                    <input class="field-input" type="tel" id="aciPhone" placeholder="+250 7XX XXX XXX"/>
+                  </div>
+                  <div class="field">
+                    <label class="field-label">Vehicle plate <span style="font-size:10px;color:var(--text-muted)">Optional</span></label>
+                    <input class="field-input" type="text" id="aciPlate" placeholder="e.g. RAC 123A"/>
+                  </div>
+                </div>
+                <div class="inc2-modal-footer">
+                  <button class="inc2-modal-cancel" onclick="closeAdminCheckInModal()">Cancel</button>
+                  <button class="inc2-modal-submit" onclick="submitAdminCheckIn()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Check In
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Visitor detail bottom sheet -->
             <div class="admin-visitor-sheet-bg" id="adminVisitorSheetBg" onclick="if(event.target===this)adminCloseVisitorSheet()">
               <div class="admin-visitor-sheet" id="adminVisitorSheet">
@@ -900,39 +999,10 @@
             </a>
             <div class="resident-topbar-actions">
               <div class="resident-notif-wrap">
-                <button type="button" class="resident-icon-btn" aria-label="Notifications" onclick="toggleResidentNotifications(); event.stopPropagation();">
+                <button type="button" class="resident-icon-btn" aria-label="Notifications" onclick="toggleResidentNotifications()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                   <span class="resident-notif-dot active" id="residentNotifDot" aria-hidden="true"></span>
                 </button>
-                <div class="resident-notif-dropdown" id="residentNotifPanel">
-                  <div class="resident-notif-hd">
-                    <span class="resident-notif-hd-title">Notifications</span>
-                    <button type="button" class="resident-notif-mark-all" onclick="markAllNotificationsRead()">Mark all as read</button>
-                  </div>
-                  <div class="resident-notif-item unread">
-                    <span class="resident-notif-tag payment">Payment</span>
-                    <div class="resident-notif-content">
-                      <p class="resident-notif-text">March fees due <strong>10 March</strong>. Don't miss the deadline.</p>
-                      <p class="resident-notif-time">Today, 8:00 AM</p>
-                    </div>
-                    <span class="resident-notif-unread-dot"></span>
-                  </div>
-                  <div class="resident-notif-item unread">
-                    <span class="resident-notif-tag notice">Notice</span>
-                    <div class="resident-notif-content">
-                      <p class="resident-notif-text">Water supply off <strong>Friday 7 Mar</strong>, 8:00 AM – 2:00 PM.</p>
-                      <p class="resident-notif-time">Yesterday, 5:12 PM</p>
-                    </div>
-                    <span class="resident-notif-unread-dot"></span>
-                  </div>
-                  <div class="resident-notif-item">
-                    <span class="resident-notif-tag visitor">Visitor</span>
-                    <div class="resident-notif-content">
-                      <p class="resident-notif-text"><strong>Diane M.</strong> checked in at gate — House C-02.</p>
-                      <p class="resident-notif-time">Mar 3, 9:17 AM</p>
-                    </div>
-                  </div>
-                </div>
               </div>
               <button class="resident-icon-btn" onclick="residentNav('profile')" aria-label="My profile">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1540,7 +1610,6 @@
             </button>
           </nav>
         </div>
-        <div class="resident-notif-backdrop" id="residentNotifBackdrop" onclick="closeResidentNotifications()" aria-hidden="true"></div>
       </div>
       <div class="resident-sidebar-backdrop hidden" id="residentSidebarBackdrop" onclick="toggleResidentSidebar()" aria-hidden="true"></div>
     </section>
@@ -2061,6 +2130,45 @@
     </div>
   </div>
 
+  <!-- ═══ RESIDENT: NOTIFICATION PANEL ═══ -->
+  <div class="rn-panel-overlay hidden" id="residentNotifOverlay" onclick="closeResidentNotifications()"></div>
+  <div class="rn-panel hidden" id="residentNotifPanel">
+    <div class="rn-panel-head">
+      <span class="rn-panel-title">Notifications</span>
+      <div class="rn-panel-head-right">
+        <button class="rn-panel-mark-all" onclick="markAllNotificationsRead()">Mark all as read</button>
+        <button class="rn-panel-close" onclick="closeResidentNotifications()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="rn-panel-body">
+      <div class="resident-notif-item unread">
+        <span class="resident-notif-tag payment">Payment</span>
+        <div class="resident-notif-content">
+          <p class="resident-notif-text">March fees due <strong>10 March</strong>. Don't miss the deadline.</p>
+          <p class="resident-notif-time">Today, 8:00 AM</p>
+        </div>
+        <span class="resident-notif-unread-dot"></span>
+      </div>
+      <div class="resident-notif-item unread">
+        <span class="resident-notif-tag notice">Notice</span>
+        <div class="resident-notif-content">
+          <p class="resident-notif-text">Water supply off <strong>Friday 7 Mar</strong>, 8:00 AM – 2:00 PM.</p>
+          <p class="resident-notif-time">Yesterday, 5:12 PM</p>
+        </div>
+        <span class="resident-notif-unread-dot"></span>
+      </div>
+      <div class="resident-notif-item">
+        <span class="resident-notif-tag visitor">Visitor</span>
+        <div class="resident-notif-content">
+          <p class="resident-notif-text"><strong>Diane M.</strong> checked in at gate — House C-02.</p>
+          <p class="resident-notif-time">Mar 3, 9:17 AM</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══ SHARED: INCIDENT DETAIL SHEET ═══ -->
   <div class="inc2-sheet-overlay hidden" id="incDetailOverlay" onclick="closeIncidentSheet()"></div>
   <div class="inc2-sheet hidden" id="incDetailSheet">
@@ -2084,8 +2192,24 @@
       <div class="inc2-tl-lbl">Timeline</div>
       <div class="inc2-timeline" id="incSheetTimeline"></div>
     </div>
+    <!-- Resolve inline form (hidden until Mark as Resolved clicked) -->
+    <div class="inc2-resolve-form hidden" id="incResolveForm">
+      <div class="inc2-resolve-divider"></div>
+      <div class="inc2-resolve-body">
+        <label class="inc2-resolve-lbl">Resolution note <span style="font-size:10px;opacity:.6">Optional</span></label>
+        <textarea class="inc2-resolve-textarea" id="incResolveNote" placeholder="How was the situation handled?" rows="2"></textarea>
+      </div>
+    </div>
     <div class="inc2-sheet-footer">
-      <button class="inc2-sheet-close-btn" onclick="closeIncidentSheet()">Close</button>
+      <button class="inc2-sheet-close-btn" id="incSheetCloseBtn" onclick="closeIncidentSheet()">Close</button>
+      <button class="inc2-sheet-resolve-btn" id="incSheetResolveBtn" onclick="toggleIncResolveForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+        Mark as Resolved
+      </button>
+      <button class="inc2-sheet-confirm-btn" id="incSheetConfirmBtn" onclick="confirmIncidentResolved()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirm Resolved
+      </button>
     </div>
   </div>
 

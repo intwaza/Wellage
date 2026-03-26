@@ -556,6 +556,10 @@
             <option value="left">Left</option>
           </select>
           <div class="spacer"></div>
+          <button class="record-btn outline" onclick="openWebQRModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/></svg>
+            Share QR
+          </button>
           <button class="record-btn" onclick="openVisitorModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Check In Visitor
@@ -683,6 +687,84 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
               Check In
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Web Resolve Incident modal -->
+      <div class="web-emergency-modal-bg hidden" id="webResolveModalBg" onclick="if(event.target===this)closeWebResolveModal()">
+        <div class="wli-modal" onclick="event.stopPropagation()">
+          <div class="wli-head">
+            <div class="wli-head-left">
+              <div class="wli-title">Mark as Resolved</div>
+              <div class="wli-sub">Confirm this incident has been handled.</div>
+            </div>
+            <button class="wli-cls" onclick="closeWebResolveModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="wli-body">
+            <div class="wli-field">
+              <div class="wli-lbl">Resolution note <span class="wli-optional">Optional</span></div>
+              <textarea class="wli-inp wli-textarea" id="webResolveNote" placeholder="How was the situation handled?" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="wli-footer">
+            <button class="wli-cancel" onclick="closeWebResolveModal()">Cancel</button>
+            <button class="wli-submit" onclick="submitWebResolve()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+              Confirm Resolved
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Web Share QR modal -->
+      <div class="web-emergency-modal-bg hidden" id="webQRModalBg" onclick="if(event.target===this)closeWebQRModal()">
+        <div class="wli-modal" onclick="event.stopPropagation()">
+          <div class="wli-head">
+            <div class="wli-head-left">
+              <div class="wli-title">Gate QR Code</div>
+              <div class="wli-sub">Share with a visitor to allow gate entry</div>
+            </div>
+            <button class="wli-cls" onclick="closeWebQRModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="wli-body" style="align-items:center">
+            <!-- QR card -->
+            <div class="web-qr-card">
+              <div class="web-qr-lbl">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                <span id="webQrLabel">Urugo Estate · Gate Access</span>
+              </div>
+              <div class="web-qr-frame">
+                <div id="webQRCode"></div>
+              </div>
+              <div class="web-qr-expiry">
+                <span class="web-qr-dot"></span>
+                Active · expires <span id="webQrExpiry">—</span>
+              </div>
+            </div>
+            <!-- Unit field -->
+            <div class="wli-field" style="width:100%">
+              <div class="wli-lbl">For unit <span class="wli-optional">Optional</span></div>
+              <input class="wli-inp" type="text" id="webQrUnit" placeholder="e.g. A-12 (leave blank for general)" oninput="refreshWebQR()"/>
+            </div>
+            <!-- Actions -->
+            <div class="web-qr-actions">
+              <button class="web-qr-share" onclick="shareWebQR()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="13" height="13"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                Share QR
+              </button>
+              <button class="web-qr-regen" onclick="refreshWebQR(true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                New QR
+              </button>
+            </div>
+          </div>
+          <div class="wli-footer">
+            <button class="wli-cancel" onclick="closeWebQRModal()">Close</button>
           </div>
         </div>
       </div>

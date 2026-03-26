@@ -2201,6 +2201,29 @@ body {
   box-sizing: border-box;
   padding: 0;
 }
+/* Visitor toolbar */
+.admin-visit-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 0 4px;
+}
+.admin-visit-checkin-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 13px;
+  background: var(--accent, #1A9E6B);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.admin-visit-checkin-btn:hover { background: #158a5c; }
 #admin-screen-visitors .admin-visit-scroll {
   flex: 1;
   min-height: 0;
@@ -3898,49 +3921,54 @@ body {
 .notice-preview { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
 
 /* Resident notification dropdown (reference style) */
-.resident-notif-wrap { position: relative; }
-.resident-notif-dropdown {
+/* Notification dropdown panel */
+.rn-panel-overlay {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  width: 300px;
-  max-width: calc(100vw - 24px);
+  inset: 0;
+  background: transparent;
+  z-index: 9150;
+}
+.rn-panel-overlay.hidden { display: none; }
+.rn-panel {
+  position: absolute;
+  top: 58px;
+  right: 12px;
+  width: 290px;
   background: var(--bg-card);
+  z-index: 9160;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08);
   border: 1px solid var(--border);
   overflow: hidden;
-  z-index: 300;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-6px) scale(0.97);
   transform-origin: top right;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
-.resident-notif-dropdown.open {
+.rn-panel.open {
   opacity: 1;
   pointer-events: all;
   transform: translateY(0) scale(1);
 }
-.resident-notif-hd {
+.rn-panel.hidden { display: none; }
+.rn-panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px 10px;
+  padding: 13px 16px 10px;
   border-bottom: 1px solid var(--border);
 }
-.resident-notif-hd-title { font-size: 13px; font-weight: 700; color: var(--text); }
-.resident-notif-mark-all {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--accent);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
+.rn-panel-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.rn-panel-head-right { display: flex; align-items: center; gap: 8px; }
+.rn-panel-mark-all {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  background: none; border: none; cursor: pointer;
+  padding: 0; font-family: inherit;
 }
-.resident-notif-mark-all:hover { text-decoration: underline; }
+.rn-panel-mark-all:hover { text-decoration: underline; }
+.rn-panel-close { display: none; }
+.rn-panel-body { overflow-y: auto; max-height: 320px; }
 .resident-notif-item {
   display: flex;
   align-items: flex-start;
@@ -3978,14 +4006,6 @@ body {
   flex-shrink: 0;
   margin-top: 5px;
 }
-.resident-notif-backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 299;
-  display: none;
-  background: transparent;
-}
-.resident-notif-backdrop.open { display: block; }
 
 /* Payment service tabs (Security | Cleaning | Waste) */
 .payment-service-tabs {
@@ -9513,9 +9533,26 @@ body {
 .inc2-tl-body  { font-size: 12.5px; color: var(--text-muted, #9CA3AF); line-height: 1.5; }
 
 /* Sheet footer */
-.inc2-sheet-footer { padding: 12px 20px 24px; flex-shrink: 0; border-top: 1px solid var(--border, rgba(0,0,0,.07)); }
-.inc2-sheet-close-btn { width: 100%; padding: 13px; border-radius: 13px; background: var(--accent, #1A9E6B); color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-.inc2-sheet-close-btn:active { background: #158a5c; }
+.inc2-sheet-footer { padding: 12px 20px 24px; flex-shrink: 0; border-top: 1px solid var(--border, rgba(0,0,0,.07)); display: flex; gap: 8px; }
+.inc2-sheet-close-btn { flex: 1; padding: 13px; border-radius: 13px; background: var(--bg-hover, #f0f4f2); color: var(--text, #0C1A14); font-size: 14px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+.inc2-sheet-close-btn:active { background: var(--border); }
+/* When resolve btn is hidden, close btn fills full width */
+.inc2-sheet-footer:has(#incSheetResolveBtn.hidden):has(#incSheetConfirmBtn.hidden) .inc2-sheet-close-btn { flex: unset; width: 100%; background: var(--accent, #1A9E6B); color: #fff; border-color: transparent; }
+/* Resolve button — hidden by default, shown only for admin + non-resolved */
+.inc2-sheet-resolve-btn { display: none; flex: 2; padding: 13px; border-radius: 13px; background: var(--accent, #1A9E6B); color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; align-items: center; justify-content: center; gap: 6px; transition: background .15s; }
+.inc2-sheet-resolve-btn:active { background: #158a5c; }
+/* Only show when admin viewer AND status is active or investigating */
+#incDetailSheet[data-viewer="admin"][data-status="active"] #incSheetResolveBtn,
+#incDetailSheet[data-viewer="admin"][data-status="investigating"] #incSheetResolveBtn { display: flex; }
+.inc2-sheet-confirm-btn { flex: 2; padding: 13px; border-radius: 13px; background: var(--accent, #1A9E6B); color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background .15s; }
+.inc2-sheet-confirm-btn:active { background: #158a5c; }
+/* Resolve inline form */
+.inc2-resolve-form { padding: 0 20px; }
+.inc2-resolve-divider { height: 1px; background: var(--border, rgba(0,0,0,.07)); margin-bottom: 14px; }
+.inc2-resolve-body { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.inc2-resolve-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-muted, #B8CCC7); }
+.inc2-resolve-textarea { width: 100%; padding: 10px 12px; background: var(--bg, #f5f6f8); border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--text); font-family: inherit; resize: none; outline: none; transition: border-color .15s; }
+.inc2-resolve-textarea:focus { border-color: var(--accent, #1A9E6B); }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -9872,3 +9909,61 @@ body {
   border: none; cursor: pointer; font-family: inherit; transition: background .15s;
 }
 .li-submit:hover { background: #158a5c; }
+
+/* ── Admin QR & toolbar ─────────────────────────────────────── */
+.admin-visit-toolbar-btns { display: flex; align-items: center; gap: 8px; }
+.admin-visit-qr-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 13px;
+  background: var(--bg-card, #fff);
+  color: var(--text, #0C1A14);
+  font-size: 12px; font-weight: 600;
+  border-radius: 10px;
+  border: 1.5px solid var(--border, rgba(0,0,0,.07));
+  cursor: pointer; font-family: inherit;
+  transition: background .15s;
+}
+.admin-visit-qr-btn:hover { background: var(--bg-hover, #f0f4f2); }
+.admin-qr-card {
+  background: var(--bg, #f5f6f8);
+  border: 1.5px solid var(--border, rgba(0,0,0,.07));
+  border-radius: 16px;
+  padding: 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  width: 100%;
+}
+.admin-qr-label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--text-muted, #B8CCC7);
+  letter-spacing: 0.3px;
+}
+.admin-qr-frame {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--border, rgba(0,0,0,.07));
+}
+.admin-qr-expiry {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-muted, #B8CCC7);
+}
+.admin-qr-actions {
+  display: flex; gap: 8px; width: 100%;
+}
+.admin-qr-share-btn {
+  flex: 2; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 10px;
+  background: var(--accent, #1A9E6B); color: #fff;
+  font-size: 12px; font-weight: 600; border: none;
+  cursor: pointer; font-family: inherit; transition: background .15s;
+}
+.admin-qr-share-btn:hover { background: #158a5c; }
+.admin-qr-regen-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 10px;
+  background: var(--bg-card, #fff); color: var(--text-sub, #3D5349);
+  font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--border, rgba(0,0,0,.07));
+  cursor: pointer; font-family: inherit; transition: background .15s;
+}
+.admin-qr-regen-btn:hover { background: var(--bg-hover, #f0f4f2); }
